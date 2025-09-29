@@ -1,0 +1,10 @@
+;Sliced at: {day} {date} {time}
+;Basic settings: Layer height: {layer_height} Walls: {wall_thickness} Fill: {infill_sparse_density}
+G21 ;metric values
+G90 ;relative positioning
+
+
+
+M117 Printing...
+
+

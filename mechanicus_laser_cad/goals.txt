@@ -1,0 +1,199 @@
+MECHANICUS DEVELOPMENT GOALS
+=======================
+
+1. Core Architecture Improvements
+-------------------------------
+- Implement proper Model-View-Controller (MVC) pattern
+- Create separate modules for UI, business logic, and data management
+- Implement proper event handling system
+- Add undo/redo stack with compound operations
+- Add proper error handling and logging system
+- Implement plugin architecture for extensibility
+
+2. Drawing and Editing Features
+-----------------------------
+a) Basic Shape Tools
+   - Improved polygon tool with dynamic preview
+   - Spline tool with control points
+   - Star tool with adjustable points
+   - Spiral tool with adjustable parameters
+   - Advanced rectangle tool with rounded corners
+   - Advanced circle tool with pie/arc segments
+
+b) Path Operations
+   - Path combination (union, intersection, difference)
+   - Path simplification
+   - Path smoothing
+   - Convert shapes to editable paths
+   - Boolean operations between shapes
+   - Offset path creation
+   - Path alignment tools
+
+c) Selection and Transformation
+   - Multiple selection modes (point, box, lasso)
+   - Smart selection (similar objects, color, layer)
+   - Advanced rotation with precise angle control
+   - Scale with reference point
+   - Mirror tool with preview
+   - Array tool (rectangular and polar)
+   - Improved snap system (endpoint, midpoint, intersection)
+   - Object handles for direct manipulation
+
+3. Layer System Enhancement
+-------------------------
+- Layer groups and subgroups
+- Layer visibility toggles
+- Layer locking
+- Layer opacity control
+- Layer blend modes
+- Layer effects
+- Layer search and filtering
+- Layer templates
+
+4. Style and Formatting
+---------------------
+- Style presets for shapes
+- Gradient fills (linear, radial, pattern)
+- Pattern fills
+- Stroke styles (dashed, dotted, custom)
+- Arrow styles for lines
+- Text styles and typography controls
+- Symbol library
+- Color schemes and palettes
+
+5. Measurement and Precision
+--------------------------
+- Dimension tools (linear, angular, radial)
+- Advanced grid system with multiple grids
+- Guide lines and guide points
+- Measurement tools
+- Scale and units management
+- Reference coordinate system
+- Calibration tools
+
+6. File Operations
+----------------
+- Enhanced SVG import/export
+- DXF import/export
+- AI file compatibility
+- Project templates
+- Auto-save and backup
+- File recovery
+- Batch processing
+- Cloud storage integration
+
+7. UI/UX Improvements
+-------------------
+- Customizable toolbars
+- Dockable panels
+- Tool presets
+- Quick access toolbar
+- Context-sensitive menus
+- Status bar with tool hints
+- Property inspector
+- Mini toolbar for quick access
+- Customizable keyboard shortcuts
+- Touch screen support
+- Dark/light theme support
+
+8. Real-time Features
+-------------------
+- Live preview for all operations
+- Real-time collaboration
+- Auto-update of dependent objects
+- Dynamic constraints
+- Real-time path optimization
+- Live machine feedback
+- Performance monitoring
+
+9. CNC/Machine Integration
+------------------------
+- Multiple machine profiles
+- Tool path optimization
+- Cut simulation
+- Material library
+- Tool library
+- Machine calibration tools
+- Job queuing system
+- Machine monitoring
+- Error recovery procedures
+
+10. Documentation and Help
+------------------------
+- Interactive tutorials
+- Tool tips and help system
+- Video tutorials
+- Sample projects
+- Best practices guide
+- Troubleshooting guide
+- API documentation
+- Plugin development guide
+
+Proposed App Structure
+=====================
+
+src/
+├── core/
+│   ├── model/
+│   │   ├── document.py
+│   │   ├── layer.py
+│   │   ├── shape.py
+│   │   └── style.py
+│   ├── view/
+│   │   ├── canvas.py
+│   │   ├── toolbar.py
+│   │   └── panels.py
+│   └── controller/
+│       ├── commands.py
+│       ├── tools.py
+│       └── events.py
+├── tools/
+│   ├── drawing/
+│   ├── editing/
+│   ├── transform/
+│   └── measurement/
+├── ui/
+│   ├── dialogs/
+│   ├── widgets/
+│   └── themes/
+├── machine/
+│   ├── profiles/
+│   ├── gcode/
+│   └── control/
+├── file/
+│   ├── import/
+│   ├── export/
+│   └── project/
+├── utils/
+│   ├── math/
+│   ├── geometry/
+│   └── helpers/
+└── plugins/
+    ├── api/
+    └── examples/
+
+Implementation Priority
+=====================
+1. Core Architecture
+2. Basic Shape Tools
+3. Selection and Transformation
+4. Layer System
+5. File Operations
+6. UI/UX Improvements
+7. Style and Formatting
+8. Measurement and Precision
+9. Real-time Features
+10. Documentation
+
+Next Steps
+=========
+1. Refactor current codebase to follow MVC pattern
+2. Implement proper event system
+3. Enhance basic shape tools
+4. Improve selection system
+5. Develop comprehensive layer management
+6. Add style and formatting options
+7. Implement proper file handling
+8. Enhance UI/UX
+9. Add machine integration features
+10. Create documentation and tutorials 
