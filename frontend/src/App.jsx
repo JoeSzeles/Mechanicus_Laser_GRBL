@@ -68,6 +68,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/signup" element={<Register />} />
           <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
           <Route path="/cad" element={user ? <CADInterface /> : <Login />} />
           <Route path="/" element={user ? <CADInterface /> : <Login />} />

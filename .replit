@@ -33,13 +33,13 @@ args = "Mechanicus CAD App"
 name = "Mechanicus CAD App"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
-waitForPort = 5000
-
 [workflows.workflow.metadata]
 outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash -c \"npm run server & cd frontend && npm run dev -- --host 0.0.0.0\""
+waitForPort = 5000
 
 [[ports]]
 localPort = 3001
@@ -50,5 +50,5 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 33061
+localPort = 43821
 externalPort = 3000

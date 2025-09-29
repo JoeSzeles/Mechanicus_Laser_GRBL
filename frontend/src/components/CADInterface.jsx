@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from 'react'
-import { fabric } from 'fabric'
+import * as fabric from 'fabric'
 import AuthContext from '../contexts/AuthContext'
 import Toolbar from './Toolbar'
 import LayerPanel from './LayerPanel'
