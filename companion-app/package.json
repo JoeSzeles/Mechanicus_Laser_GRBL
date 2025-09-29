@@ -1,0 +1,32 @@
+{
+  "name": "mechanicus-companion",
+  "version": "1.0.0",
+  "description": "Mechanicus CAD Serial Communication Bridge",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "build": "pkg . --out-path dist/",
+    "build-win": "pkg . --targets win-x64 --out-path dist/",
+    "build-mac": "pkg . --targets macos-x64 --out-path dist/",
+    "build-linux": "pkg . --targets linux-x64 --out-path dist/"
+  },
+  "bin": "src/index.js",
+  "pkg": {
+    "assets": ["config/**/*"]
+  },
+  "dependencies": {
+    "serialport": "^12.0.0",
+    "ws": "^8.18.3",
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "node-notifier": "^10.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "pkg": "^5.8.1"
+  },
+  "keywords": ["serial", "cad", "laser", "cnc", "mechanicus"],
+  "author": "Mechanicus Team",
+  "license": "MIT"
+}
