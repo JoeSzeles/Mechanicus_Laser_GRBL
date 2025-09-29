@@ -1,0 +1,69 @@
+SES Removing unpermitted intrinsics lockdown-install.js:1:203117
+  Removing intrinsics.%DatePrototype%.toTemporalInstant lockdown-install.js:1:202962
+Firefox can’t establish a connection to the server at wss://0.0.0.0:5000/?token=Q2lopZFQ4F-y. client:745:27
+[vite] failed to connect to websocket (Error: WebSocket closed without opened.). client:772:13
+Uncaught (in promise) Error: WebSocket closed without opened.
+    connect client:423
+client:423:30
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:36:16
+The connection to ws://localhost:8080/ was interrupted while the page was loading. SerialContext.jsx:36:16
+SES_UNCAUGHT_EXCEPTION: TypeError: canvas.sendToBack is not a function
+    drawGrid CADInterface.jsx:141
+    CADInterface CADInterface.jsx:110
+    react_stack_bottom_frame react-dom_client.js:17486
+    runWithFiberInDEV react-dom_client.js:1487
+    commitHookEffectListMount react-dom_client.js:8460
+    commitHookPassiveMountEffects react-dom_client.js:8518
+    commitPassiveMountOnFiber react-dom_client.js:9887
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9984
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9881
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9881
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9984
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9984
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9881
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9984
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9881
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9984
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9984
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9881
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9881
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9984
+    recursivelyTraversePassiveMountEffects react-dom_client.js:9868
+    commitPassiveMountOnFiber react-dom_client.js:9899
+    flushPassiveEffects react-dom_client.js:11302
+    commitRoot react-dom_client.js:11060
+    performWorkUntilDeadline react-dom_client.js:36
+lockdown-install.js:1:145467
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:36:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 6566, … }
+SerialContext.jsx:70:15
+🔌 Disconnected from companion app SerialContext.jsx:54:15
+The connection to ws://localhost:8080/ was interrupted while the page was loading. SerialContext.jsx:36:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 6568, … }
+SerialContext.jsx:70:15
+🔌 Disconnected from companion app SerialContext.jsx:54:15
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:36:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 41261, … }
+SerialContext.jsx:70:15
+🔌 Disconnected from companion app SerialContext.jsx:54:15
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:36:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 103644, … }
+SerialContext.jsx:70:15
+🔌 Disconnected from companion app SerialContext.jsx:54:15

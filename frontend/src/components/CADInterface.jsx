@@ -138,7 +138,7 @@ function CADInterface() {
         isGrid: true
       })
       canvas.add(line)
-      canvas.sendToBack(line)
+      line.sendToBack()
     }
 
     // Horizontal lines
@@ -152,7 +152,7 @@ function CADInterface() {
         isGrid: true
       })
       canvas.add(line)
-      canvas.sendToBack(line)
+      line.sendToBack()
     }
 
     canvas.renderAll()
