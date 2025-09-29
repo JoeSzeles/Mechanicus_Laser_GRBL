@@ -1,0 +1,64 @@
+.toolbar {
+  width: 80px;
+  background: #2d3748;
+  border-right: 2px solid #4a5568;
+  padding: 1rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  overflow-y: auto;
+}
+
+.tool-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tool-section h3 {
+  font-size: 0.8rem;
+  color: #a0aec0;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #4a5568;
+  padding-bottom: 0.5rem;
+}
+
+.toolbar button {
+  width: 50px;
+  height: 50px;
+  background: #4a5568;
+  color: #fff;
+  border: 2px solid #718096;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin: 0 auto;
+}
+
+.toolbar button:hover {
+  background: #718096;
+  border-color: #a0aec0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.toolbar button.active {
+  background: #4299e1;
+  border-color: #63b3ed;
+  box-shadow: 0 0 8px rgba(66, 153, 225, 0.4);
+}
+
+.zoom-display {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
