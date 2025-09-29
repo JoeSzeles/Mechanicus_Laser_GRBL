@@ -1,10 +1,11 @@
-/* CAD Interface Layout - Professional CAD Style */
+/* CAD Interface - Single Viewport Design (Python tkinter style) */
 .cad-interface {
   height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #263d42;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
 }
 
 /* Top Menu Bar */
@@ -18,6 +19,7 @@
   padding: 0 20px;
   color: white;
   font-size: 14px;
+  flex-shrink: 0;
 }
 
 .menu-left h2 {
@@ -32,7 +34,7 @@
   gap: 10px;
 }
 
-.menu-center button, .zoom-select {
+.menu-center button {
   background-color: #1a2a2f;
   color: white;
   border: 1px solid #444;
@@ -45,10 +47,6 @@
 
 .menu-center button:hover {
   background-color: #2a3a3f;
-}
-
-.zoom-select {
-  min-width: 70px;
 }
 
 .menu-right {
@@ -72,36 +70,35 @@
   background-color: #b71c1c;
 }
 
-/* Main Content Area */
-.cad-content {
+/* Main Workspace - Single Large Viewport */
+.main-workspace {
   flex: 1;
   display: flex;
-  background-color: #1a1a1a;
+  background-color: #1a2a2f;
   overflow: hidden;
 }
 
-/* Left Toolbar */
-.left-toolbar {
-  width: 250px;
+/* Left Toolbar Panel */
+.toolbar-panel {
+  width: 200px;
   background-color: #263d42;
   border-right: 1px solid #1a2a2f;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  flex-shrink: 0;
 }
 
 .tool-options {
-  margin-top: 20px;
   padding: 15px;
-  background-color: #1a2a2f;
-  border-radius: 5px;
+  border-top: 1px solid #1a2a2f;
 }
 
 .tool-options label {
   display: block;
-  margin-bottom: 10px;
   color: white;
   font-size: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
 .tool-options input[type="checkbox"] {
@@ -109,168 +106,335 @@
 }
 
 .tool-options input[type="number"] {
-  background-color: #2b2b2b;
-  color: white;
-  border: 1px solid #444;
-  padding: 4px 8px;
-  border-radius: 3px;
   width: 60px;
   margin-left: 8px;
+  padding: 4px;
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 3px;
 }
 
-/* Viewport with Rulers */
-.viewport {
+.grid-input {
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 3px;
+}
+
+/* Canvas Viewport with Rulers - Single Scroll Container */
+.canvas-viewport {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #2b2b2b;
+  background-color: #f5f5f5;
   position: relative;
+  overflow: hidden; /* No scrolling here */
 }
 
+/* Horizontal Ruler */
 .h-ruler {
-  height: 20px;
-  background-color: #2b2b2b;
-  border-bottom: 1px solid #444;
-  position: relative;
+  height: 25px;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+  margin-left: 25px; /* Space for vertical ruler */
   overflow: hidden;
-  margin-left: 20px; /* Account for vertical ruler width */
+  position: relative;
+  z-index: 10;
 }
 
-.viewport-main {
+/* Canvas Workspace */
+.canvas-workspace {
   flex: 1;
   display: flex;
   position: relative;
+  overflow: hidden; /* No scrolling here */
 }
 
+/* Vertical Ruler */
 .v-ruler {
-  width: 20px;
-  background-color: #2b2b2b;
-  border-right: 1px solid #444;
-  position: relative;
+  width: 25px;
+  background-color: #f0f0f0;
+  border-right: 1px solid #ccc;
   overflow: hidden;
-}
-
-.canvas-scroll-container {
-  flex: 1;
-  overflow: auto;
-  background-color: #404040;
   position: relative;
+  z-index: 10;
 }
 
+/* Main Canvas Container - ONLY SCROLLABLE SURFACE */
 .canvas-container {
+  flex: 1;
   position: relative;
-  margin: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  overflow: auto; /* SINGLE scroll source */
+  background-color: #ffffff;
 }
 
-.cad-canvas {
+.main-canvas {
   display: block;
-  cursor: crosshair;
+  background-color: white;
 }
 
-/* Right Panels */
-.right-panels {
+/* Right Side Panels */
+.side-panels {
   width: 300px;
   background-color: #263d42;
   border-left: 1px solid #1a2a2f;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+/* Toolbar Styles */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.toolbar-section {
+  margin-bottom: 15px;
+}
+
+.toolbar-section h3 {
+  color: white;
+  font-size: 12px;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+.tool-button {
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  padding: 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  text-align: center;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 35px;
+}
+
+.tool-button:hover {
+  background-color: #2a3a3f;
+  border-color: #666;
+}
+
+.tool-button.active {
+  background-color: #00ff00;
+  color: #000;
+  border-color: #00ff00;
+  font-weight: bold;
+}
+
+.zoom-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.zoom-button {
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: background-color 0.2s;
+}
+
+.zoom-button:hover {
+  background-color: #2a3a3f;
+}
+
+.zoom-display {
+  color: white;
+  font-size: 11px;
+  text-align: center;
+  padding: 4px;
+}
+
+/* Panel Styles */
+.panel {
+  background-color: #263d42;
+  border-bottom: 1px solid #1a2a2f;
+  margin-bottom: 1px;
+}
+
+.panel-header {
+  background-color: #1a2a2f;
+  color: white;
+  padding: 8px 15px;
+  font-size: 12px;
+  font-weight: bold;
+  border-bottom: 1px solid #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.panel-header:hover {
+  background-color: #2a3a3f;
+}
+
+.panel-content {
+  padding: 10px;
+  color: white;
+  font-size: 12px;
+}
+
+.panel-content.collapsed {
+  display: none;
+}
+
+/* Layer Panel */
+.layer-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #1a2a2f;
+}
+
+.layer-item:last-child {
+  border-bottom: none;
+}
+
+.layer-visibility {
+  margin-right: 8px;
+}
+
+.layer-name {
+  flex: 1;
+  color: white;
+  font-size: 11px;
+}
+
+/* Properties Panel */
+.property-group {
+  margin-bottom: 12px;
+}
+
+.property-label {
+  display: block;
+  color: #ccc;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+
+.property-input {
+  width: 100%;
+  padding: 4px 6px;
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.property-input:focus {
+  outline: none;
+  border-color: #00ff00;
+}
+
+/* Serial Control Panel */
+.serial-status {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-indicator.connected {
+  background-color: #4caf50;
+}
+
+.status-indicator.disconnected {
+  background-color: #f44336;
+}
+
+.serial-button {
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.serial-button:hover {
+  background-color: #2a3a3f;
+}
+
+.serial-button.primary {
+  background-color: #00ff00;
+  color: #000;
+  border-color: #00ff00;
+}
+
+.serial-button.primary:hover {
+  background-color: #00dd00;
 }
 
 /* Scrollbar Styling */
-.canvas-scroll-container::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.canvas-scroll-container::-webkit-scrollbar-track {
-  background: #1a1a1a;
+::-webkit-scrollbar-track {
+  background: #1a2a2f;
 }
 
-.canvas-scroll-container::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: #444;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-.canvas-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: #555;
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
 }
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .left-toolbar {
-    width: 200px;
+  .toolbar-panel {
+    width: 180px;
   }
   
-  .right-panels {
+  .side-panels {
     width: 250px;
   }
 }
 
 @media (max-width: 900px) {
-  .menu-center {
-    gap: 5px;
+  .toolbar-panel {
+    width: 150px;
   }
   
-  .menu-center button {
-    padding: 4px 8px;
-    font-size: 11px;
+  .side-panels {
+    width: 200px;
   }
   
-  .menu-right {
-    gap: 10px;
-    font-size: 11px;
+  .tool-grid {
+    grid-template-columns: 1fr;
   }
-}
-
-/* Tool Selection States */
-.tool-active {
-  background-color: #00ff00 !important;
-  color: #000 !important;
-}
-
-/* Grid and Snap Indicators */
-.snap-indicator {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: #ff0000;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1000;
-}
-
-/* Machine Bed Visualization */
-.canvas-container::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border: 2px dashed #888;
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* Status indicators */
-.machine-status {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 3px;
-  font-size: 12px;
-  z-index: 100;
-}
-
-.machine-status.connected {
-  border-left: 3px solid #00ff00;
-}
-
-.machine-status.disconnected {
-  border-left: 3px solid #ff0000;
 }
