@@ -1,0 +1,69 @@
+SES Removing unpermitted intrinsics lockdown-install.js:1:203117
+  Removing intrinsics.%DatePrototype%.toTemporalInstant lockdown-install.js:1:202962
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:39:16
+The connection to ws://localhost:8080/ was interrupted while the page was loading. SerialContext.jsx:39:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 4600, … }
+SerialContext.jsx:80:15
+🔌 Disconnected from companion app SerialContext.jsx:60:15
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:39:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 6874, … }
+SerialContext.jsx:80:15
+🔌 Disconnected from companion app SerialContext.jsx:60:15
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:39:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 12821, … }
+SerialContext.jsx:80:15
+🔌 Disconnected from companion app SerialContext.jsx:60:15
+SES_UNCAUGHT_EXCEPTION: TypeError: canvas.sendToBack is not a function
+    drawGrid CADInterface.jsx:186
+    CADInterface CADInterface.jsx:160
+    React 35
+    performWorkUntilDeadline scheduler.development.js:45
+lockdown-install.js:1:145467
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:39:16
+The connection to ws://localhost:8080/ was interrupted while the page was loading. SerialContext.jsx:39:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, eventPhase: 0, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, timeStamp: 13892, … }
+​
+bubbles: false
+​
+cancelBubble: false
+​
+cancelable: false
+​
+composed: false
+​
+currentTarget: null
+​
+defaultPrevented: false
+​
+eventPhase: 0
+​
+explicitOriginalTarget: WebSocket { url: "ws://localhost:8080/", readyState: 3, bufferedAmount: 0, … }
+​
+isTrusted: true
+​
+originalTarget: WebSocket { url: "ws://localhost:8080/", readyState: 3, bufferedAmount: 0, … }
+​
+returnValue: true
+​
+srcElement: WebSocket { url: "ws://localhost:8080/", readyState: 3, bufferedAmount: 0, … }
+​
+target: WebSocket { url: "ws://localhost:8080/", readyState: 3, bufferedAmount: 0, … }
+​
+timeStamp: 13892
+​
+type: "error"
+​
+<get isTrusted()>: function isTrusted()
+​
+<prototype>: EventPrototype { composedPath: composedPath(), stopPropagation: stopPropagation(), stopImmediatePropagation: stopImmediatePropagation(), … }
+SerialContext.jsx:80:15
+🔌 Disconnected from companion app SerialContext.jsx:60:15
+Firefox can’t establish a connection to the server at ws://localhost:8080/. SerialContext.jsx:39:16
+❌ Companion WebSocket error: 
+error { target: WebSocket, isTrusted: true, srcElement: WebSocket, currentTarget: WebSocket, eventPhase: 2, bubbles: false, cancelable: false, returnValue: true, defaultPrevented: false, composed: false, … }
+SerialContext.jsx:80:15
+🔌 Disconnected from companion app
