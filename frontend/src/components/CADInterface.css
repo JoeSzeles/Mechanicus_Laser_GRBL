@@ -1,153 +1,276 @@
+/* CAD Interface Layout - Professional CAD Style */
 .cad-interface {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #1a1a1a;
-  color: #fff;
-  overflow: hidden;
+  background-color: #263d42;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Top Menu Bar */
 .top-menu {
+  height: 50px;
+  background-color: #263d42;
+  border-bottom: 1px solid #1a2a2f;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: #2d3748;
-  padding: 0.5rem 1rem;
-  border-bottom: 2px solid #4a5568;
-  min-height: 50px;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: white;
+  font-size: 14px;
 }
 
 .menu-left h2 {
   margin: 0;
-  color: #4299e1;
-  font-size: 1.2rem;
+  font-size: 16px;
   font-weight: bold;
-  letter-spacing: 1px;
+  color: #00ff00;
 }
 
 .menu-center {
   display: flex;
-  gap: 0.5rem;
+  gap: 10px;
 }
 
-.menu-center button, .menu-right button {
-  background: #4a5568;
-  color: #fff;
-  border: 1px solid #718096;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
+.menu-center button, .zoom-select {
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  padding: 6px 12px;
+  border-radius: 3px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
+  font-size: 12px;
+  transition: background-color 0.2s;
 }
 
-.menu-center button:hover, .menu-right button:hover {
-  background: #718096;
-  transform: translateY(-1px);
+.menu-center button:hover {
+  background-color: #2a3a3f;
+}
+
+.zoom-select {
+  min-width: 70px;
 }
 
 .menu-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 15px;
+  font-size: 12px;
 }
 
-.menu-right span {
-  color: #a0aec0;
-  font-size: 0.9rem;
+.menu-right button {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
+.menu-right button:hover {
+  background-color: #b71c1c;
+}
+
+/* Main Content Area */
 .cad-content {
-  display: flex;
   flex: 1;
+  display: flex;
+  background-color: #1a1a1a;
   overflow: hidden;
 }
 
-.canvas-container {
+/* Left Toolbar */
+.left-toolbar {
+  width: 250px;
+  background-color: #263d42;
+  border-right: 1px solid #1a2a2f;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.tool-options {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #1a2a2f;
+  border-radius: 5px;
+}
+
+.tool-options label {
+  display: block;
+  margin-bottom: 10px;
+  color: white;
+  font-size: 12px;
+}
+
+.tool-options input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.tool-options input[type="number"] {
+  background-color: #2b2b2b;
+  color: white;
+  border: 1px solid #444;
+  padding: 4px 8px;
+  border-radius: 3px;
+  width: 60px;
+  margin-left: 8px;
+}
+
+/* Viewport with Rulers */
+.viewport {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #2d3748;
-  border-right: 2px solid #4a5568;
+  background-color: #2b2b2b;
+  position: relative;
 }
 
-.canvas-controls {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  background: #1a202c;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid #4a5568;
-  font-size: 0.9rem;
+.h-ruler {
+  height: 20px;
+  background-color: #2b2b2b;
+  border-bottom: 1px solid #444;
+  position: relative;
+  overflow: hidden;
+  margin-left: 20px; /* Account for vertical ruler width */
 }
 
-.canvas-controls label {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #e2e8f0;
-  cursor: pointer;
-}
-
-.canvas-controls input[type="checkbox"] {
-  margin-right: 0.25rem;
-}
-
-.canvas-controls input[type="number"] {
-  width: 60px;
-  padding: 0.25rem;
-  margin-left: 0.25rem;
-  background: #2d3748;
-  border: 1px solid #4a5568;
-  border-radius: 3px;
-  color: #fff;
-  font-size: 0.8rem;
-}
-
-.canvas-wrapper {
+.viewport-main {
   flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #1a1a1a;
+  position: relative;
+}
+
+.v-ruler {
+  width: 20px;
+  background-color: #2b2b2b;
+  border-right: 1px solid #444;
   position: relative;
   overflow: hidden;
 }
 
-.canvas-wrapper canvas {
-  border: 1px solid #4a5568;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+.canvas-scroll-container {
+  flex: 1;
+  overflow: auto;
+  background-color: #404040;
+  position: relative;
 }
 
+.canvas-container {
+  position: relative;
+  margin: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.cad-canvas {
+  display: block;
+  cursor: crosshair;
+}
+
+/* Right Panels */
 .right-panels {
+  width: 300px;
+  background-color: #263d42;
+  border-left: 1px solid #1a2a2f;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  width: 280px;
-  background: #2d3748;
-  border-left: 2px solid #4a5568;
 }
 
-.loading-screen {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+/* Scrollbar Styling */
+.canvas-scroll-container::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.canvas-scroll-container::-webkit-scrollbar-track {
   background: #1a1a1a;
-  color: #fff;
 }
 
-.loading-spinner {
-  width: 50px;
-  height: 50px;
-  border: 3px solid #4a5568;
-  border-top: 3px solid #4299e1;
+.canvas-scroll-container::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 6px;
+}
+
+.canvas-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .left-toolbar {
+    width: 200px;
+  }
+  
+  .right-panels {
+    width: 250px;
+  }
+}
+
+@media (max-width: 900px) {
+  .menu-center {
+    gap: 5px;
+  }
+  
+  .menu-center button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
+  .menu-right {
+    gap: 10px;
+    font-size: 11px;
+  }
+}
+
+/* Tool Selection States */
+.tool-active {
+  background-color: #00ff00 !important;
+  color: #000 !important;
+}
+
+/* Grid and Snap Indicators */
+.snap-indicator {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #ff0000;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
+  pointer-events: none;
+  z-index: 1000;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Machine Bed Visualization */
+.canvas-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px dashed #888;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Status indicators */
+.machine-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  z-index: 100;
+}
+
+.machine-status.connected {
+  border-left: 3px solid #00ff00;
+}
+
+.machine-status.disconnected {
+  border-left: 3px solid #ff0000;
 }

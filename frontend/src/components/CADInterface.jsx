@@ -9,6 +9,9 @@ import './CADInterface.css'
 
 function CADInterface() {
   const canvasRef = useRef(null)
+  const hRulerRef = useRef(null)
+  const vRulerRef = useRef(null)
+  const scrollContainerRef = useRef(null)
   const [canvas, setCanvas] = useState(null)
   const [activeTool, setActiveTool] = useState('select')
   const [showGrid, setShowGrid] = useState(true)
@@ -16,6 +19,12 @@ function CADInterface() {
   const [snapToGrid, setSnapToGrid] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [selectedObjects, setSelectedObjects] = useState([])
+  const [machineProfile, setMachineProfile] = useState({
+    bedSizeX: 370, // Default machine bed size in mm
+    bedSizeY: 600,
+    name: 'Default Profile',
+    mmToPx: 1.0 // Scale factor: mm to pixels
+  })
   const { user, logout } = useContext(AuthContext)
 
   // Generate G-code from current canvas design
@@ -120,14 +129,14 @@ function CADInterface() {
     return gcodeText
   }
 
-  // Initialize Fabric.js canvas
+  // Initialize Fabric.js canvas (once only)
   useEffect(() => {
     if (!canvasRef.current) return
 
     const fabricCanvas = new fabric.Canvas(canvasRef.current, {
-      width: 800,
-      height: 600,
-      backgroundColor: '#1a1a1a',
+      width: machineProfile.bedSizeX * machineProfile.mmToPx,
+      height: machineProfile.bedSizeY * machineProfile.mmToPx,
+      backgroundColor: 'white',
       selection: true,
     })
 
@@ -146,11 +155,36 @@ function CADInterface() {
 
     setCanvas(fabricCanvas)
 
+    // Initialize rulers after canvas is ready
+    setTimeout(() => updateRulers(), 100)
+
     // Cleanup on unmount
     return () => {
       fabricCanvas.dispose()
     }
-  }, [])
+  }, []) // Only initialize once
+
+  // Handle machine profile changes (without recreating canvas)
+  useEffect(() => {
+    if (!canvas) return
+    
+    // Update canvas size based on machine profile
+    const newWidth = machineProfile.bedSizeX * machineProfile.mmToPx
+    const newHeight = machineProfile.bedSizeY * machineProfile.mmToPx
+    
+    canvas.setDimensions({ width: newWidth, height: newHeight })
+    canvas.renderAll()
+    updateRulers()
+  }, [canvas, machineProfile])
+
+  // Handle zoom changes (without recreating canvas)
+  useEffect(() => {
+    if (!canvas) return
+    
+    canvas.setZoom(zoom)
+    canvas.renderAll()
+    updateRulers()
+  }, [canvas, zoom])
 
   // Handle grid display
   useEffect(() => {
@@ -175,7 +209,7 @@ function CADInterface() {
     // Create vertical lines
     for (let x = 0; x <= canvasWidth; x += gridSpacing) {
       const line = new fabric.Line([x, 0, x, canvasHeight], {
-        stroke: '#333',
+        stroke: '#ddd',
         strokeWidth: 0.5,
         selectable: false,
         evented: false,
@@ -189,7 +223,7 @@ function CADInterface() {
     // Create horizontal lines
     for (let y = 0; y <= canvasHeight; y += gridSpacing) {
       const line = new fabric.Line([0, y, canvasWidth, y], {
-        stroke: '#333',
+        stroke: '#ddd',
         strokeWidth: 0.5,
         selectable: false,
         evented: false,
@@ -288,15 +322,89 @@ function CADInterface() {
   const handleZoomIn = () => {
     const newZoom = Math.min(zoom * 1.2, 5)
     setZoom(newZoom)
-    canvas.setZoom(newZoom)
-    canvas.renderAll()
   }
 
   const handleZoomOut = () => {
     const newZoom = Math.max(zoom / 1.2, 0.1)
     setZoom(newZoom)
     canvas.setZoom(newZoom)
+    updateRulers()
     canvas.renderAll()
+  }
+
+  // Update rulers based on current scroll position and zoom
+  const updateRulers = () => {
+    if (!hRulerRef.current || !vRulerRef.current || !scrollContainerRef.current) return
+    
+    const scrollLeft = scrollContainerRef.current.scrollLeft
+    const scrollTop = scrollContainerRef.current.scrollTop
+    
+    // Clear existing ruler content
+    hRulerRef.current.innerHTML = ''
+    vRulerRef.current.innerHTML = ''
+    
+    // Create ruler marks based on mm units
+    const mmStep = Math.max(10, 50 / zoom) // mm step size
+    const rulerHeight = 20
+    const rulerWidth = 20
+    
+    // Horizontal ruler
+    const hRulerCanvas = document.createElement('canvas')
+    hRulerCanvas.width = machineProfile.bedSizeX * machineProfile.mmToPx * zoom
+    hRulerCanvas.height = rulerHeight
+    hRulerCanvas.style.position = 'absolute'
+    hRulerCanvas.style.left = `-${scrollLeft}px`
+    hRulerCanvas.style.backgroundColor = '#2b2b2b'
+    
+    const hCtx = hRulerCanvas.getContext('2d')
+    hCtx.fillStyle = 'white'
+    hCtx.strokeStyle = 'white'
+    hCtx.font = '10px Arial'
+    
+    for (let i = 0; i <= machineProfile.bedSizeX; i += mmStep) {
+      const x = i * machineProfile.mmToPx * zoom
+      hCtx.beginPath()
+      hCtx.moveTo(x, rulerHeight - 5)
+      hCtx.lineTo(x, rulerHeight)
+      hCtx.stroke()
+      
+      if (i % (mmStep * 2) === 0) {
+        hCtx.fillText(i.toString() + 'mm', x + 2, rulerHeight - 8)
+      }
+    }
+    
+    hRulerRef.current.appendChild(hRulerCanvas)
+    
+    // Vertical ruler
+    const vRulerCanvas = document.createElement('canvas')
+    vRulerCanvas.width = rulerWidth
+    vRulerCanvas.height = machineProfile.bedSizeY * machineProfile.mmToPx * zoom
+    vRulerCanvas.style.position = 'absolute'
+    vRulerCanvas.style.top = `-${scrollTop}px`
+    vRulerCanvas.style.backgroundColor = '#2b2b2b'
+    
+    const vCtx = vRulerCanvas.getContext('2d')
+    vCtx.fillStyle = 'white'
+    vCtx.strokeStyle = 'white'
+    vCtx.font = '10px Arial'
+    
+    for (let i = 0; i <= machineProfile.bedSizeY; i += mmStep) {
+      const y = i * machineProfile.mmToPx * zoom
+      vCtx.beginPath()
+      vCtx.moveTo(rulerWidth - 5, y)
+      vCtx.lineTo(rulerWidth, y)
+      vCtx.stroke()
+      
+      if (i % (mmStep * 2) === 0) {
+        vCtx.save()
+        vCtx.translate(rulerWidth - 15, y + 2)
+        vCtx.rotate(-Math.PI / 2)
+        vCtx.fillText(i.toString() + 'mm', 0, 0)
+        vCtx.restore()
+      }
+    }
+    
+    vRulerRef.current.appendChild(vRulerCanvas)
   }
 
   return (
@@ -304,16 +412,49 @@ function CADInterface() {
       {/* Top Menu Bar */}
       <div className="top-menu">
         <div className="menu-left">
-          <h2>MECHANICUS CAD</h2>
+          <h2>MECHANICUS CAD v0.1</h2>
         </div>
         <div className="menu-center">
           <button onClick={clearCanvas}>New</button>
           <button>Open</button>
           <button>Save</button>
           <button>Export SVG</button>
-          <button>Generate G-Code</button>
+          <button onClick={() => {
+            const gcode = generateGcode()
+            if (gcode) {
+              const blob = new Blob([gcode], { type: 'text/plain' })
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = 'mechanicus_output.gcode'
+              a.click()
+              URL.revokeObjectURL(url)
+            }
+          }}>Export G-Code</button>
+          <select 
+            value={`${zoom * 100}%`}
+            onChange={(e) => {
+              const newZoom = parseFloat(e.target.value) / 100
+              setZoom(newZoom)
+              if (canvas) {
+                canvas.setZoom(newZoom)
+                updateRulers()
+                canvas.renderAll()
+              }
+            }}
+            className="zoom-select"
+          >
+            <option value="25%">25%</option>
+            <option value="50%">50%</option>
+            <option value="75%">75%</option>
+            <option value="100%">100%</option>
+            <option value="125%">125%</option>
+            <option value="150%">150%</option>
+            <option value="200%">200%</option>
+          </select>
         </div>
         <div className="menu-right">
+          <span>Machine: {machineProfile.name} ({machineProfile.bedSizeX}x{machineProfile.bedSizeY}mm)</span>
           <span>User: {user?.username}</span>
           <button onClick={logout}>Logout</button>
         </div>
@@ -321,21 +462,20 @@ function CADInterface() {
 
       <div className="cad-content">
         {/* Left Toolbar */}
-        <Toolbar 
-          activeTool={activeTool}
-          onToolChange={handleToolChange}
-          onAddRectangle={addRectangle}
-          onAddCircle={addCircle}
-          onAddLine={addLine}
-          onDelete={deleteSelected}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          zoom={zoom}
-        />
-
-        {/* Main Canvas Area */}
-        <div className="canvas-container">
-          <div className="canvas-controls">
+        <div className="left-toolbar">
+          <Toolbar 
+            activeTool={activeTool}
+            onToolChange={handleToolChange}
+            onAddRectangle={addRectangle}
+            onAddCircle={addCircle}
+            onAddLine={addLine}
+            onDelete={deleteSelected}
+            onZoomIn={handleZoomIn}
+            onZoomOut={handleZoomOut}
+            zoom={zoom}
+          />
+          
+          <div className="tool-options">
             <label>
               <input 
                 type="checkbox" 
@@ -350,8 +490,9 @@ function CADInterface() {
                 type="number" 
                 value={gridSize}
                 onChange={(e) => setGridSize(Number(e.target.value))}
-                min="5"
+                min="1"
                 max="50"
+                className="grid-input"
               />
             </label>
             <label>
@@ -363,9 +504,40 @@ function CADInterface() {
               Snap to Grid
             </label>
           </div>
+        </div>
+
+        {/* Viewport with Rulers */}
+        <div className="viewport">
+          {/* Horizontal Ruler */}
+          <div className="h-ruler" ref={hRulerRef}></div>
           
-          <div className="canvas-wrapper">
-            <canvas ref={canvasRef} />
+          <div className="viewport-main">
+            {/* Vertical Ruler */}
+            <div className="v-ruler" ref={vRulerRef}></div>
+            
+            {/* Scrollable Canvas Area */}
+            <div className="canvas-scroll-container" 
+                 ref={scrollContainerRef}
+                 onScroll={updateRulers}>
+              <div className="canvas-container" style={{
+                width: `${machineProfile.bedSizeX * machineProfile.mmToPx}px`,
+                height: `${machineProfile.bedSizeY * machineProfile.mmToPx}px`,
+                position: 'relative',
+                backgroundColor: 'white',
+                border: '2px solid #ccc'
+              }}>
+                <canvas 
+                  ref={canvasRef}
+ 
+                  className="cad-canvas"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
