@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import AuthContext from './contexts/AuthContext'
+import { SerialProvider } from './contexts/SerialContext'
 import Login from './components/Login'
 import Register from './components/Register'
 import Dashboard from './components/Dashboard'
@@ -64,16 +65,18 @@ function App() {
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
-      <div className="app">
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/signup" element={<Register />} />
-          <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
-          <Route path="/cad" element={user ? <CADInterface /> : <Login />} />
-          <Route path="/" element={user ? <CADInterface /> : <Login />} />
-        </Routes>
-      </div>
+      <SerialProvider>
+        <div className="app">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/signup" element={<Register />} />
+            <Route path="/dashboard" element={user ? <Dashboard /> : <Login />} />
+            <Route path="/cad" element={user ? <CADInterface /> : <Login />} />
+            <Route path="/" element={user ? <CADInterface /> : <Login />} />
+          </Routes>
+        </div>
+      </SerialProvider>
     </AuthContext.Provider>
   )
 }
