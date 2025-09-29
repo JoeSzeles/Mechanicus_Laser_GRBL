@@ -19,6 +19,9 @@ class MechanicusCompanion {
     this.status = 'disconnected';
     this.jobQueue = [];
     this.isTransmitting = false;
+    this.authToken = process.env.COMPANION_AUTH_TOKEN || 'mechanicus-' + Math.random().toString(36).substr(2, 9);
+    
+    console.log(`🔐 Authentication token: ${this.authToken}`);
     
     // Default machine profiles
     this.loadDefaultProfiles();
@@ -105,26 +108,76 @@ class MechanicusCompanion {
   }
 
   setupWebSocketServer() {
-    this.wss = new WebSocket.Server({ port: 8080 });
-    
-    this.wss.on('connection', (ws) => {
-      console.log('🔗 CAD app connected');
-      this.clients.add(ws);
-      
-      // Send current status
-      this.sendToClient(ws, {
-        type: 'status',
-        data: {
-          status: this.status,
-          connectedPorts: Array.from(this.connectedPorts.keys()),
-          machineProfiles: Array.from(this.machineProfiles.entries()),
-          currentProfile: this.currentProfile
+    this.wss = new WebSocket.Server({ 
+      port: 8080,
+      host: '127.0.0.1', // Bind to localhost only for security
+      verifyClient: (info) => {
+        // Check origin for additional security
+        const origin = info.origin;
+        const allowedOrigins = [
+          'http://localhost:5000',
+          'http://127.0.0.1:5000',
+          'http://localhost:3000',
+          'http://127.0.0.1:3000',
+          'http://localhost:5173',
+          'http://127.0.0.1:5173',
+          ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
+        ];
+        
+        if (origin && !allowedOrigins.includes(origin)) {
+          console.warn(`🚫 Rejected connection from unauthorized origin: ${origin}`);
+          return false;
         }
+        
+        return true;
+      }
+    });
+    
+    this.wss.on('connection', (ws, req) => {
+      let isAuthenticated = false;
+      
+      console.log('🔗 CAD app attempting connection');
+      
+      // Send authentication challenge only - no status before auth
+      this.sendToClient(ws, {
+        type: 'auth_challenge',
+        data: { message: 'Please authenticate' }
       });
 
       ws.on('message', async (message) => {
         try {
           const data = JSON.parse(message);
+          
+          // Handle authentication first
+          if (!isAuthenticated) {
+            if (data.type === 'authenticate' && data.payload?.token === this.authToken) {
+              isAuthenticated = true;
+              this.clients.add(ws);
+              console.log('✅ Client authenticated successfully');
+              
+              // Send current status after authentication
+              this.sendToClient(ws, {
+                type: 'auth_success',
+                data: {
+                  status: this.status,
+                  connectedPorts: Array.from(this.connectedPorts.keys()),
+                  machineProfiles: Array.from(this.machineProfiles.entries()),
+                  currentProfile: this.currentProfile
+                }
+              });
+              
+              return;
+            } else {
+              console.warn('🚫 Authentication failed');
+              this.sendToClient(ws, {
+                type: 'auth_failed',
+                data: { message: 'Invalid authentication token' }
+              });
+              ws.close();
+              return;
+            }
+          }
+          
           await this.handleClientMessage(ws, data);
         } catch (error) {
           console.error('❌ Error handling client message:', error);
@@ -136,8 +189,12 @@ class MechanicusCompanion {
       });
 
       ws.on('close', () => {
-        console.log('🔌 CAD app disconnected');
-        this.clients.delete(ws);
+        if (isAuthenticated) {
+          console.log('🔌 CAD app disconnected');
+          this.clients.delete(ws);
+        } else {
+          console.log('🔌 Unauthenticated connection closed');
+        }
       });
     });
   }

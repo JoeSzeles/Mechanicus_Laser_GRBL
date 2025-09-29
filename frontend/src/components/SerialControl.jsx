@@ -12,6 +12,8 @@ function SerialControl({ onGcodeGenerated }) {
     currentProfile,
     transmissionStatus,
     messages,
+    authToken,
+    isAuthenticated,
     listPorts,
     connectToPort,
     disconnectFromPort,
@@ -19,20 +21,23 @@ function SerialControl({ onGcodeGenerated }) {
     sendGcode,
     setMachineProfile,
     emergencyStop,
-    clearMessages
+    clearMessages,
+    setCompanionAuthToken
   } = useSerial()
 
   const [selectedPort, setSelectedPort] = useState('')
   const [selectedProfile, setSelectedProfile] = useState('grbl')
   const [customCommand, setCustomCommand] = useState('')
   const [showLog, setShowLog] = useState(false)
+  const [tokenInput, setTokenInput] = useState('')
+  const [showTokenInput, setShowTokenInput] = useState(false)
 
-  // Refresh ports on component mount
+  // Refresh ports only after authentication
   useEffect(() => {
-    if (companionStatus === 'connected') {
+    if (companionStatus === 'connected' && isAuthenticated) {
       listPorts()
     }
-  }, [companionStatus])
+  }, [companionStatus, isAuthenticated])
 
   const handleConnect = () => {
     if (selectedPort) {
@@ -100,12 +105,41 @@ function SerialControl({ onGcodeGenerated }) {
           <ol>
             <li>Download from: <code>http://localhost:8081/health</code></li>
             <li>Run the companion app</li>
-            <li>Refresh this page</li>
+            <li>Copy the authentication token from the companion app logs</li>
+            <li>Enter the token below and refresh this page</li>
           </ol>
         </div>
       )}
 
-      {companionStatus === 'connected' && (
+      {companionStatus === 'connected' && !isAuthenticated && (
+        <div className="auth-section">
+          <h4>🔐 Authentication Required</h4>
+          <p>Please enter the authentication token from the companion app logs:</p>
+          <div className="auth-controls">
+            <input
+              type="text"
+              value={tokenInput}
+              onChange={(e) => setTokenInput(e.target.value)}
+              placeholder="Enter authentication token..."
+              className="token-input"
+            />
+            <button 
+              onClick={() => {
+                if (tokenInput.trim()) {
+                  setCompanionAuthToken(tokenInput.trim())
+                  setTokenInput('')
+                }
+              }}
+              disabled={!tokenInput.trim()}
+              className="auth-btn"
+            >
+              🔐 Authenticate
+            </button>
+          </div>
+        </div>
+      )}
+
+      {companionStatus === 'connected' && isAuthenticated && (
         <>
           {/* Connection Section */}
           <div className="connection-section">

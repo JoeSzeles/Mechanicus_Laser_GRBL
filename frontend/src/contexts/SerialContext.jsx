@@ -19,6 +19,8 @@ export function SerialProvider({ children }) {
   const [companionStatus, setCompanionStatus] = useState('disconnected') // disconnected, connecting, connected, error
   const [transmissionStatus, setTransmissionStatus] = useState(null)
   const [messages, setMessages] = useState([])
+  const [authToken, setAuthToken] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   
   const wsRef = useRef(null)
   const reconnectTimeoutRef = useRef(null)
@@ -42,9 +44,7 @@ export function SerialProvider({ children }) {
       setCompanionStatus('connected')
       reconnectAttemptRef.current = 0
       addMessage('system', '✅ Connected to Mechanicus Companion App')
-      
-      // Request initial status
-      sendMessage({ type: 'list_ports' })
+      setIsAuthenticated(false) // Reset auth status
     }
 
     ws.onmessage = (event) => {
@@ -109,16 +109,55 @@ export function SerialProvider({ children }) {
     }
   }
 
+  // Set authentication token (called by user or from companion app logs)
+  const setCompanionAuthToken = (token) => {
+    setAuthToken(token)
+    localStorage.setItem('companion_auth_token', token)
+    addMessage('system', '🔐 Authentication token saved')
+    if (companionStatus === 'connected' && !isAuthenticated) {
+      sendMessage({ type: 'authenticate', payload: { token } })
+    }
+  }
+
   // Handle messages from companion app
   const handleCompanionMessage = (message) => {
     const { type, data } = message
 
     switch (type) {
-      case 'status':
+      case 'auth_challenge':
+        addMessage('system', 'Authenticating with companion app...')
+        // Try to get auth token from localStorage or generate one
+        const storedToken = localStorage.getItem('companion_auth_token')
+        if (storedToken) {
+          sendMessage({ type: 'authenticate', payload: { token: storedToken } })
+        } else {
+          addMessage('error', '❌ No authentication token found. Please check companion app logs.')
+        }
+        break
+
+      case 'auth_success':
+        setIsAuthenticated(true)
         setConnectedPorts(data.connectedPorts || [])
         setMachineProfiles(data.machineProfiles || [])
         setCurrentProfile(data.currentProfile)
         setIsConnected(data.connectedPorts?.length > 0)
+        addMessage('success', '✅ Authenticated with companion app')
+        // Now request initial status
+        sendMessage({ type: 'list_ports' })
+        break
+
+      case 'auth_failed':
+        setIsAuthenticated(false)
+        addMessage('error', '❌ Authentication failed. Please check companion app token.')
+        break
+
+      case 'status':
+        if (isAuthenticated) {
+          setConnectedPorts(data.connectedPorts || [])
+          setMachineProfiles(data.machineProfiles || [])
+          setCurrentProfile(data.currentProfile)
+          setIsConnected(data.connectedPorts?.length > 0)
+        }
         break
 
       case 'ports_list':
@@ -132,8 +171,11 @@ export function SerialProvider({ children }) {
         break
 
       case 'port_disconnected':
-        setConnectedPorts(prev => prev.filter(port => port !== data.portPath))
-        setIsConnected(prev => prev && connectedPorts.length > 1)
+        setConnectedPorts(prev => {
+          const updatedPorts = prev.filter(port => port !== data.portPath)
+          setIsConnected(updatedPorts.length > 0) // Fix: use updated array, not stale state
+          return updatedPorts
+        })
         addMessage('info', `🔌 Disconnected from ${data.portPath}`)
         break
 
@@ -277,10 +319,13 @@ export function SerialProvider({ children }) {
     companionStatus,
     transmissionStatus,
     messages,
+    authToken,
+    isAuthenticated,
 
     // Connection management
     connectToCompanion,
     disconnectFromCompanion,
+    setCompanionAuthToken,
     
     // Serial operations
     listPorts,
