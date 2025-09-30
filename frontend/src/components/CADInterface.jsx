@@ -9,6 +9,7 @@ import MarkersWindow from './MarkersWindow'
 import TransformToolsWindow from './TransformToolsWindow'
 import LineEditorToolsWindow from './LineEditorToolsWindow'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
+import { findLineIntersection } from '../utils/lineEditorUtils'
 import './CADInterface.css'
 
 function CADInterface() {
