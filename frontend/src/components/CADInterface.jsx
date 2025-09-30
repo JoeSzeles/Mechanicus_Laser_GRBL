@@ -22,6 +22,7 @@ import {
   UserIcon, LogoutIcon
 } from './ToolIcons'
 import MenuBar from './MenuBar'
+import FloatingPanel from './FloatingPanel'
 import './CADInterface.css'
 
 function CADInterface() {
@@ -69,13 +70,13 @@ function CADInterface() {
   }, [])
   
   const [showDrawingTools, setShowDrawingTools] = useState(true)
-  const [showSnapTools, setShowSnapTools] = useState(true)
+  const [showSnapTools, setShowSnapTools] = useState(false)
   const [showMarkersWindow, setShowMarkersWindow] = useState(false)
   const [showTransformTools, setShowTransformTools] = useState(false)
   const [showLineEditorTools, setShowLineEditorTools] = useState(false)
-  const [showShapeProperties, setShowShapeProperties] = useState(false)
+  const [showShapeProperties, setShowShapeProperties] = useState(true)
   const [showTextTools, setShowTextTools] = useState(false)
-  const [showLayers, setShowLayers] = useState(false)
+  const [showLayers, setShowLayers] = useState(true)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -2262,83 +2263,85 @@ function CADInterface() {
             </div>
           </div>
         </div>
+
+        <div className="floating-panels-container">
+          <FloatingPanel 
+            title="Drawing Tools" 
+            isOpen={showDrawingTools}
+            onClose={() => setShowDrawingTools(false)}
+            zIndex={10}
+          >
+            <DrawingToolsWindow />
+          </FloatingPanel>
+
+          <FloatingPanel 
+            title="Layers" 
+            isOpen={showLayers}
+            onClose={() => setShowLayers(false)}
+            zIndex={10}
+          >
+            <LayersWindow />
+          </FloatingPanel>
+
+          <FloatingPanel 
+            title="Shape Properties" 
+            isOpen={showShapeProperties}
+            onClose={() => setShowShapeProperties(false)}
+            zIndex={10}
+          >
+            <ShapePropertiesWindow />
+          </FloatingPanel>
+
+          <FloatingPanel 
+            title="Snap Tools" 
+            isOpen={showSnapTools}
+            onClose={() => setShowSnapTools(false)}
+            zIndex={10}
+          >
+            <SnapToolsWindow />
+          </FloatingPanel>
+
+          <FloatingPanel 
+            title="Markers & Guides" 
+            isOpen={showMarkersWindow}
+            onClose={() => setShowMarkersWindow(false)}
+            zIndex={10}
+          >
+            <MarkersWindow onActivateTool={setActiveTool} />
+          </FloatingPanel>
+
+          <FloatingPanel 
+            title="Transform Tools" 
+            isOpen={showTransformTools}
+            onClose={() => setShowTransformTools(false)}
+            zIndex={10}
+          >
+            <TransformToolsWindow 
+              onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
+              mirrorAxisLineId={mirrorAxisLineId}
+              onClearMirrorAxis={() => setMirrorAxisLineId(null)}
+            />
+          </FloatingPanel>
+
+          <FloatingPanel 
+            title="Line Editor Tools" 
+            isOpen={showLineEditorTools}
+            onClose={() => setShowLineEditorTools(false)}
+            zIndex={10}
+          >
+            <LineEditorToolsWindow />
+          </FloatingPanel>
+
+          <FloatingPanel 
+            title="Text & Font Tools" 
+            isOpen={showTextTools}
+            onClose={() => setShowTextTools(false)}
+            zIndex={10}
+          >
+            <TextFontToolsWindow />
+          </FloatingPanel>
+        </div>
       </div>
-
-      <PopupWindow
-        title="Drawing Tools"
-        isOpen={showDrawingTools}
-        onClose={() => setShowDrawingTools(false)}
-        defaultPosition={{ x: 50, y: 100 }}
-      >
-        <DrawingToolsWindow />
-      </PopupWindow>
-
-      <PopupWindow
-        title="Snap Tools"
-        isOpen={showSnapTools}
-        onClose={() => setShowSnapTools(false)}
-        defaultPosition={{ x: 50, y: 320 }}
-      >
-        <SnapToolsWindow />
-      </PopupWindow>
-
-      <PopupWindow
-        title="Markers & Guides"
-        isOpen={showMarkersWindow}
-        onClose={() => setShowMarkersWindow(false)}
-        defaultPosition={{ x: 300, y: 100 }}
-      >
-        <MarkersWindow onActivateTool={setActiveTool} />
-      </PopupWindow>
-
-      <PopupWindow
-        title="Transform Tools"
-        isOpen={showTransformTools}
-        onClose={() => setShowTransformTools(false)}
-        defaultPosition={{ x: 550, y: 100 }}
-      >
-        <TransformToolsWindow 
-          onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
-          mirrorAxisLineId={mirrorAxisLineId}
-          onClearMirrorAxis={() => setMirrorAxisLineId(null)}
-        />
-      </PopupWindow>
-
-      <PopupWindow
-        title="Line Editor Tools"
-        isOpen={showLineEditorTools}
-        onClose={() => setShowLineEditorTools(false)}
-        defaultPosition={{ x: 800, y: 100 }}
-      >
-        <LineEditorToolsWindow />
-      </PopupWindow>
-
-      <PopupWindow
-        title="Shape Properties"
-        isOpen={showShapeProperties}
-        onClose={() => setShowShapeProperties(false)}
-        defaultPosition={{ x: 1050, y: 100 }}
-      >
-        <ShapePropertiesWindow />
-      </PopupWindow>
-
-      <PopupWindow
-        title="Text & Font Tools"
-        isOpen={showTextTools}
-        onClose={() => setShowTextTools(false)}
-        defaultPosition={{ x: 1050, y: 400 }}
-      >
-        <TextFontToolsWindow />
-      </PopupWindow>
-
-      <PopupWindow
-        title="Layers"
-        isOpen={showLayers}
-        onClose={() => setShowLayers(false)}
-        defaultPosition={{ x: 1050, y: 100 }}
-      >
-        <LayersWindow />
-      </PopupWindow>
     </div>
   )
 }
