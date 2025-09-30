@@ -6,6 +6,7 @@ import PopupWindow from './PopupWindow'
 import DrawingToolsWindow from './DrawingToolsWindow'
 import SnapToolsWindow from './SnapToolsWindow'
 import MarkersWindow from './MarkersWindow'
+import TransformToolsWindow from './TransformToolsWindow'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import './CADInterface.css'
 
@@ -26,10 +27,13 @@ function CADInterface() {
   const guidesLocked = useCadStore((state) => state.guidesLocked)
   const addMarker = useCadStore((state) => state.addMarker)
   const updateGuide = useCadStore((state) => state.updateGuide)
+  const selectedShapeId = useCadStore((state) => state.selectedShapeId)
+  const setSelectedShapeId = useCadStore((state) => state.setSelectedShapeId)
   
   const [showDrawingTools, setShowDrawingTools] = useState(true)
   const [showSnapTools, setShowSnapTools] = useState(true)
   const [showMarkersWindow, setShowMarkersWindow] = useState(false)
+  const [showTransformTools, setShowTransformTools] = useState(false)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -489,6 +493,9 @@ function CADInterface() {
           <button onClick={() => setShowMarkersWindow(!showMarkersWindow)}>
             {showMarkersWindow ? 'Hide' : 'Show'} Markers
           </button>
+          <button onClick={() => setShowTransformTools(!showTransformTools)}>
+            {showTransformTools ? 'Hide' : 'Show'} Transform
+          </button>
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
           <button onClick={handleZoomReset}>Reset Zoom ({Math.round(viewport.zoom * 100)}%)</button>
@@ -561,6 +568,7 @@ function CADInterface() {
                           points={[shape.x1, shape.y1, shape.x2, shape.y2]}
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
+                          onClick={() => setSelectedShapeId(shape.id)}
                         />
                       )
                     } else if (shape.type === 'circle') {
@@ -572,6 +580,10 @@ function CADInterface() {
                           radius={shape.radius}
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
+                          rotation={shape.rotation || 0}
+                          scaleX={shape.scaleX || 1}
+                          scaleY={shape.scaleY || 1}
+                          onClick={() => setSelectedShapeId(shape.id)}
                         />
                       )
                     } else if (shape.type === 'rectangle') {
@@ -584,6 +596,10 @@ function CADInterface() {
                           height={shape.height}
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
+                          rotation={shape.rotation || 0}
+                          scaleX={shape.scaleX || 1}
+                          scaleY={shape.scaleY || 1}
+                          onClick={() => setSelectedShapeId(shape.id)}
                         />
                       )
                     } else if (shape.type === 'polygon') {
@@ -594,6 +610,7 @@ function CADInterface() {
                           closed
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
+                          onClick={() => setSelectedShapeId(shape.id)}
                         />
                       )
                     } else if (shape.type === 'arc') {
@@ -606,6 +623,10 @@ function CADInterface() {
                           angle={90}
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
+                          rotation={shape.rotation || 0}
+                          scaleX={shape.scaleX || 1}
+                          scaleY={shape.scaleY || 1}
+                          onClick={() => setSelectedShapeId(shape.id)}
                         />
                       )
                     } else if (shape.type === 'freehand') {
@@ -617,6 +638,7 @@ function CADInterface() {
                           strokeWidth={shape.strokeWidth}
                           lineCap="round"
                           lineJoin="round"
+                          onClick={() => setSelectedShapeId(shape.id)}
                         />
                       )
                     }
@@ -814,6 +836,84 @@ function CADInterface() {
                     return null
                   })}
                   
+                  {selectedShapeId && (() => {
+                    const shape = shapes.find(s => s.id === selectedShapeId)
+                    if (!shape) return null
+                    
+                    let bbox = { x: 0, y: 0, width: 0, height: 0 }
+                    
+                    if (shape.type === 'line') {
+                      const minX = Math.min(shape.x1, shape.x2)
+                      const maxX = Math.max(shape.x1, shape.x2)
+                      const minY = Math.min(shape.y1, shape.y2)
+                      const maxY = Math.max(shape.y1, shape.y2)
+                      bbox = { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+                    } else if (shape.type === 'circle') {
+                      bbox = {
+                        x: shape.x - shape.radius,
+                        y: shape.y - shape.radius,
+                        width: shape.radius * 2,
+                        height: shape.radius * 2
+                      }
+                    } else if (shape.type === 'rectangle') {
+                      bbox = { x: shape.x, y: shape.y, width: shape.width, height: shape.height }
+                    } else if (shape.type === 'polygon' || shape.type === 'freehand') {
+                      const xs = shape.points.filter((_, i) => i % 2 === 0)
+                      const ys = shape.points.filter((_, i) => i % 2 === 1)
+                      const minX = Math.min(...xs)
+                      const maxX = Math.max(...xs)
+                      const minY = Math.min(...ys)
+                      const maxY = Math.max(...ys)
+                      bbox = { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+                    } else if (shape.type === 'arc') {
+                      bbox = {
+                        x: shape.x - shape.outerRadius,
+                        y: shape.y - shape.outerRadius,
+                        width: shape.outerRadius * 2,
+                        height: shape.outerRadius * 2
+                      }
+                    }
+                    
+                    const handleSize = 8 / viewport.zoom
+                    const handles = [
+                      { x: bbox.x, y: bbox.y, cursor: 'nw-resize' },
+                      { x: bbox.x + bbox.width / 2, y: bbox.y, cursor: 'n-resize' },
+                      { x: bbox.x + bbox.width, y: bbox.y, cursor: 'ne-resize' },
+                      { x: bbox.x + bbox.width, y: bbox.y + bbox.height / 2, cursor: 'e-resize' },
+                      { x: bbox.x + bbox.width, y: bbox.y + bbox.height, cursor: 'se-resize' },
+                      { x: bbox.x + bbox.width / 2, y: bbox.y + bbox.height, cursor: 's-resize' },
+                      { x: bbox.x, y: bbox.y + bbox.height, cursor: 'sw-resize' },
+                      { x: bbox.x, y: bbox.y + bbox.height / 2, cursor: 'w-resize' }
+                    ]
+                    
+                    return (
+                      <React.Fragment key={`selection-${selectedShapeId}`}>
+                        <Rect
+                          x={bbox.x}
+                          y={bbox.y}
+                          width={bbox.width}
+                          height={bbox.height}
+                          stroke="#0088FF"
+                          strokeWidth={2 / viewport.zoom}
+                          dash={[5 / viewport.zoom, 5 / viewport.zoom]}
+                          listening={false}
+                        />
+                        {handles.map((handle, i) => (
+                          <Rect
+                            key={`handle-${i}`}
+                            x={handle.x - handleSize / 2}
+                            y={handle.y - handleSize / 2}
+                            width={handleSize}
+                            height={handleSize}
+                            fill="white"
+                            stroke="#0088FF"
+                            strokeWidth={1 / viewport.zoom}
+                          />
+                        ))}
+                      </React.Fragment>
+                    )
+                  })()}
+                  
                   {snapIndicator && (
                     <>
                       <Circle
@@ -867,6 +967,15 @@ function CADInterface() {
         defaultPosition={{ x: 300, y: 100 }}
       >
         <MarkersWindow onActivateTool={setActiveTool} />
+      </PopupWindow>
+
+      <PopupWindow
+        title="Transform Tools"
+        isOpen={showTransformTools}
+        onClose={() => setShowTransformTools(false)}
+        defaultPosition={{ x: 550, y: 100 }}
+      >
+        <TransformToolsWindow />
       </PopupWindow>
     </div>
   )

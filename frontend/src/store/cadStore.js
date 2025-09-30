@@ -57,10 +57,21 @@ const useCadStore = create((set) => ({
   markersVisible: true,
   guidesVisible: true,
   guidesLocked: false,
+  selectedShapeId: null,
+  transformMode: null,
+  transformSettings: {
+    keepAspectRatio: true,
+    createCopy: false,
+    snapAngle: true,
+    rotationCenter: null
+  },
   undo: [],
 
   setShapes: (shapes) => set({ shapes }),
   addShape: (shape) => set((state) => ({ shapes: [...state.shapes, shape] })),
+  updateShape: (shapeId, updates) => set((state) => ({
+    shapes: state.shapes.map(s => s.id === shapeId ? { ...s, ...updates } : s)
+  })),
   removeShape: (shapeId) => set((state) => ({
     shapes: state.shapes.filter(s => s.id !== shapeId)
   })),
@@ -101,6 +112,12 @@ const useCadStore = create((set) => ({
   setViewport: (viewport) => set({ viewport }),
   updateViewport: (updates) => set((state) => ({
     viewport: { ...state.viewport, ...updates }
+  })),
+  
+  setSelectedShapeId: (id) => set({ selectedShapeId: id }),
+  setTransformMode: (mode) => set({ transformMode: mode }),
+  updateTransformSettings: (key, value) => set((state) => ({
+    transformSettings: { ...state.transformSettings, [key]: value }
   })),
   
   pushUndo: (command) => set((state) => ({
