@@ -85,22 +85,62 @@ function LineEditorToolsWindow() {
     
     const intersection = findLineIntersection(line1, line2)
     if (!intersection) {
-      alert('Lines do not intersect')
+      alert('Lines do not intersect or are parallel')
+      return
+    }
+    
+    if (intersection.extended) {
+      if (!confirm('Lines only intersect when extended. Continue with fillet?')) {
+        return
+      }
+    }
+    
+    const line1Length = calculateDistance(line1.x1, line1.y1, line1.x2, line1.y2)
+    const line2Length = calculateDistance(line2.x1, line2.y1, line2.x2, line2.y2)
+    
+    if (size * 1.5 > Math.min(line1Length, line2Length)) {
+      alert('Fillet radius is too large for the selected lines')
       return
     }
     
     try {
       const arcData = createFilletArc(line1, line2, size, intersection)
       
-      updateShape(line1.id, {
-        x2: arcData.tangent1.x,
-        y2: arcData.tangent1.y
-      })
+      if (isNaN(arcData.tangent1.x) || isNaN(arcData.tangent1.y) || 
+          isNaN(arcData.tangent2.x) || isNaN(arcData.tangent2.y)) {
+        alert('Invalid fillet geometry (angle too small or lines nearly parallel)')
+        return
+      }
       
-      updateShape(line2.id, {
-        x2: arcData.tangent2.x,
-        y2: arcData.tangent2.y
-      })
+      const dist1_start = calculateDistance(line1.x1, line1.y1, arcData.tangent1.x, arcData.tangent1.y)
+      const dist1_end = calculateDistance(line1.x2, line1.y2, arcData.tangent1.x, arcData.tangent1.y)
+      
+      if (dist1_start < dist1_end) {
+        updateShape(line1.id, {
+          x1: arcData.tangent1.x,
+          y1: arcData.tangent1.y
+        })
+      } else {
+        updateShape(line1.id, {
+          x2: arcData.tangent1.x,
+          y2: arcData.tangent1.y
+        })
+      }
+      
+      const dist2_start = calculateDistance(line2.x1, line2.y1, arcData.tangent2.x, arcData.tangent2.y)
+      const dist2_end = calculateDistance(line2.x2, line2.y2, arcData.tangent2.x, arcData.tangent2.y)
+      
+      if (dist2_start < dist2_end) {
+        updateShape(line2.id, {
+          x1: arcData.tangent2.x,
+          y1: arcData.tangent2.y
+        })
+      } else {
+        updateShape(line2.id, {
+          x2: arcData.tangent2.x,
+          y2: arcData.tangent2.y
+        })
+      }
       
       addShape({
         id: `arc-${Date.now()}`,
@@ -118,7 +158,7 @@ function LineEditorToolsWindow() {
       clearSelection()
     } catch (error) {
       console.error('Fillet error:', error)
-      alert('Failed to create fillet')
+      alert('Failed to create fillet: ' + error.message)
     }
   }
   
@@ -138,22 +178,62 @@ function LineEditorToolsWindow() {
     
     const intersection = findLineIntersection(line1, line2)
     if (!intersection) {
-      alert('Lines do not intersect')
+      alert('Lines do not intersect or are parallel')
+      return
+    }
+    
+    if (intersection.extended) {
+      if (!confirm('Lines only intersect when extended. Continue with chamfer?')) {
+        return
+      }
+    }
+    
+    const line1Length = calculateDistance(line1.x1, line1.y1, line1.x2, line1.y2)
+    const line2Length = calculateDistance(line2.x1, line2.y1, line2.x2, line2.y2)
+    
+    if (size * 1.5 > Math.min(line1Length, line2Length)) {
+      alert('Chamfer size is too large for the selected lines')
       return
     }
     
     try {
       const chamferData = createChamfer(line1, line2, size, intersection)
       
-      updateShape(line1.id, {
-        x2: chamferData.point1.x,
-        y2: chamferData.point1.y
-      })
+      if (isNaN(chamferData.point1.x) || isNaN(chamferData.point1.y) || 
+          isNaN(chamferData.point2.x) || isNaN(chamferData.point2.y)) {
+        alert('Invalid chamfer geometry (angle too small or lines nearly parallel)')
+        return
+      }
       
-      updateShape(line2.id, {
-        x2: chamferData.point2.x,
-        y2: chamferData.point2.y
-      })
+      const dist1_start = calculateDistance(line1.x1, line1.y1, chamferData.point1.x, chamferData.point1.y)
+      const dist1_end = calculateDistance(line1.x2, line1.y2, chamferData.point1.x, chamferData.point1.y)
+      
+      if (dist1_start < dist1_end) {
+        updateShape(line1.id, {
+          x1: chamferData.point1.x,
+          y1: chamferData.point1.y
+        })
+      } else {
+        updateShape(line1.id, {
+          x2: chamferData.point1.x,
+          y2: chamferData.point1.y
+        })
+      }
+      
+      const dist2_start = calculateDistance(line2.x1, line2.y1, chamferData.point2.x, chamferData.point2.y)
+      const dist2_end = calculateDistance(line2.x2, line2.y2, chamferData.point2.x, chamferData.point2.y)
+      
+      if (dist2_start < dist2_end) {
+        updateShape(line2.id, {
+          x1: chamferData.point2.x,
+          y1: chamferData.point2.y
+        })
+      } else {
+        updateShape(line2.id, {
+          x2: chamferData.point2.x,
+          y2: chamferData.point2.y
+        })
+      }
       
       addShape({
         id: `line-${Date.now()}`,
@@ -169,7 +249,7 @@ function LineEditorToolsWindow() {
       clearSelection()
     } catch (error) {
       console.error('Chamfer error:', error)
-      alert('Failed to create chamfer')
+      alert('Failed to create chamfer: ' + error.message)
     }
   }
   
