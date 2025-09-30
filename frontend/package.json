@@ -13,10 +13,14 @@
     "axios": "^1.12.2",
     "fabric": "^6.7.1",
     "gcode-viewer": "^0.7.1",
+    "konva": "^10.0.2",
     "makerjs": "^0.18.1",
+    "rbush": "^4.0.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.3"
+    "react-konva": "^19.0.10",
+    "react-router-dom": "^7.9.3",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
