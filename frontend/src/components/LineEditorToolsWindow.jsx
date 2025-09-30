@@ -28,6 +28,26 @@ function LineEditorToolsWindow() {
   
   const selectedLines = lineEditorState?.selectedLines || []
   const selectedShapes = selectedLines.map(id => shapes.find(s => s.id === id)).filter(Boolean)
+  const currentTool = lineEditorState?.currentTool
+  
+  const toolRequirements = {
+    fillet: { minLines: 2, maxLines: 2, label: 'Fillet' },
+    chamfer: { minLines: 2, maxLines: 2, label: 'Chamfer' },
+    trim: { minLines: 2, maxLines: null, label: 'Trim' },
+    trimMid: { minLines: 2, maxLines: 2, label: 'Trim Mid' },
+    extend: { minLines: 2, maxLines: 2, label: 'Extend' },
+    adjustLine: { minLines: 1, maxLines: 1, label: 'Adjust Line' },
+    rotate: { minLines: 1, maxLines: null, label: 'Rotate' }
+  }
+  
+  const canApplyTool = () => {
+    if (!currentTool) return false
+    const req = toolRequirements[currentTool]
+    if (!req) return false
+    if (selectedLines.length < req.minLines) return false
+    if (req.maxLines && selectedLines.length > req.maxLines) return false
+    return true
+  }
   
   const clearSelection = () => {
     if (lineEditorState) {
@@ -47,7 +67,15 @@ function LineEditorToolsWindow() {
     })
   }
   
-  const handleFillet = () => {
+  const startToolSelection = (toolName) => {
+    clearSelection()
+    setLineEditorState({
+      selectedLines: [],
+      currentTool: toolName
+    })
+  }
+  
+  const executeFillet = () => {
     if (selectedLines.length !== 2) {
       alert('Please select exactly 2 lines')
       return
@@ -156,7 +184,7 @@ function LineEditorToolsWindow() {
     }
   }
   
-  const handleChamfer = () => {
+  const executeChamfer = () => {
     if (selectedLines.length !== 2) {
       alert('Please select exactly 2 lines')
       return
@@ -260,7 +288,7 @@ function LineEditorToolsWindow() {
     }
   }
   
-  const handleTrim = () => {
+  const executeTrim = () => {
     if (selectedLines.length < 2) {
       alert('Please select at least 2 lines')
       return
@@ -273,7 +301,7 @@ function LineEditorToolsWindow() {
     })
   }
   
-  const handleTrimMid = () => {
+  const executeTrimMid = () => {
     if (selectedLines.length < 2) {
       alert('Please select at least 2 boundary lines first')
       return
@@ -286,7 +314,7 @@ function LineEditorToolsWindow() {
     })
   }
   
-  const handleExtend = () => {
+  const executeExtend = () => {
     if (selectedLines.length < 2) {
       alert('Please select boundary line and line to extend')
       return
@@ -321,7 +349,12 @@ function LineEditorToolsWindow() {
     clearSelection()
   }
   
-  const handleAdjustLine = () => {
+  const executeAdjustLine = () => {
+    if (selectedLines.length < 1) {
+      alert('Please select a line to adjust')
+      return
+    }
+    
     setLineEditorState({
       ...(lineEditorState || {}),
       currentTool: 'adjustLine',
@@ -329,7 +362,7 @@ function LineEditorToolsWindow() {
     })
   }
   
-  const handleRotateShape = () => {
+  const executeRotate = () => {
     if (selectedLines.length === 0) {
       alert('Please select at least one shape')
       return
@@ -340,6 +373,36 @@ function LineEditorToolsWindow() {
       currentTool: 'rotate',
       rotationAngle: 0
     })
+  }
+  
+  const applyCurrentTool = () => {
+    if (!currentTool || !canApplyTool()) return
+    
+    switch (currentTool) {
+      case 'fillet':
+        executeFillet()
+        break
+      case 'chamfer':
+        executeChamfer()
+        break
+      case 'trim':
+        executeTrim()
+        break
+      case 'trimMid':
+        executeTrimMid()
+        break
+      case 'extend':
+        executeExtend()
+        break
+      case 'adjustLine':
+        executeAdjustLine()
+        break
+      case 'rotate':
+        executeRotate()
+        break
+      default:
+        break
+    }
   }
   
   const applyRotation = (direction) => {
@@ -384,24 +447,48 @@ function LineEditorToolsWindow() {
       </div>
       
       <div className="tool-grid">
-        <button onClick={handleFillet} title="Create rounded corner between two lines">
+        <button 
+          onClick={() => startToolSelection('fillet')} 
+          className={currentTool === 'fillet' ? 'active' : ''}
+          title="Create rounded corner between two lines"
+        >
           Fillet
         </button>
-        <button onClick={handleChamfer} title="Create beveled corner between two lines">
+        <button 
+          onClick={() => startToolSelection('chamfer')} 
+          className={currentTool === 'chamfer' ? 'active' : ''}
+          title="Create beveled corner between two lines"
+        >
           Chamfer
         </button>
         
-        <button onClick={handleTrim} title="Trim line segment at intersection">
+        <button 
+          onClick={() => startToolSelection('trim')} 
+          className={currentTool === 'trim' ? 'active' : ''}
+          title="Trim line segment at intersection"
+        >
           Trim
         </button>
-        <button onClick={handleTrimMid} title="Trim middle section between boundaries">
+        <button 
+          onClick={() => startToolSelection('trimMid')} 
+          className={currentTool === 'trimMid' ? 'active' : ''}
+          title="Trim middle section between boundaries"
+        >
           TrimMid
         </button>
         
-        <button onClick={handleExtend} title="Extend line to meet boundary">
+        <button 
+          onClick={() => startToolSelection('extend')} 
+          className={currentTool === 'extend' ? 'active' : ''}
+          title="Extend line to meet boundary"
+        >
           Extend
         </button>
-        <button onClick={handleAdjustLine} title="Drag line endpoints">
+        <button 
+          onClick={() => startToolSelection('adjustLine')} 
+          className={currentTool === 'adjustLine' ? 'active' : ''}
+          title="Drag line endpoints"
+        >
           Adjust Line
         </button>
       </div>
@@ -418,7 +505,11 @@ function LineEditorToolsWindow() {
       </div>
       
       <div className="rotate-section">
-        <button onClick={handleRotateShape} title="Rotate selected shapes">
+        <button 
+          onClick={() => startToolSelection('rotate')} 
+          className={currentTool === 'rotate' ? 'active' : ''}
+          title="Rotate selected shapes"
+        >
           Rotate
         </button>
         <label className="angle-snap">
@@ -456,15 +547,30 @@ function LineEditorToolsWindow() {
         Clear Selection
       </button>
       
-      {selectedLines.length > 0 && (
-        <div className="selection-info">
-          Selected: {selectedLines.length} shape(s)
+      {currentTool && toolRequirements[currentTool] && (
+        <div className="tool-status-panel">
+          <div className="tool-status">
+            <strong>{toolRequirements[currentTool].label}</strong>
+            <div className="selection-progress">
+              {toolRequirements[currentTool].maxLines ? (
+                <>Select {toolRequirements[currentTool].minLines} line(s): {selectedLines.length}/{toolRequirements[currentTool].maxLines}</>
+              ) : (
+                <>Select at least {toolRequirements[currentTool].minLines} line(s): {selectedLines.length} selected</>
+              )}
+            </div>
+          </div>
+          
+          {canApplyTool() && (
+            <button className="apply-tool-btn" onClick={applyCurrentTool}>
+              Apply {toolRequirements[currentTool].label}
+            </button>
+          )}
         </div>
       )}
       
-      {lineEditorState?.currentTool && (
-        <div className="tool-status">
-          Active: {lineEditorState.currentTool}
+      {!currentTool && selectedLines.length > 0 && (
+        <div className="selection-info">
+          Selected: {selectedLines.length} shape(s)
         </div>
       )}
     </div>
