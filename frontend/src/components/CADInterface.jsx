@@ -10,8 +10,10 @@ import TransformToolsWindow from './TransformToolsWindow'
 import LineEditorToolsWindow from './LineEditorToolsWindow'
 import ShapePropertiesWindow from './ShapePropertiesWindow'
 import TextFontToolsWindow from './TextFontToolsWindow'
+import LayersWindow from './LayersWindow'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
+import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
 import './CADInterface.css'
 
 function CADInterface() {
@@ -36,6 +38,9 @@ function CADInterface() {
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
   const setSelectedShapeId = useCadStore((state) => state.setSelectedShapeId)
   const updateShape = useCadStore((state) => state.updateShape)
+  const layers = useCadStore((state) => state.layers)
+  const setLayers = useCadStore((state) => state.setLayers)
+  const setShapes = useCadStore((state) => state.setShapes)
   const lineEditorState = useCadStore((state) => state.lineEditorState)
   const setLineEditorState = useCadStore((state) => state.setLineEditorState)
   const updateLineEditorState = useCadStore((state) => state.updateLineEditorState)
@@ -55,6 +60,7 @@ function CADInterface() {
   const [showLineEditorTools, setShowLineEditorTools] = useState(false)
   const [showShapeProperties, setShowShapeProperties] = useState(false)
   const [showTextTools, setShowTextTools] = useState(false)
+  const [showLayers, setShowLayers] = useState(false)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -881,6 +887,35 @@ function CADInterface() {
   const handleZoomReset = () => {
     updateViewport({ zoom: 1, pan: { x: 0, y: 0 } })
   }
+  
+  const handleExportSVG = () => {
+    const svgContent = exportToSVG(shapes, machineProfile, layers)
+    downloadSVG(svgContent, 'design.svg')
+  }
+  
+  const handleImportSVG = async (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+    
+    try {
+      const { shapes: importedShapes, layers: importedLayers } = await importFromSVG(file, machineProfile)
+      
+      if (importedLayers && importedLayers.length > 0) {
+        setLayers(importedLayers)
+      }
+      
+      if (importedShapes && importedShapes.length > 0) {
+        setShapes(importedShapes)
+      }
+      
+      alert(`Imported ${importedShapes.length} shapes and ${importedLayers.length} layers`)
+    } catch (error) {
+      console.error('SVG import error:', error)
+      alert('Failed to import SVG: ' + error.message)
+    }
+    
+    event.target.value = ''
+  }
 
   const handleLineEditorToolClick = (shape, clickX, clickY) => {
     const tool = lineEditorState?.currentTool
@@ -1247,6 +1282,12 @@ function CADInterface() {
       event.evt.stopPropagation()
     }
     
+    const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
+    if (shapeLayer && shapeLayer.locked) {
+      console.log('   → Shape on locked layer, ignoring click')
+      return
+    }
+    
     const textToolState = useCadStore.getState().textToolState
     const shapePropertiesState = useCadStore.getState().shapePropertiesState
     
@@ -1356,6 +1397,14 @@ function CADInterface() {
           <button onClick={() => setShowTextTools(!showTextTools)}>
             {showTextTools ? 'Hide' : 'Show'} Text Tools
           </button>
+          <button onClick={() => setShowLayers(!showLayers)}>
+            {showLayers ? 'Hide' : 'Show'} Layers
+          </button>
+          <label style={{ cursor: 'pointer', padding: '8px 16px', background: '#4CAF50', color: 'white', borderRadius: '4px' }}>
+            Import SVG
+            <input type="file" accept=".svg" onChange={handleImportSVG} style={{ display: 'none' }} />
+          </label>
+          <button onClick={handleExportSVG} style={{ background: '#4CAF50' }}>Export SVG</button>
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
           <button onClick={handleZoomReset}>Reset Zoom ({Math.round(viewport.zoom * 100)}%)</button>
@@ -1421,7 +1470,10 @@ function CADInterface() {
                   />
                   {drawGrid()}
                   
-                  {shapes.map(shape => {
+                  {shapes.filter(shape => {
+                    const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
+                    return shapeLayer && shapeLayer.visible
+                  }).map(shape => {
                     if (shape.type === 'line') {
                       return (
                         <Line
@@ -2065,6 +2117,15 @@ function CADInterface() {
         defaultPosition={{ x: 1050, y: 400 }}
       >
         <TextFontToolsWindow />
+      </PopupWindow>
+
+      <PopupWindow
+        title="Layers"
+        isOpen={showLayers}
+        onClose={() => setShowLayers(false)}
+        defaultPosition={{ x: 1050, y: 100 }}
+      >
+        <LayersWindow />
       </PopupWindow>
     </div>
   )
