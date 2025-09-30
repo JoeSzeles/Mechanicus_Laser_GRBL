@@ -21,6 +21,7 @@ function CADInterface() {
   const activeTool = useCadStore((state) => state.activeTool)
   const setActiveTool = useCadStore((state) => state.setActiveTool)
   const addShape = useCadStore((state) => state.addShape)
+  const removeShape = useCadStore((state) => state.removeShape)
   const markers = useCadStore((state) => state.markers)
   const guides = useCadStore((state) => state.guides)
   const markersVisible = useCadStore((state) => state.markersVisible)
@@ -54,6 +55,7 @@ function CADInterface() {
   const [mirrorAxisSelectionCallback, setMirrorAxisSelectionCallback] = useState(null)
   const [mirrorAxisLineId, setMirrorAxisLineId] = useState(null)
   const [hoveredShapeId, setHoveredShapeId] = useState(null)
+  const [adjustLineState, setAdjustLineState] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -163,6 +165,45 @@ function CADInterface() {
       return
     }
     
+    if (lineEditorState?.currentTool === 'adjustLine' && e.evt.button === 0) {
+      const point = getWorldPoint(e)
+      const tolerance = 15 / viewport.zoom
+      
+      for (const shape of shapes) {
+        if (shape.type === 'line') {
+          const distToStart = Math.sqrt((point.x - shape.x1)**2 + (point.y - shape.y1)**2)
+          const distToEnd = Math.sqrt((point.x - shape.x2)**2 + (point.y - shape.y2)**2)
+          
+          if (distToStart < tolerance) {
+            setAdjustLineState({
+              shapeId: shape.id,
+              endpoint: 'start'
+            })
+            updateShape(shape.id, {
+              originalStroke: shape.stroke,
+              originalStrokeWidth: shape.strokeWidth,
+              stroke: '#FF0000',
+              strokeWidth: 2
+            })
+            return
+          } else if (distToEnd < tolerance) {
+            setAdjustLineState({
+              shapeId: shape.id,
+              endpoint: 'end'
+            })
+            updateShape(shape.id, {
+              originalStroke: shape.stroke,
+              originalStrokeWidth: shape.strokeWidth,
+              stroke: '#FF0000',
+              strokeWidth: 2
+            })
+            return
+          }
+        }
+      }
+      return
+    }
+    
     if (guidesVisible && !guidesLocked && e.evt.button === 0) {
       const point = getWorldPoint(e)
       const threshold = 10 / viewport.zoom
@@ -216,6 +257,25 @@ function CADInterface() {
         y: e.evt.clientY - panStart.y
       }
       updateViewport({ pan: newPan })
+      return
+    }
+    
+    if (adjustLineState) {
+      const point = getWorldPoint(e)
+      const shape = shapes.find(s => s.id === adjustLineState.shapeId)
+      if (shape) {
+        if (adjustLineState.endpoint === 'start') {
+          updateShape(shape.id, {
+            x1: point.x,
+            y1: point.y
+          })
+        } else {
+          updateShape(shape.id, {
+            x2: point.x,
+            y2: point.y
+          })
+        }
+      }
       return
     }
     
@@ -310,6 +370,18 @@ function CADInterface() {
   const handleMouseUp = (e) => {
     setIsPanning(false)
     setDraggedGuide(null)
+    
+    if (adjustLineState) {
+      const shape = shapes.find(s => s.id === adjustLineState.shapeId)
+      if (shape && shape.originalStroke) {
+        updateShape(shape.id, {
+          stroke: shape.originalStroke,
+          strokeWidth: shape.originalStrokeWidth
+        })
+      }
+      setAdjustLineState(null)
+      return
+    }
     
     if (drawingState && previewShape) {
       const currentPoint = getWorldPoint(e)
@@ -515,39 +587,288 @@ function CADInterface() {
     updateViewport({ zoom: 1, pan: { x: 0, y: 0 } })
   }
 
-  const handleShapeClick = (shape) => {
+  const handleLineEditorToolClick = (shape, clickX, clickY) => {
+    const tool = lineEditorState?.currentTool
+    
+    if (tool === 'trim') {
+      handleTrimClick(shape, clickX, clickY)
+    } else if (tool === 'trimMid') {
+      handleTrimMidClick(shape)
+    } else if (tool === 'extend') {
+      handleExtendClick(shape, clickX, clickY)
+    } else {
+      handleDefaultLineEditorClick(shape)
+    }
+  }
+
+  const handleTrimClick = (shape, clickX, clickY) => {
+    const { trimState, selectedLines = [], intersection } = lineEditorState
+    
+    if (trimState === 'first_line') {
+      setLineEditorState({
+        ...lineEditorState,
+        selectedLines: [shape.id],
+        trimState: 'second_line'
+      })
+      updateShape(shape.id, {
+        originalStroke: shape.stroke,
+        originalStrokeWidth: shape.strokeWidth,
+        stroke: '#FF0000',
+        strokeWidth: 2
+      })
+    } else if (trimState === 'second_line') {
+      if (selectedLines.includes(shape.id)) return
+      
+      const line1 = shapes.find(s => s.id === selectedLines[0])
+      const inters = findLineIntersection(line1, shape)
+      
+      if (!inters) {
+        alert('Lines do not intersect')
+        return
+      }
+      
+      setLineEditorState({
+        ...lineEditorState,
+        selectedLines: [...selectedLines, shape.id],
+        intersection: inters,
+        trimState: 'select_segment'
+      })
+      updateShape(shape.id, {
+        originalStroke: shape.stroke,
+        originalStrokeWidth: shape.strokeWidth,
+        stroke: '#FF0000',
+        strokeWidth: 2
+      })
+    } else if (trimState === 'select_segment' && selectedLines.includes(shape.id)) {
+      const distToStart = Math.sqrt((clickX - shape.x1)**2 + (clickY - shape.y1)**2)
+      const distToEnd = Math.sqrt((clickX - shape.x2)**2 + (clickY - shape.y2)**2)
+      
+      const keepEndSegment = distToStart < distToEnd
+      
+      if (keepEndSegment) {
+        updateShape(shape.id, {
+          x1: intersection.x,
+          y1: intersection.y,
+          stroke: shape.originalStroke,
+          strokeWidth: shape.originalStrokeWidth
+        })
+      } else {
+        updateShape(shape.id, {
+          x2: intersection.x,
+          y2: intersection.y,
+          stroke: shape.originalStroke,
+          strokeWidth: shape.originalStrokeWidth
+        })
+      }
+      
+      selectedLines.forEach(id => {
+        const s = shapes.find(sh => sh.id === id)
+        if (s && s.originalStroke) {
+          updateShape(id, {
+            stroke: s.originalStroke,
+            strokeWidth: s.originalStrokeWidth
+          })
+        }
+      })
+      
+      setLineEditorState({
+        ...lineEditorState,
+        selectedLines: [],
+        trimState: 'first_line',
+        intersection: null
+      })
+    }
+  }
+
+  const handleTrimMidClick = (shape) => {
+    const { trimState, selectedLines = [], boundaryLines = [] } = lineEditorState
+    
+    if (trimState === 'first_line') {
+      setLineEditorState({
+        ...lineEditorState,
+        selectedLines: [shape.id],
+        boundaryLines: [shape.id],
+        trimState: 'second_line'
+      })
+      updateShape(shape.id, {
+        originalStroke: shape.stroke,
+        originalStrokeWidth: shape.strokeWidth,
+        stroke: '#FF0000',
+        strokeWidth: 2
+      })
+    } else if (trimState === 'second_line') {
+      if (selectedLines.includes(shape.id)) return
+      
+      setLineEditorState({
+        ...lineEditorState,
+        selectedLines: [...selectedLines, shape.id],
+        boundaryLines: [...boundaryLines, shape.id],
+        trimState: 'trim_crossing'
+      })
+      updateShape(shape.id, {
+        originalStroke: shape.stroke,
+        originalStrokeWidth: shape.strokeWidth,
+        stroke: '#FF0000',
+        strokeWidth: 2
+      })
+    } else if (trimState === 'trim_crossing' && !boundaryLines.includes(shape.id)) {
+      const boundary1 = shapes.find(s => s.id === boundaryLines[0])
+      const boundary2 = shapes.find(s => s.id === boundaryLines[1])
+      
+      const int1 = findLineIntersection(boundary1, shape)
+      const int2 = findLineIntersection(boundary2, shape)
+      
+      if (int1 && int2) {
+        const dist1Start = Math.sqrt((int1.x - shape.x1)**2 + (int1.y - shape.y1)**2)
+        const dist1End = Math.sqrt((int1.x - shape.x2)**2 + (int1.y - shape.y2)**2)
+        const dist2Start = Math.sqrt((int2.x - shape.x1)**2 + (int2.y - shape.y1)**2)
+        const dist2End = Math.sqrt((int2.x - shape.x2)**2 + (int2.y - shape.y2)**2)
+        
+        const newLine1 = {
+          id: `line-${Date.now()}-1`,
+          type: 'line',
+          x1: shape.x1,
+          y1: shape.y1,
+          x2: dist1Start < dist1End ? int1.x : int2.x,
+          y2: dist1Start < dist1End ? int1.y : int2.y,
+          stroke: shape.stroke,
+          strokeWidth: shape.strokeWidth
+        }
+        
+        const newLine2 = {
+          id: `line-${Date.now()}-2`,
+          type: 'line',
+          x1: dist2End < dist2Start ? int2.x : int1.x,
+          y1: dist2End < dist2Start ? int2.y : int1.y,
+          x2: shape.x2,
+          y2: shape.y2,
+          stroke: shape.stroke,
+          strokeWidth: shape.strokeWidth
+        }
+        
+        removeShape(shape.id)
+        addShape(newLine1)
+        addShape(newLine2)
+      }
+    }
+  }
+
+  const handleExtendClick = (shape, clickX, clickY) => {
+    const { extendState, boundaryLines = [] } = lineEditorState
+    
+    if (extendState === 'select_boundary') {
+      setLineEditorState({
+        ...lineEditorState,
+        boundaryLines: [...boundaryLines, shape.id],
+        extendState: 'extend_lines'
+      })
+      updateShape(shape.id, {
+        originalStroke: shape.stroke,
+        originalStrokeWidth: shape.strokeWidth,
+        stroke: '#FF0000',
+        strokeWidth: 2
+      })
+    } else if (extendState === 'extend_lines' && !boundaryLines.includes(shape.id)) {
+      const distToStart = Math.sqrt((clickX - shape.x1)**2 + (clickY - shape.y1)**2)
+      const distToEnd = Math.sqrt((clickX - shape.x2)**2 + (clickY - shape.y2)**2)
+      
+      const extendFromStart = distToStart < distToEnd
+      const px = extendFromStart ? shape.x1 : shape.x2
+      const py = extendFromStart ? shape.y1 : shape.y2
+      const vx = extendFromStart ? (shape.x1 - shape.x2) : (shape.x2 - shape.x1)
+      const vy = extendFromStart ? (shape.y1 - shape.y2) : (shape.y2 - shape.y1)
+      const len = Math.sqrt(vx*vx + vy*vy)
+      const dirX = vx / len
+      const dirY = vy / len
+      
+      const extendedX = px + dirX * 10000
+      const extendedY = py + dirY * 10000
+      
+      let bestIntersection = null
+      let minDist = Infinity
+      
+      boundaryLines.forEach(boundaryId => {
+        const boundary = shapes.find(s => s.id === boundaryId)
+        if (!boundary) return
+        
+        const inters = findLineIntersection(
+          { x1: px, y1: py, x2: extendedX, y2: extendedY },
+          boundary
+        )
+        
+        if (inters) {
+          const dist = Math.sqrt((inters.x - px)**2 + (inters.y - py)**2)
+          const dot = (inters.x - px) * dirX + (inters.y - py) * dirY
+          if (dot > 0 && dist < minDist) {
+            minDist = dist
+            bestIntersection = inters
+          }
+        }
+      })
+      
+      if (bestIntersection) {
+        if (extendFromStart) {
+          updateShape(shape.id, {
+            x1: bestIntersection.x,
+            y1: bestIntersection.y
+          })
+        } else {
+          updateShape(shape.id, {
+            x2: bestIntersection.x,
+            y2: bestIntersection.y
+          })
+        }
+      } else {
+        alert('Could not find valid extension point')
+      }
+    }
+  }
+
+  const handleDefaultLineEditorClick = (shape) => {
+    const currentSelected = lineEditorState.selectedLines || []
+    if (currentSelected.includes(shape.id)) {
+      const newSelection = currentSelected.filter(id => id !== shape.id)
+      if (shape.originalStroke) {
+        updateShape(shape.id, {
+          stroke: shape.originalStroke,
+          strokeWidth: shape.originalStrokeWidth
+        })
+      }
+      setLineEditorState({
+        ...lineEditorState,
+        selectedLines: newSelection
+      })
+    } else {
+      const newSelection = [...currentSelected, shape.id]
+      if (!shape.originalStroke) {
+        updateShape(shape.id, {
+          originalStroke: shape.stroke,
+          originalStrokeWidth: shape.strokeWidth,
+          stroke: '#FF0000',
+          strokeWidth: 3
+        })
+      }
+      setLineEditorState({
+        ...lineEditorState,
+        selectedLines: newSelection
+      })
+    }
+  }
+
+  const handleShapeClick = (shape, event) => {
     if (mirrorAxisSelectionCallback) {
       mirrorAxisSelectionCallback(shape.id)
       setMirrorAxisLineId(shape.id)
       setMirrorAxisSelectionCallback(null)
     } else if (showLineEditorTools && lineEditorState) {
-      const currentSelected = lineEditorState.selectedLines || []
-      if (currentSelected.includes(shape.id)) {
-        const newSelection = currentSelected.filter(id => id !== shape.id)
-        if (shape.originalStroke) {
-          updateShape(shape.id, {
-            stroke: shape.originalStroke,
-            strokeWidth: shape.originalStrokeWidth
-          })
-        }
-        setLineEditorState({
-          ...lineEditorState,
-          selectedLines: newSelection
-        })
+      const stage = event?.target?.getStage()
+      const pointerPos = stage?.getPointerPosition()
+      if (pointerPos) {
+        const clickX = (pointerPos.x - viewport.pan.x) / viewport.zoom
+        const clickY = (pointerPos.y - viewport.pan.y) / viewport.zoom
+        handleLineEditorToolClick(shape, clickX, clickY)
       } else {
-        const newSelection = [...currentSelected, shape.id]
-        if (!shape.originalStroke) {
-          updateShape(shape.id, {
-            originalStroke: shape.stroke,
-            originalStrokeWidth: shape.strokeWidth,
-            stroke: '#FF0000',
-            strokeWidth: 3
-          })
-        }
-        setLineEditorState({
-          ...lineEditorState,
-          selectedLines: newSelection
-        })
+        handleDefaultLineEditorClick(shape)
       }
     } else {
       setSelectedShapeId(shape.id)
@@ -690,7 +1011,7 @@ function CADInterface() {
                           stroke={getShapeStroke(shape)}
                           strokeWidth={getShapeStrokeWidth(shape)}
                           hitStrokeWidth={getHitStrokeWidth(shape)}
-                          onClick={() => handleShapeClick(shape)}
+                          onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
                         />
@@ -708,7 +1029,7 @@ function CADInterface() {
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
-                          onClick={() => handleShapeClick(shape)}
+                          onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
                         />
@@ -727,7 +1048,7 @@ function CADInterface() {
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
-                          onClick={() => handleShapeClick(shape)}
+                          onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
                         />
@@ -741,7 +1062,7 @@ function CADInterface() {
                           stroke={getShapeStroke(shape)}
                           strokeWidth={getShapeStrokeWidth(shape)}
                           hitStrokeWidth={getHitStrokeWidth(shape)}
-                          onClick={() => handleShapeClick(shape)}
+                          onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
                         />
@@ -762,7 +1083,7 @@ function CADInterface() {
                           fill={undefined}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
-                          onClick={() => handleShapeClick(shape)}
+                          onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
                         />
@@ -777,7 +1098,7 @@ function CADInterface() {
                           hitStrokeWidth={getHitStrokeWidth(shape)}
                           lineCap="round"
                           lineJoin="round"
-                          onClick={() => handleShapeClick(shape)}
+                          onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
                         />

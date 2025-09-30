@@ -289,74 +289,35 @@ function LineEditorToolsWindow() {
   }
   
   const executeTrim = () => {
-    if (selectedLines.length < 2) {
-      alert('Please select at least 2 lines')
-      return
-    }
-    
     setLineEditorState({
-      ...(lineEditorState || {}),
+      selectedLines: [],
       currentTool: 'trim',
-      waitingForSegmentClick: true
+      trimState: 'first_line',
+      intersection: null
     })
   }
   
   const executeTrimMid = () => {
-    if (selectedLines.length < 2) {
-      alert('Please select at least 2 boundary lines first')
-      return
-    }
-    
     setLineEditorState({
-      ...(lineEditorState || {}),
+      selectedLines: [],
       currentTool: 'trimMid',
-      boundaryLines: selectedLines.slice(0, 2)
+      trimState: 'first_line',
+      boundaryLines: []
     })
   }
   
   const executeExtend = () => {
-    if (selectedLines.length < 2) {
-      alert('Please select boundary line and line to extend')
-      return
-    }
-    
-    const boundaryLine = shapes.find(s => s.id === selectedLines[0])
-    const lineToExtend = shapes.find(s => s.id === selectedLines[1])
-    
-    if (!boundaryLine || !lineToExtend) return
-    
-    const intersection = findLineIntersection(boundaryLine, lineToExtend)
-    if (!intersection) {
-      alert('Lines do not intersect when extended')
-      return
-    }
-    
-    const distToStart = calculateDistance(intersection.x, intersection.y, lineToExtend.x1, lineToExtend.y1)
-    const distToEnd = calculateDistance(intersection.x, intersection.y, lineToExtend.x2, lineToExtend.y2)
-    
-    if (distToStart < distToEnd) {
-      updateShape(lineToExtend.id, {
-        x1: intersection.x,
-        y1: intersection.y
-      })
-    } else {
-      updateShape(lineToExtend.id, {
-        x2: intersection.x,
-        y2: intersection.y
-      })
-    }
-    
-    clearSelection()
+    setLineEditorState({
+      selectedLines: [],
+      currentTool: 'extend',
+      extendState: 'select_boundary',
+      boundaryLines: []
+    })
   }
   
   const executeAdjustLine = () => {
-    if (selectedLines.length < 1) {
-      alert('Please select a line to adjust')
-      return
-    }
-    
     setLineEditorState({
-      ...(lineEditorState || {}),
+      selectedLines: [],
       currentTool: 'adjustLine',
       snapEnabled
     })
