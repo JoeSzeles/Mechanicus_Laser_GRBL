@@ -26,7 +26,10 @@ function CADInterface() {
   const activeTool = useCadStore((state) => state.activeTool)
   const setActiveTool = useCadStore((state) => state.setActiveTool)
   const addShape = useCadStore((state) => state.addShape)
+  const addShapeWithUndo = useCadStore((state) => state.addShapeWithUndo)
   const removeShape = useCadStore((state) => state.removeShape)
+  const removeShapeWithUndo = useCadStore((state) => state.removeShapeWithUndo)
+  const updateShapeWithUndo = useCadStore((state) => state.updateShapeWithUndo)
   const markers = useCadStore((state) => state.markers)
   const guides = useCadStore((state) => state.guides)
   const markersVisible = useCadStore((state) => state.markersVisible)
@@ -44,6 +47,10 @@ function CADInterface() {
   const lineEditorState = useCadStore((state) => state.lineEditorState)
   const setLineEditorState = useCadStore((state) => state.setLineEditorState)
   const updateLineEditorState = useCadStore((state) => state.updateLineEditorState)
+  const undoStack = useCadStore((state) => state.undoStack)
+  const redoStack = useCadStore((state) => state.redoStack)
+  const undo = useCadStore((state) => state.undo)
+  const redo = useCadStore((state) => state.redo)
   
   useEffect(() => {
     if (typeof updateLineEditorState !== 'function') {
@@ -168,10 +175,16 @@ function CADInterface() {
       } else if (e.key === 'Delete' || e.key === 'Del') {
         if (selectedShapeIds.length > 0) {
           selectedShapeIds.forEach(id => {
-            removeShape(id)
+            removeShapeWithUndo(id)
           })
           setSelectedShapeIds([])
         }
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        undo()
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
+        e.preventDefault()
+        redo()
       }
     }
     
@@ -767,7 +780,7 @@ function CADInterface() {
         newShape.rotation = 0
       }
       
-      addShape(newShape)
+      addShapeWithUndo(newShape)
       setDrawingState(null)
       setPreviewShape(null)
     }
@@ -1005,7 +1018,7 @@ function CADInterface() {
     if (selectedShapeIds.length === 0) return
     
     selectedShapeIds.forEach(id => {
-      removeShape(id)
+      removeShapeWithUndo(id)
     })
     setSelectedShapeIds([])
   }
@@ -1498,6 +1511,20 @@ function CADInterface() {
             <input type="file" accept=".svg" onChange={handleImportSVG} style={{ display: 'none' }} />
           </label>
           <button onClick={handleExportSVG} style={{ background: '#4CAF50' }}>Export SVG</button>
+          <button 
+            onClick={undo} 
+            style={{ background: '#2196F3', color: 'white' }}
+            disabled={undoStack.length === 0}
+          >
+            ⟲ Undo (Ctrl+Z)
+          </button>
+          <button 
+            onClick={redo} 
+            style={{ background: '#2196F3', color: 'white' }}
+            disabled={redoStack.length === 0}
+          >
+            ⟳ Redo (Ctrl+Y)
+          </button>
           <button 
             onClick={handleDeleteSelected} 
             style={{ background: '#f44336', color: 'white' }}

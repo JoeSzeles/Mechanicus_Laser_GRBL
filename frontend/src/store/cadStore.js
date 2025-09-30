@@ -69,7 +69,9 @@ const useCadStore = create((set) => ({
   lineEditorState: null,
   shapePropertiesState: null,
   textToolState: null,
-  undo: [],
+  undoStack: [],
+  redoStack: [],
+  maxUndoStack: 50,
 
   setShapes: (shapes) => set({ shapes }),
   addShape: (shape) => set((state) => ({ shapes: [...state.shapes, shape] })),
@@ -79,6 +81,68 @@ const useCadStore = create((set) => ({
   removeShape: (shapeId) => set((state) => ({
     shapes: state.shapes.filter(s => s.id !== shapeId)
   })),
+  
+  addShapeWithUndo: (shape) => set((state) => {
+    const command = {
+      type: 'addShape',
+      shape: shape,
+      undo: (store) => {
+        store.removeShape(shape.id)
+      },
+      redo: (store) => {
+        store.addShape(shape)
+      }
+    }
+    const newUndoStack = [...state.undoStack, command].slice(-state.maxUndoStack)
+    return { shapes: [...state.shapes, shape], undoStack: newUndoStack, redoStack: [] }
+  }),
+  
+  removeShapeWithUndo: (shapeId) => set((state) => {
+    const shape = state.shapes.find(s => s.id === shapeId)
+    if (!shape) return state
+    
+    const command = {
+      type: 'removeShape',
+      shape: shape,
+      undo: (store) => {
+        store.addShape(shape)
+      },
+      redo: (store) => {
+        store.removeShape(shapeId)
+      }
+    }
+    const newUndoStack = [...state.undoStack, command].slice(-state.maxUndoStack)
+    return { shapes: state.shapes.filter(s => s.id !== shapeId), undoStack: newUndoStack, redoStack: [] }
+  }),
+  
+  updateShapeWithUndo: (shapeId, updates) => set((state) => {
+    const shape = state.shapes.find(s => s.id === shapeId)
+    if (!shape) return state
+    
+    const oldValues = {}
+    Object.keys(updates).forEach(key => {
+      oldValues[key] = shape[key]
+    })
+    
+    const command = {
+      type: 'updateShape',
+      shapeId: shapeId,
+      oldValues: oldValues,
+      newValues: updates,
+      undo: (store) => {
+        store.updateShape(shapeId, oldValues)
+      },
+      redo: (store) => {
+        store.updateShape(shapeId, updates)
+      }
+    }
+    const newUndoStack = [...state.undoStack, command].slice(-state.maxUndoStack)
+    return { 
+      shapes: state.shapes.map(s => s.id === shapeId ? { ...s, ...updates } : s),
+      undoStack: newUndoStack,
+      redoStack: []
+    }
+  }),
   
   setMarkers: (markers) => set({ markers }),
   addMarker: (marker) => set((state) => ({ markers: [...state.markers, marker] })),
@@ -140,12 +204,38 @@ const useCadStore = create((set) => ({
     textToolState: { ...(state.textToolState || {}), ...updates }
   })),
   
-  pushUndo: (command) => set((state) => ({
-    undo: [...state.undo, command]
+  undo: () => {
+    const state = useCadStore.getState()
+    if (state.undoStack.length === 0) return
+    
+    const command = state.undoStack[state.undoStack.length - 1]
+    command.undo(useCadStore.getState())
+    
+    set({
+      undoStack: state.undoStack.slice(0, -1),
+      redoStack: [...state.redoStack, command]
+    })
+  },
+  
+  redo: () => {
+    const state = useCadStore.getState()
+    if (state.redoStack.length === 0) return
+    
+    const command = state.redoStack[state.redoStack.length - 1]
+    command.redo(useCadStore.getState())
+    
+    set({
+      redoStack: state.redoStack.slice(0, -1),
+      undoStack: [...state.undoStack, command]
+    })
+  },
+  
+  pushCommand: (command) => set((state) => ({
+    undoStack: [...state.undoStack, command].slice(-state.maxUndoStack),
+    redoStack: []
   })),
-  popUndo: () => set((state) => ({
-    undo: state.undo.slice(0, -1)
-  }))
+  
+  clearHistory: () => set({ undoStack: [], redoStack: [] })
 }))
 
 export default useCadStore
