@@ -1,7 +1,37 @@
 import { create } from 'zustand'
 
 const useCadStore = create((set) => ({
-  shapes: [],
+  shapes: [
+    { 
+      id: 'test-line-1', 
+      type: 'line', 
+      x1: 100, 
+      y1: 100, 
+      x2: 300, 
+      y2: 100,
+      stroke: '#000',
+      strokeWidth: 2
+    },
+    { 
+      id: 'test-line-2', 
+      type: 'line', 
+      x1: 300, 
+      y1: 100, 
+      x2: 300, 
+      y2: 300,
+      stroke: '#000',
+      strokeWidth: 2
+    },
+    { 
+      id: 'test-circle', 
+      type: 'circle', 
+      x: 500, 
+      y: 200, 
+      radius: 50,
+      stroke: '#000',
+      strokeWidth: 2
+    }
+  ],
   layers: [
     { id: 'layer1', name: 'Layer 1', visible: true, locked: false }
   ],

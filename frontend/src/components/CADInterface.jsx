@@ -340,6 +340,31 @@ function CADInterface() {
                   />
                   {drawGrid()}
                   
+                  {shapes.map(shape => {
+                    if (shape.type === 'line') {
+                      return (
+                        <Line
+                          key={shape.id}
+                          points={[shape.x1, shape.y1, shape.x2, shape.y2]}
+                          stroke={shape.stroke}
+                          strokeWidth={shape.strokeWidth}
+                        />
+                      )
+                    } else if (shape.type === 'circle') {
+                      return (
+                        <Circle
+                          key={shape.id}
+                          x={shape.x}
+                          y={shape.y}
+                          radius={shape.radius}
+                          stroke={shape.stroke}
+                          strokeWidth={shape.strokeWidth}
+                        />
+                      )
+                    }
+                    return null
+                  })}
+                  
                   {snapIndicator && (
                     <>
                       <Circle
