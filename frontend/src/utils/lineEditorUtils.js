@@ -107,14 +107,18 @@ export function createFilletArc(line1, line2, radius, intersection) {
   v2x /= len2
   v2y /= len2
   
+  let line1KeepEnd = { x: line1.x2, y: line1.y2 }
   if ((xInt - line1.x1) * v1x + (yInt - line1.y1) * v1y > 0) {
     v1x = -v1x
     v1y = -v1y
+    line1KeepEnd = { x: line1.x1, y: line1.y1 }
   }
   
+  let line2KeepEnd = { x: line2.x2, y: line2.y2 }
   if ((xInt - line2.x1) * v2x + (yInt - line2.y1) * v2y > 0) {
     v2x = -v2x
     v2y = -v2y
+    line2KeepEnd = { x: line2.x1, y: line2.y1 }
   }
   
   const cross = v1x * v2y - v1y * v2x
@@ -158,7 +162,9 @@ export function createFilletArc(line1, line2, radius, intersection) {
     startAngle,
     arcAngle,
     tangent1: { x: tangent1X, y: tangent1Y },
-    tangent2: { x: tangent2X, y: tangent2Y }
+    tangent2: { x: tangent2X, y: tangent2Y },
+    line1KeepEnd,
+    line2KeepEnd
   }
 }
 
@@ -178,14 +184,18 @@ export function createChamfer(line1, line2, size, intersection) {
   v2x /= len2
   v2y /= len2
   
+  let line1KeepEnd = { x: line1.x2, y: line1.y2 }
   if ((xInt - line1.x1) * v1x + (yInt - line1.y1) * v1y > 0) {
     v1x = -v1x
     v1y = -v1y
+    line1KeepEnd = { x: line1.x1, y: line1.y1 }
   }
   
+  let line2KeepEnd = { x: line2.x2, y: line2.y2 }
   if ((xInt - line2.x1) * v2x + (yInt - line2.y1) * v2y > 0) {
     v2x = -v2x
     v2y = -v2y
+    line2KeepEnd = { x: line2.x1, y: line2.y1 }
   }
   
   const chamfer1X = xInt + size * v1x
@@ -196,7 +206,9 @@ export function createChamfer(line1, line2, size, intersection) {
   
   return {
     point1: { x: chamfer1X, y: chamfer1Y },
-    point2: { x: chamfer2X, y: chamfer2Y }
+    point2: { x: chamfer2X, y: chamfer2Y },
+    line1KeepEnd,
+    line2KeepEnd
   }
 }
 

@@ -144,35 +144,32 @@ function LineEditorToolsWindow() {
         return
       }
       
-      const dist1_start = calculateDistance(line1.x1, line1.y1, arcData.tangent1.x, arcData.tangent1.y)
-      const dist1_end = calculateDistance(line1.x2, line1.y2, arcData.tangent1.x, arcData.tangent1.y)
-      
-      if (dist1_start < dist1_end) {
-        updateShape(line1.id, {
-          x1: arcData.tangent1.x,
-          y1: arcData.tangent1.y
-        })
-      } else {
+      if (arcData.line1KeepEnd.x === line1.x1 && arcData.line1KeepEnd.y === line1.y1) {
         updateShape(line1.id, {
           x2: arcData.tangent1.x,
           y2: arcData.tangent1.y
         })
+      } else {
+        updateShape(line1.id, {
+          x1: arcData.tangent1.x,
+          y1: arcData.tangent1.y
+        })
       }
       
-      const dist2_start = calculateDistance(line2.x1, line2.y1, arcData.tangent2.x, arcData.tangent2.y)
-      const dist2_end = calculateDistance(line2.x2, line2.y2, arcData.tangent2.x, arcData.tangent2.y)
-      
-      if (dist2_start < dist2_end) {
-        updateShape(line2.id, {
-          x1: arcData.tangent2.x,
-          y1: arcData.tangent2.y
-        })
-      } else {
+      if (arcData.line2KeepEnd.x === line2.x1 && arcData.line2KeepEnd.y === line2.y1) {
         updateShape(line2.id, {
           x2: arcData.tangent2.x,
           y2: arcData.tangent2.y
         })
+      } else {
+        updateShape(line2.id, {
+          x1: arcData.tangent2.x,
+          y1: arcData.tangent2.y
+        })
       }
+      
+      const isClockwise = arcData.arcAngle < 0
+      const arcRotation = isClockwise ? arcData.startAngle + arcData.arcAngle : arcData.startAngle
       
       addShape({
         id: `arc-${Date.now()}`,
@@ -180,9 +177,8 @@ function LineEditorToolsWindow() {
         x: arcData.centerX,
         y: arcData.centerY,
         outerRadius: arcData.radius,
-        innerRadius: 0,
         angle: Math.abs(arcData.arcAngle),
-        rotation: arcData.startAngle,
+        rotation: arcRotation,
         stroke: '#000',
         strokeWidth: 2
       })
@@ -250,33 +246,27 @@ function LineEditorToolsWindow() {
         return
       }
       
-      const dist1_start = calculateDistance(line1.x1, line1.y1, chamferData.point1.x, chamferData.point1.y)
-      const dist1_end = calculateDistance(line1.x2, line1.y2, chamferData.point1.x, chamferData.point1.y)
-      
-      if (dist1_start < dist1_end) {
-        updateShape(line1.id, {
-          x1: chamferData.point1.x,
-          y1: chamferData.point1.y
-        })
-      } else {
+      if (chamferData.line1KeepEnd.x === line1.x1 && chamferData.line1KeepEnd.y === line1.y1) {
         updateShape(line1.id, {
           x2: chamferData.point1.x,
           y2: chamferData.point1.y
         })
+      } else {
+        updateShape(line1.id, {
+          x1: chamferData.point1.x,
+          y1: chamferData.point1.y
+        })
       }
       
-      const dist2_start = calculateDistance(line2.x1, line2.y1, chamferData.point2.x, chamferData.point2.y)
-      const dist2_end = calculateDistance(line2.x2, line2.y2, chamferData.point2.x, chamferData.point2.y)
-      
-      if (dist2_start < dist2_end) {
-        updateShape(line2.id, {
-          x1: chamferData.point2.x,
-          y1: chamferData.point2.y
-        })
-      } else {
+      if (chamferData.line2KeepEnd.x === line2.x1 && chamferData.line2KeepEnd.y === line2.y1) {
         updateShape(line2.id, {
           x2: chamferData.point2.x,
           y2: chamferData.point2.y
+        })
+      } else {
+        updateShape(line2.id, {
+          x1: chamferData.point2.x,
+          y1: chamferData.point2.y
         })
       }
       

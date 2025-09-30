@@ -748,16 +748,18 @@ function CADInterface() {
                       )
                     } else if (shape.type === 'arc') {
                       return (
-                        <Wedge
+                        <Arc
                           key={shape.id}
                           x={shape.x}
                           y={shape.y}
-                          radius={shape.outerRadius}
-                          angle={90}
+                          innerRadius={shape.outerRadius}
+                          outerRadius={shape.outerRadius}
+                          angle={shape.angle}
+                          rotation={shape.rotation || 0}
                           stroke={getShapeStroke(shape)}
                           strokeWidth={getShapeStrokeWidth(shape)}
                           hitStrokeWidth={getHitStrokeWidth(shape)}
-                          rotation={shape.rotation || 0}
+                          fill={undefined}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
                           onClick={() => handleShapeClick(shape)}
