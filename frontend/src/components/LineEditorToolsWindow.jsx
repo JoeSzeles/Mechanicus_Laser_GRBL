@@ -300,30 +300,36 @@ function LineEditorToolsWindow() {
   }
   
   const executeTrim = () => {
-    setLineEditorState({
+    const newState = {
       selectedLines: [],
       currentTool: 'trim',
       trimState: 'first_line',
       intersection: null
-    })
+    }
+    console.log('🔧 TRIM BUTTON CLICKED - Setting state:', newState)
+    setLineEditorState(newState)
   }
   
   const executeTrimMid = () => {
-    setLineEditorState({
+    const newState = {
       selectedLines: [],
       currentTool: 'trimMid',
       trimState: 'first_line',
       boundaryLines: []
-    })
+    }
+    console.log('🔧 TRIM MID BUTTON CLICKED - Setting state:', newState)
+    setLineEditorState(newState)
   }
   
   const executeExtend = () => {
-    setLineEditorState({
+    const newState = {
       selectedLines: [],
       currentTool: 'extend',
       extendState: 'select_boundary',
       boundaryLines: []
-    })
+    }
+    console.log('🔧 EXTEND BUTTON CLICKED - Setting state:', newState)
+    setLineEditorState(newState)
   }
   
   const executeAdjustLine = () => {

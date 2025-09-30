@@ -813,15 +813,22 @@ function CADInterface() {
   }
 
   const handleTrimClick = (shape, clickX, clickY) => {
-    if (shape.type !== 'line') return
+    if (shape.type !== 'line') {
+      console.log('❌ TRIM: Shape is not a line, ignoring')
+      return
+    }
     
     const { trimState, selectedLines = [], intersection } = lineEditorState
+    console.log('✂️ TRIM CLICK - Current state:', { trimState, selectedLines, intersection })
     
     if (trimState === 'first_line') {
-      updateLineEditorState({
+      console.log('  → Selecting FIRST line:', shape.id)
+      const updates = {
         selectedLines: [shape.id],
         trimState: 'second_line'
-      })
+      }
+      console.log('  → Updating state to:', updates)
+      updateLineEditorState(updates)
       updateShape(shape.id, {
         originalStroke: shape.stroke,
         originalStrokeWidth: shape.strokeWidth,
@@ -829,21 +836,30 @@ function CADInterface() {
         strokeWidth: 2
       })
     } else if (trimState === 'second_line') {
-      if (selectedLines.includes(shape.id)) return
+      if (selectedLines.includes(shape.id)) {
+        console.log('  ⚠️ Already selected, ignoring')
+        return
+      }
       
+      console.log('  → Selecting SECOND line:', shape.id)
       const line1 = shapes.find(s => s.id === selectedLines[0])
+      console.log('  → Finding intersection between line1:', selectedLines[0], 'and line2:', shape.id)
       const inters = findLineIntersection(line1, shape)
       
       if (!inters) {
+        console.log('  ❌ Lines do not intersect!')
         alert('Lines do not intersect')
         return
       }
       
-      updateLineEditorState({
+      console.log('  ✓ Intersection found:', inters)
+      const updates = {
         selectedLines: [...selectedLines, shape.id],
         intersection: inters,
         trimState: 'select_segment'
-      })
+      }
+      console.log('  → Updating state to:', updates)
+      updateLineEditorState(updates)
       updateShape(shape.id, {
         originalStroke: shape.stroke,
         originalStrokeWidth: shape.strokeWidth,
@@ -891,16 +907,23 @@ function CADInterface() {
   }
 
   const handleTrimMidClick = (shape) => {
-    if (shape.type !== 'line') return
+    if (shape.type !== 'line') {
+      console.log('❌ TRIM MID: Shape is not a line, ignoring')
+      return
+    }
     
     const { trimState, selectedLines = [], boundaryLines = [] } = lineEditorState
+    console.log('✂️ TRIM MID CLICK - Current state:', { trimState, selectedLines, boundaryLines })
     
     if (trimState === 'first_line') {
-      updateLineEditorState({
+      console.log('  → Selecting FIRST BOUNDARY line:', shape.id)
+      const updates = {
         selectedLines: [shape.id],
         boundaryLines: [shape.id],
         trimState: 'second_line'
-      })
+      }
+      console.log('  → Updating state to:', updates)
+      updateLineEditorState(updates)
       updateShape(shape.id, {
         originalStroke: shape.stroke,
         originalStrokeWidth: shape.strokeWidth,
@@ -908,13 +931,19 @@ function CADInterface() {
         strokeWidth: 2
       })
     } else if (trimState === 'second_line') {
-      if (selectedLines.includes(shape.id)) return
+      if (selectedLines.includes(shape.id)) {
+        console.log('  ⚠️ Already selected, ignoring')
+        return
+      }
       
-      updateLineEditorState({
+      console.log('  → Selecting SECOND BOUNDARY line:', shape.id)
+      const updates = {
         selectedLines: [...selectedLines, shape.id],
         boundaryLines: [...boundaryLines, shape.id],
         trimState: 'trim_crossing'
-      })
+      }
+      console.log('  → Updating state to:', updates)
+      updateLineEditorState(updates)
       updateShape(shape.id, {
         originalStroke: shape.stroke,
         originalStrokeWidth: shape.strokeWidth,
@@ -981,15 +1010,22 @@ function CADInterface() {
   }
 
   const handleExtendClick = (shape, clickX, clickY) => {
-    if (shape.type !== 'line') return
+    if (shape.type !== 'line') {
+      console.log('❌ EXTEND: Shape is not a line, ignoring')
+      return
+    }
     
     const { extendState, boundaryLines = [] } = lineEditorState
+    console.log('↗️ EXTEND CLICK - Current state:', { extendState, boundaryLines })
     
     if (extendState === 'select_boundary') {
-      updateLineEditorState({
+      console.log('  → Selecting BOUNDARY line:', shape.id)
+      const updates = {
         boundaryLines: [...boundaryLines, shape.id],
         extendState: 'extend_lines'
-      })
+      }
+      console.log('  → Updating state to:', updates)
+      updateLineEditorState(updates)
       updateShape(shape.id, {
         originalStroke: shape.stroke,
         originalStrokeWidth: shape.strokeWidth,
@@ -1116,16 +1152,22 @@ function CADInterface() {
   }
 
   const handleShapeClick = (shape, event) => {
+    console.log('👆 SHAPE CLICKED:', shape.id, 'type:', shape.type)
+    console.log('   showLineEditorTools:', showLineEditorTools)
+    console.log('   lineEditorState:', lineEditorState)
+    
     if (event && event.evt) {
       event.evt.cancelBubble = true
       event.evt.stopPropagation()
     }
     
     if (mirrorAxisSelectionCallback) {
+      console.log('   → Mirror axis callback')
       mirrorAxisSelectionCallback(shape.id)
       setMirrorAxisLineId(shape.id)
       setMirrorAxisSelectionCallback(null)
     } else if (showLineEditorTools && lineEditorState && lineEditorState.currentTool) {
+      console.log('   → Routing to line editor tool:', lineEditorState.currentTool)
       const stage = event?.target?.getStage()
       const pointerPos = stage?.getPointerPosition()
       if (pointerPos) {
@@ -1136,6 +1178,7 @@ function CADInterface() {
         handleDefaultLineEditorClick(shape)
       }
     } else {
+      console.log('   → Default selection')
       setSelectedShapeId(shape.id)
     }
   }
