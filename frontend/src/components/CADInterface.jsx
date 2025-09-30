@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect, useContext } from 'react'
-import { Stage, Layer, Line, Rect } from 'react-konva'
+import { Stage, Layer, Line, Rect, Circle, Text } from 'react-konva'
 import AuthContext from '../contexts/AuthContext'
 import useCadStore from '../store/cadStore'
 import PopupWindow from './PopupWindow'
 import DrawingToolsWindow from './DrawingToolsWindow'
 import SnapToolsWindow from './SnapToolsWindow'
+import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import './CADInterface.css'
 
 function CADInterface() {
@@ -12,6 +13,8 @@ function CADInterface() {
   const machineProfile = useCadStore((state) => state.machineProfile)
   const viewport = useCadStore((state) => state.viewport)
   const updateViewport = useCadStore((state) => state.updateViewport)
+  const shapes = useCadStore((state) => state.shapes)
+  const snap = useCadStore((state) => state.snap)
   
   const [showDrawingTools, setShowDrawingTools] = useState(true)
   const [showSnapTools, setShowSnapTools] = useState(true)
@@ -20,6 +23,7 @@ function CADInterface() {
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
   const [gridSize, setGridSize] = useState(10)
   const [showGrid, setShowGrid] = useState(true)
+  const [snapIndicator, setSnapIndicator] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -45,6 +49,10 @@ function CADInterface() {
   useEffect(() => {
     updateRulers()
   }, [viewport, containerSize])
+
+  useEffect(() => {
+    updateSpatialIndex(shapes)
+  }, [shapes])
 
   const handleWheel = (e) => {
     e.evt.preventDefault()
@@ -84,6 +92,25 @@ function CADInterface() {
         y: e.evt.clientY - panStart.y
       }
       updateViewport({ pan: newPan })
+    } else {
+      const stage = stageRef.current
+      if (!stage) return
+      
+      const point = stage.getPointerPosition()
+      const worldX = (point.x - viewport.pan.x) / viewport.zoom
+      const worldY = (point.y - viewport.pan.y) / viewport.zoom
+      
+      const gridSpacing = gridSize * machineProfile.mmToPx
+      const snapResult = findSnapPoint(
+        worldX, 
+        worldY, 
+        viewport.zoom, 
+        snap, 
+        gridSpacing, 
+        showGrid
+      )
+      
+      setSnapIndicator(snapResult)
     }
   }
 
@@ -312,6 +339,28 @@ function CADInterface() {
                     fill="white"
                   />
                   {drawGrid()}
+                  
+                  {snapIndicator && (
+                    <>
+                      <Circle
+                        x={snapIndicator.x}
+                        y={snapIndicator.y}
+                        radius={6 / viewport.zoom}
+                        fill={SNAP_COLORS[snapIndicator.type]}
+                        stroke="white"
+                        strokeWidth={1 / viewport.zoom}
+                        listening={false}
+                      />
+                      <Text
+                        x={snapIndicator.x + 10 / viewport.zoom}
+                        y={snapIndicator.y - 15 / viewport.zoom}
+                        text={snapIndicator.label}
+                        fontSize={12 / viewport.zoom}
+                        fill="#0088FF"
+                        listening={false}
+                      />
+                    </>
+                  )}
                 </Layer>
               </Stage>
             </div>
