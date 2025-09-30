@@ -4,16 +4,19 @@
 A modern web-based CAD system for laser engraving and CNC machines, inspired by the Python Mechanicus application. Built with React/Vite frontend, Node.js backend, and PostgreSQL database.
 
 ## Current Implementation Status
-✅ **Phase 1 Completed** (January 29, 2025)
+✅ **Phase 1-8 Completed** (September 30, 2025)
 - Full-stack web application setup with authentication system
 - Main CAD interface with Fabric.js canvas integration
 - Database schema for users, projects, machine configurations, and preferences
-- Basic drawing tools (line, rectangle, circle, free draw)
+- Complete drawing tools (line, rectangle, circle, polygon, arc, free draw)
 - Grid system with zoom/pan functionality
-- Layer management panel (UI ready)
+- **Layer Management**: Full layer system with visibility, lock, reorder, rename
 - Properties panel for object editing
 - User authentication with email/password
 - Responsive dark theme UI
+- **Rectangle Selection**: Multi-shape selection with visual feedback
+- **SVG Import/Export**: Full layer organization support
+- **Undo/Redo System**: Complete with keyboard shortcuts (Ctrl+Z, Ctrl+Y)
 
 ## Architecture
 - **Frontend**: React + Vite + Fabric.js for canvas operations
@@ -33,15 +36,12 @@ A modern web-based CAD system for laser engraving and CNC machines, inspired by 
 6. **Database Integration**: User profiles, preferences, project storage ready
 
 ## Pending Features (Next Phases)
-- [ ] Functional layer system (assign objects to layers, visibility control)
 - [ ] Snap tools (grid, endpoint, midpoint, center snapping)
-- [ ] SVG import/export functionality
 - [ ] G-code generation and preview
 - [ ] Machine configuration management
 - [ ] Serial communication bridge for local machines
-- [ ] Advanced drawing tools (arc, polygon, text, spiral)
+- [ ] Advanced drawing tools (text, spiral)
 - [ ] Image processing (PNG/JPEG to G-code)
-- [ ] Undo/redo system
 
 ## Technology Stack
 - **Frontend**: React 18, Vite, Fabric.js, React Router
