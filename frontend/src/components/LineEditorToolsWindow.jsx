@@ -46,29 +46,6 @@ function LineEditorToolsWindow() {
     })
   }
   
-  const selectLine = (lineId) => {
-    const shape = shapes.find(s => s.id === lineId)
-    if (!shape) return
-    
-    if (!lineEditorState || !lineEditorState.selectedLines.includes(lineId)) {
-      const newSelection = [...(lineEditorState?.selectedLines || []), lineId]
-      
-      if (!shape.originalStroke) {
-        updateShape(lineId, {
-          originalStroke: shape.stroke,
-          originalStrokeWidth: shape.strokeWidth,
-          stroke: '#FF0000',
-          strokeWidth: 3
-        })
-      }
-      
-      setLineEditorState({
-        ...(lineEditorState || {}),
-        selectedLines: newSelection
-      })
-    }
-  }
-  
   const handleFillet = () => {
     if (selectedLines.length !== 2) {
       alert('Please select exactly 2 lines')
