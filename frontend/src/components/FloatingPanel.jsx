@@ -15,8 +15,6 @@ const FloatingPanel = ({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const panelRef = useRef(null)
 
-  if (!isOpen) return null
-
   const handleMouseDown = (e) => {
     if (e.target.closest('.panel-close-button')) return
     
@@ -65,6 +63,8 @@ const FloatingPanel = ({
       onBringToFront()
     }
   }
+
+  if (!isOpen) return null
 
   return (
     <div 
