@@ -65,6 +65,7 @@ const useCadStore = create((set) => ({
     snapAngle: true,
     rotationCenter: null
   },
+  lineEditorState: null,
   undo: [],
 
   setShapes: (shapes) => set({ shapes }),
@@ -119,6 +120,8 @@ const useCadStore = create((set) => ({
   updateTransformSettings: (key, value) => set((state) => ({
     transformSettings: { ...state.transformSettings, [key]: value }
   })),
+  
+  setLineEditorState: (state) => set({ lineEditorState: state }),
   
   pushUndo: (command) => set((state) => ({
     undo: [...state.undo, command]

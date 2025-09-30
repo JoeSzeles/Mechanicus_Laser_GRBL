@@ -1,0 +1,205 @@
+.line-editor-tools-window {
+  padding: 15px;
+  background: #2b2b2b;
+  color: #e0e0e0;
+  border-radius: 4px;
+  min-width: 250px;
+}
+
+.line-editor-tools-window h3 {
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #444;
+  font-size: 16px;
+  color: #4CAF50;
+}
+
+.size-input {
+  margin-bottom: 15px;
+}
+
+.size-input label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.size-input input[type="number"] {
+  padding: 5px 8px;
+  border: 1px solid #555;
+  background: #333;
+  color: #e0e0e0;
+  border-radius: 3px;
+  width: 80px;
+  font-size: 13px;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.tool-grid button {
+  padding: 8px 12px;
+  background: #0088ff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.tool-grid button:hover {
+  background: #0066cc;
+}
+
+.tool-grid button:active {
+  background: #004488;
+}
+
+.snap-checkbox {
+  margin-bottom: 15px;
+  padding: 8px 0;
+}
+
+.snap-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.snap-checkbox input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.rotate-section {
+  margin-bottom: 15px;
+  padding: 15px 0;
+  border-top: 1px solid #444;
+  border-bottom: 1px solid #444;
+}
+
+.rotate-section > button {
+  width: 100%;
+  padding: 10px;
+  background: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+
+.rotate-section > button:hover {
+  background: #e68900;
+}
+
+.angle-snap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.angle-snap input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.angle-input {
+  margin-bottom: 10px;
+}
+
+.angle-input label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.angle-input input[type="number"] {
+  padding: 5px 8px;
+  border: 1px solid #555;
+  background: #333;
+  color: #e0e0e0;
+  border-radius: 3px;
+  flex: 1;
+  font-size: 13px;
+}
+
+.rotation-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.rotation-buttons button {
+  padding: 8px;
+  background: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.rotation-buttons button:hover {
+  background: #7b1fa2;
+}
+
+.rotation-buttons button:active {
+  background: #6a1b9a;
+}
+
+.clear-selection-btn {
+  width: 100%;
+  padding: 10px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+
+.clear-selection-btn:hover {
+  background: #d32f2f;
+}
+
+.clear-selection-btn:active {
+  background: #c62828;
+}
+
+.selection-info {
+  padding: 8px;
+  background: #1a472a;
+  border-left: 3px solid #4CAF50;
+  border-radius: 3px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.tool-status {
+  padding: 8px;
+  background: #3e2723;
+  border-left: 3px solid #ff9800;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
