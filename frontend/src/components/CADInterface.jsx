@@ -114,10 +114,26 @@ function CADInterface() {
   }
 
   const handleMouseDown = (e) => {
-    if (e.evt.button === 0 && spaceKeyPressed.current) {
+    if ((e.evt.button === 0 && spaceKeyPressed.current) || e.evt.button === 1) {
+      e.evt.preventDefault()
       setIsPanning(true)
       setPanStart({ x: e.evt.clientX - viewport.pan.x, y: e.evt.clientY - viewport.pan.y })
       return
+    }
+    
+    if (guidesVisible && !guidesLocked && e.evt.button === 0) {
+      const point = getWorldPoint(e)
+      const threshold = 10 / viewport.zoom
+      
+      for (const guide of guides) {
+        if (guide.type === 'horizontal' && Math.abs(point.y - guide.position) < threshold) {
+          setDraggedGuide(guide.id)
+          return
+        } else if (guide.type === 'vertical' && Math.abs(point.x - guide.position) < threshold) {
+          setDraggedGuide(guide.id)
+          return
+        }
+      }
     }
     
     if (activeTool && e.evt.button === 0) {
@@ -158,6 +174,17 @@ function CADInterface() {
         y: e.evt.clientY - panStart.y
       }
       updateViewport({ pan: newPan })
+      return
+    }
+    
+    if (draggedGuide) {
+      const point = getWorldPoint(e)
+      const guide = guides.find(g => g.id === draggedGuide)
+      if (guide) {
+        updateGuide(draggedGuide, {
+          position: guide.type === 'horizontal' ? point.y : point.x
+        })
+      }
       return
     }
     
@@ -240,6 +267,7 @@ function CADInterface() {
 
   const handleMouseUp = (e) => {
     setIsPanning(false)
+    setDraggedGuide(null)
     
     if (drawingState && previewShape) {
       const currentPoint = getWorldPoint(e)
