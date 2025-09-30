@@ -52,6 +52,11 @@ const useCadStore = create((set) => ({
     zoom: 1,
     pan: { x: 0, y: 0 }
   },
+  markers: [],
+  guides: [],
+  markersVisible: true,
+  guidesVisible: true,
+  guidesLocked: false,
   undo: [],
 
   setShapes: (shapes) => set({ shapes }),
@@ -59,6 +64,26 @@ const useCadStore = create((set) => ({
   removeShape: (shapeId) => set((state) => ({
     shapes: state.shapes.filter(s => s.id !== shapeId)
   })),
+  
+  setMarkers: (markers) => set({ markers }),
+  addMarker: (marker) => set((state) => ({ markers: [...state.markers, marker] })),
+  removeMarker: (markerId) => set((state) => ({
+    markers: state.markers.filter(m => m.id !== markerId)
+  })),
+  clearMarkers: () => set({ markers: [] }),
+  setMarkersVisible: (visible) => set({ markersVisible: visible }),
+  
+  setGuides: (guides) => set({ guides }),
+  addGuide: (guide) => set((state) => ({ guides: [...state.guides, guide] })),
+  removeGuide: (guideId) => set((state) => ({
+    guides: state.guides.filter(g => g.id !== guideId)
+  })),
+  updateGuide: (guideId, updates) => set((state) => ({
+    guides: state.guides.map(g => g.id === guideId ? { ...g, ...updates } : g)
+  })),
+  clearGuides: () => set({ guides: [] }),
+  setGuidesVisible: (visible) => set({ guidesVisible: visible }),
+  setGuidesLocked: (locked) => set({ guidesLocked: locked }),
   
   setLayers: (layers) => set({ layers }),
   addLayer: (layer) => set((state) => ({ layers: [...state.layers, layer] })),

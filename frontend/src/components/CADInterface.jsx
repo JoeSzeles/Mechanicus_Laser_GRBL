@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect, useContext } from 'react'
+import React, { useState, useRef, useEffect, useContext } from 'react'
 import { Stage, Layer, Line, Rect, Circle, Text, RegularPolygon, Arc, Wedge } from 'react-konva'
 import AuthContext from '../contexts/AuthContext'
 import useCadStore from '../store/cadStore'
 import PopupWindow from './PopupWindow'
 import DrawingToolsWindow from './DrawingToolsWindow'
 import SnapToolsWindow from './SnapToolsWindow'
+import MarkersWindow from './MarkersWindow'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import './CADInterface.css'
 
@@ -16,10 +17,19 @@ function CADInterface() {
   const shapes = useCadStore((state) => state.shapes)
   const snap = useCadStore((state) => state.snap)
   const activeTool = useCadStore((state) => state.activeTool)
+  const setActiveTool = useCadStore((state) => state.setActiveTool)
   const addShape = useCadStore((state) => state.addShape)
+  const markers = useCadStore((state) => state.markers)
+  const guides = useCadStore((state) => state.guides)
+  const markersVisible = useCadStore((state) => state.markersVisible)
+  const guidesVisible = useCadStore((state) => state.guidesVisible)
+  const guidesLocked = useCadStore((state) => state.guidesLocked)
+  const addMarker = useCadStore((state) => state.addMarker)
+  const updateGuide = useCadStore((state) => state.updateGuide)
   
   const [showDrawingTools, setShowDrawingTools] = useState(true)
   const [showSnapTools, setShowSnapTools] = useState(true)
+  const [showMarkersWindow, setShowMarkersWindow] = useState(false)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -28,6 +38,8 @@ function CADInterface() {
   const [snapIndicator, setSnapIndicator] = useState(null)
   const [drawingState, setDrawingState] = useState(null)
   const [previewShape, setPreviewShape] = useState(null)
+  const [markerState, setMarkerState] = useState(null)
+  const [draggedGuide, setDraggedGuide] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -123,6 +135,18 @@ function CADInterface() {
         setDrawingState({ tool: 'arc', centerX: point.x, centerY: point.y })
       } else if (activeTool === 'freehand') {
         setDrawingState({ tool: 'freehand', points: [point.x, point.y] })
+      } else if (activeTool === 'centerPoint') {
+        addMarker({
+          id: `marker-${Date.now()}`,
+          type: 'centerPoint',
+          x: point.x,
+          y: point.y
+        })
+        setActiveTool(null)
+      } else if (activeTool === 'lineMarker') {
+        if (!markerState) {
+          setMarkerState({ tool: 'lineMarker', startX: point.x, startY: point.y })
+        }
       }
     }
   }
@@ -252,6 +276,27 @@ function CADInterface() {
       addShape(newShape)
       setDrawingState(null)
       setPreviewShape(null)
+    }
+    
+    if (markerState && markerState.tool === 'lineMarker') {
+      const currentPoint = getWorldPoint(e)
+      const dx = currentPoint.x - markerState.startX
+      const dy = currentPoint.y - markerState.startY
+      const distance = Math.sqrt(dx * dx + dy * dy)
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI
+      
+      addMarker({
+        id: `marker-${Date.now()}`,
+        type: 'lineMarker',
+        x1: markerState.startX,
+        y1: markerState.startY,
+        x2: currentPoint.x,
+        y2: currentPoint.y,
+        distance: distance,
+        angle: angle
+      })
+      setMarkerState(null)
+      setActiveTool(null)
     }
   }
 
@@ -412,6 +457,9 @@ function CADInterface() {
           </button>
           <button onClick={() => setShowSnapTools(!showSnapTools)}>
             {showSnapTools ? 'Hide' : 'Show'} Snap Tools
+          </button>
+          <button onClick={() => setShowMarkersWindow(!showMarkersWindow)}>
+            {showMarkersWindow ? 'Hide' : 'Show'} Markers
           </button>
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
@@ -658,6 +706,86 @@ function CADInterface() {
                     />
                   )}
                   
+                  {guidesVisible && guides.map(guide => {
+                    if (guide.type === 'horizontal') {
+                      return (
+                        <Line
+                          key={guide.id}
+                          points={[0, guide.position, canvasWidth, guide.position]}
+                          stroke="#FF00FF"
+                          strokeWidth={1 / viewport.zoom}
+                          dash={[10 / viewport.zoom, 5 / viewport.zoom]}
+                          listening={!guidesLocked}
+                        />
+                      )
+                    } else {
+                      return (
+                        <Line
+                          key={guide.id}
+                          points={[guide.position, 0, guide.position, canvasHeight]}
+                          stroke="#FF00FF"
+                          strokeWidth={1 / viewport.zoom}
+                          dash={[10 / viewport.zoom, 5 / viewport.zoom]}
+                          listening={!guidesLocked}
+                        />
+                      )
+                    }
+                  })}
+                  
+                  {markersVisible && markers.map(marker => {
+                    if (marker.type === 'centerPoint') {
+                      return (
+                        <React.Fragment key={marker.id}>
+                          <Circle
+                            x={marker.x}
+                            y={marker.y}
+                            radius={10 / viewport.zoom}
+                            stroke="#0088FF"
+                            strokeWidth={2 / viewport.zoom}
+                          />
+                          <Circle
+                            x={marker.x}
+                            y={marker.y}
+                            radius={3 / viewport.zoom}
+                            fill="#0088FF"
+                          />
+                        </React.Fragment>
+                      )
+                    } else if (marker.type === 'lineMarker') {
+                      const mmDist = marker.distance / machineProfile.mmToPx
+                      return (
+                        <React.Fragment key={marker.id}>
+                          <Line
+                            points={[marker.x1, marker.y1, marker.x2, marker.y2]}
+                            stroke="#FF8800"
+                            strokeWidth={2 / viewport.zoom}
+                          />
+                          <Circle
+                            x={marker.x1}
+                            y={marker.y1}
+                            radius={5 / viewport.zoom}
+                            fill="#FF8800"
+                          />
+                          <Circle
+                            x={marker.x2}
+                            y={marker.y2}
+                            radius={5 / viewport.zoom}
+                            fill="#FF8800"
+                          />
+                          <Text
+                            x={(marker.x1 + marker.x2) / 2}
+                            y={(marker.y1 + marker.y2) / 2 - 15 / viewport.zoom}
+                            text={`${mmDist.toFixed(1)}mm ${marker.angle.toFixed(1)}°`}
+                            fontSize={12 / viewport.zoom}
+                            fill="#FF8800"
+                            listening={false}
+                          />
+                        </React.Fragment>
+                      )
+                    }
+                    return null
+                  })}
+                  
                   {snapIndicator && (
                     <>
                       <Circle
@@ -702,6 +830,15 @@ function CADInterface() {
         defaultPosition={{ x: 50, y: 320 }}
       >
         <SnapToolsWindow />
+      </PopupWindow>
+
+      <PopupWindow
+        title="Markers & Guides"
+        isOpen={showMarkersWindow}
+        onClose={() => setShowMarkersWindow(false)}
+        defaultPosition={{ x: 300, y: 100 }}
+      >
+        <MarkersWindow onActivateTool={setActiveTool} />
       </PopupWindow>
     </div>
   )
