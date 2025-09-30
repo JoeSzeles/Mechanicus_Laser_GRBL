@@ -36,6 +36,14 @@ function CADInterface() {
   const setLineEditorState = useCadStore((state) => state.setLineEditorState)
   const updateLineEditorState = useCadStore((state) => state.updateLineEditorState)
   
+  useEffect(() => {
+    if (typeof updateLineEditorState !== 'function') {
+      console.error('🚨 CRITICAL: updateLineEditorState is NOT a function!', typeof updateLineEditorState)
+    } else {
+      console.log('✅ updateLineEditorState is available')
+    }
+  }, [])
+  
   const [showDrawingTools, setShowDrawingTools] = useState(true)
   const [showSnapTools, setShowSnapTools] = useState(true)
   const [showMarkersWindow, setShowMarkersWindow] = useState(false)
@@ -815,11 +823,13 @@ function CADInterface() {
   const handleTrimClick = (shape, clickX, clickY) => {
     if (shape.type !== 'line') {
       console.log('❌ TRIM: Shape is not a line, ignoring')
+      alert(`ERROR: Shape ${shape.id} is not a line (type: ${shape.type})`)
       return
     }
     
     const { trimState, selectedLines = [], intersection } = lineEditorState
     console.log('✂️ TRIM CLICK - Current state:', { trimState, selectedLines, intersection })
+    alert(`TRIM CLICK\nShape: ${shape.id}\nCurrent State: ${trimState}\nSelected: [${selectedLines.join(', ')}]`)
     
     if (trimState === 'first_line') {
       console.log('  → Selecting FIRST line:', shape.id)
@@ -829,12 +839,14 @@ function CADInterface() {
       }
       console.log('  → Updating state to:', updates)
       updateLineEditorState(updates)
+      console.log('  → State update called, highlighting line red')
       updateShape(shape.id, {
         originalStroke: shape.stroke,
         originalStrokeWidth: shape.strokeWidth,
         stroke: '#FF0000',
         strokeWidth: 2
       })
+      console.log('  ✅ First line selected, waiting for second line')
     } else if (trimState === 'second_line') {
       if (selectedLines.includes(shape.id)) {
         console.log('  ⚠️ Already selected, ignoring')
