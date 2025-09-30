@@ -111,16 +111,16 @@ function CADInterface() {
     ]
     
     const PANEL_WIDTH = 320
-    const START_X = 80
     const START_Y = 80
     const SPACING = 40
+    const viewportWidth = window.innerWidth
     
     let currentY = START_Y
     let currentColumn = 0
     
     panels.forEach((panelId, index) => {
       defaultPositions[panelId] = {
-        x: START_X + (currentColumn * (PANEL_WIDTH + 20)),
+        x: viewportWidth - PANEL_WIDTH - 20 - (currentColumn * (PANEL_WIDTH + 20)),
         y: currentY,
         zIndex: 10 + index
       }
