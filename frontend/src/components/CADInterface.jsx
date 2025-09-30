@@ -99,36 +99,28 @@ function CADInterface() {
   
   const [panelPositions, setPanelPositions] = useState(() => {
     const defaultPositions = {}
-    const panels = [
-      'drawingTools',
-      'layers',
-      'shapeProperties',
-      'snapTools',
-      'markersGuides',
-      'transformTools',
-      'lineEditorTools',
-      'textTools'
-    ]
     
     const PANEL_WIDTH = 320
     const START_Y = 80
-    const SPACING = 40
     const viewportWidth = window.innerWidth
     
-    let currentY = START_Y
-    let currentColumn = 0
-    
-    panels.forEach((panelId, index) => {
+    // Default panels on RIGHT (lower z-index, behind other panels)
+    const rightPanels = ['drawingTools', 'layers', 'shapeProperties']
+    rightPanels.forEach((panelId, index) => {
       defaultPositions[panelId] = {
-        x: viewportWidth - PANEL_WIDTH - 20 - (currentColumn * (PANEL_WIDTH + 20)),
-        y: currentY,
+        x: viewportWidth - PANEL_WIDTH - 20,
+        y: START_Y + (index * 200),
         zIndex: 10 + index
       }
-      
-      currentY += SPACING
-      if (currentY > 500) {
-        currentColumn++
-        currentY = START_Y
+    })
+    
+    // Other panels on LEFT (higher z-index to appear above defaults, but below menu bar which is 100)
+    const leftPanels = ['snapTools', 'markersGuides', 'transformTools', 'lineEditorTools', 'textTools']
+    leftPanels.forEach((panelId, index) => {
+      defaultPositions[panelId] = {
+        x: 80,
+        y: START_Y + (index * 200),
+        zIndex: 20 + index
       }
     })
     
