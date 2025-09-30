@@ -47,6 +47,7 @@ function CADInterface() {
   const [draggedGuide, setDraggedGuide] = useState(null)
   const [draggedHandle, setDraggedHandle] = useState(null)
   const [initialBbox, setInitialBbox] = useState(null)
+  const [mirrorAxisSelectionCallback, setMirrorAxisSelectionCallback] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -571,7 +572,14 @@ function CADInterface() {
                           points={[shape.x1, shape.y1, shape.x2, shape.y2]}
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
-                          onClick={() => setSelectedShapeId(shape.id)}
+                          onClick={() => {
+                            if (mirrorAxisSelectionCallback) {
+                              mirrorAxisSelectionCallback(shape.id)
+                              setMirrorAxisSelectionCallback(null)
+                            } else {
+                              setSelectedShapeId(shape.id)
+                            }
+                          }}
                         />
                       )
                     } else if (shape.type === 'circle') {
@@ -843,15 +851,89 @@ function CADInterface() {
                     const shape = shapes.find(s => s.id === selectedShapeId)
                     if (!shape) return null
                     
+                    if (shape.type === 'line') {
+                      const endpointSize = 10 / viewport.zoom
+                      return (
+                        <React.Fragment key={`selection-${selectedShapeId}`}>
+                          <Line
+                            points={[shape.x1, shape.y1, shape.x2, shape.y2]}
+                            stroke="#0088FF"
+                            strokeWidth={3 / viewport.zoom}
+                            listening={false}
+                          />
+                          <Circle
+                            x={shape.x1}
+                            y={shape.y1}
+                            radius={endpointSize / 2}
+                            fill="#0088FF"
+                            stroke="white"
+                            strokeWidth={2 / viewport.zoom}
+                            draggable
+                            onDragMove={(e) => {
+                              const pos = e.target.position()
+                              const stage = stageRef.current
+                              if (!stage) return
+                              
+                              const point = stage.getPointerPosition()
+                              let worldX = (point.x - viewport.pan.x) / viewport.zoom
+                              let worldY = (point.y - viewport.pan.y) / viewport.zoom
+                              
+                              const gridSpacing = gridSize * machineProfile.mmToPx
+                              const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
+                              
+                              if (snapResult) {
+                                worldX = snapResult.x
+                                worldY = snapResult.y
+                                setSnapIndicator(snapResult)
+                              } else {
+                                setSnapIndicator(null)
+                              }
+                              
+                              updateShape(selectedShapeId, { x1: worldX, y1: worldY })
+                              e.target.position({ x: worldX, y: worldY })
+                            }}
+                            onDragEnd={() => setSnapIndicator(null)}
+                          />
+                          <Circle
+                            x={shape.x2}
+                            y={shape.y2}
+                            radius={endpointSize / 2}
+                            fill="#0088FF"
+                            stroke="white"
+                            strokeWidth={2 / viewport.zoom}
+                            draggable
+                            onDragMove={(e) => {
+                              const pos = e.target.position()
+                              const stage = stageRef.current
+                              if (!stage) return
+                              
+                              const point = stage.getPointerPosition()
+                              let worldX = (point.x - viewport.pan.x) / viewport.zoom
+                              let worldY = (point.y - viewport.pan.y) / viewport.zoom
+                              
+                              const gridSpacing = gridSize * machineProfile.mmToPx
+                              const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
+                              
+                              if (snapResult) {
+                                worldX = snapResult.x
+                                worldY = snapResult.y
+                                setSnapIndicator(snapResult)
+                              } else {
+                                setSnapIndicator(null)
+                              }
+                              
+                              updateShape(selectedShapeId, { x2: worldX, y2: worldY })
+                              e.target.position({ x: worldX, y: worldY })
+                            }}
+                            onDragEnd={() => setSnapIndicator(null)}
+                          />
+                        </React.Fragment>
+                      )
+                    }
+                    
                     let bbox = { x: 0, y: 0, width: 0, height: 0 }
                     
-                    if (shape.type === 'line') {
-                      const minX = Math.min(shape.x1, shape.x2)
-                      const maxX = Math.max(shape.x1, shape.x2)
-                      const minY = Math.min(shape.y1, shape.y2)
-                      const maxY = Math.max(shape.y1, shape.y2)
-                      bbox = { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
-                    } else if (shape.type === 'circle') {
+                    if (shape.type === 'circle') {
                       bbox = {
                         x: shape.x - shape.radius,
                         y: shape.y - shape.radius,
@@ -1017,7 +1099,9 @@ function CADInterface() {
         onClose={() => setShowTransformTools(false)}
         defaultPosition={{ x: 550, y: 100 }}
       >
-        <TransformToolsWindow />
+        <TransformToolsWindow 
+          onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
+        />
       </PopupWindow>
     </div>
   )

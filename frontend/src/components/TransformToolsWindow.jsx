@@ -2,7 +2,7 @@ import { useState } from 'react'
 import useCadStore from '../store/cadStore'
 import './TransformToolsWindow.css'
 
-function TransformToolsWindow() {
+function TransformToolsWindow({ onSelectingMirrorAxis }) {
   const [activeTab, setActiveTab] = useState('scale')
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
   const shapes = useCadStore((state) => state.shapes)
@@ -22,6 +22,8 @@ function TransformToolsWindow() {
   const [cloneSpacingX, setCloneSpacingX] = useState(20)
   const [cloneSpacingY, setCloneSpacingY] = useState(20)
   const [mirrorAxisType, setMirrorAxisType] = useState('horizontal')
+  const [mirrorAxisLineId, setMirrorAxisLineId] = useState(null)
+  const [selectingMirrorAxis, setSelectingMirrorAxis] = useState(false)
   
   const selectedShape = shapes.find(s => s.id === selectedShapeId)
   
@@ -35,6 +37,75 @@ function TransformToolsWindow() {
     setSelectedShapeId(null)
   }
   
+  const handleSelectMirrorAxis = () => {
+    setSelectingMirrorAxis(true)
+    if (onSelectingMirrorAxis) {
+      onSelectingMirrorAxis((lineId) => {
+        setMirrorAxisLineId(lineId)
+        setSelectingMirrorAxis(false)
+      })
+    }
+  }
+  
+  const handleMirrorAcrossLine = () => {
+    if (!selectedShape || !mirrorAxisLineId) return
+    
+    const axisLine = shapes.find(s => s.id === mirrorAxisLineId && s.type === 'line')
+    if (!axisLine) return
+    
+    const mirroredShape = { ...selectedShape }
+    
+    const dx = axisLine.x2 - axisLine.x1
+    const dy = axisLine.y2 - axisLine.y1
+    const len = Math.sqrt(dx * dx + dy * dy)
+    const ux = dx / len
+    const uy = dy / len
+    
+    const mirrorPoint = (px, py) => {
+      const vx = px - axisLine.x1
+      const vy = py - axisLine.y1
+      const proj = vx * ux + vy * uy
+      const projX = axisLine.x1 + proj * ux
+      const projY = axisLine.y1 + proj * uy
+      return {
+        x: 2 * projX - px,
+        y: 2 * projY - py
+      }
+    }
+    
+    if (selectedShape.type === 'line') {
+      const p1 = mirrorPoint(selectedShape.x1, selectedShape.y1)
+      const p2 = mirrorPoint(selectedShape.x2, selectedShape.y2)
+      mirroredShape.x1 = p1.x
+      mirroredShape.y1 = p1.y
+      mirroredShape.x2 = p2.x
+      mirroredShape.y2 = p2.y
+    } else if (selectedShape.type === 'circle') {
+      const center = mirrorPoint(selectedShape.x, selectedShape.y)
+      mirroredShape.x = center.x
+      mirroredShape.y = center.y
+    } else if (selectedShape.type === 'rectangle') {
+      const center = mirrorPoint(selectedShape.x + selectedShape.width / 2, selectedShape.y + selectedShape.height / 2)
+      mirroredShape.x = center.x - selectedShape.width / 2
+      mirroredShape.y = center.y - selectedShape.height / 2
+    } else if (selectedShape.type === 'polygon' || selectedShape.type === 'freehand') {
+      const points = [...selectedShape.points]
+      for (let i = 0; i < points.length; i += 2) {
+        const mirrored = mirrorPoint(points[i], points[i + 1])
+        points[i] = mirrored.x
+        points[i + 1] = mirrored.y
+      }
+      mirroredShape.points = points
+    }
+    
+    if (transformSettings.createCopy) {
+      mirroredShape.id = `shape-${Date.now()}`
+      addShape(mirroredShape)
+    } else {
+      updateShape(selectedShapeId, mirroredShape)
+    }
+  }
+  
   const handleMirrorHorizontal = () => {
     if (!selectedShape) return
     
@@ -45,7 +116,7 @@ function TransformToolsWindow() {
       mirroredShape.x1 = 2 * centerX - selectedShape.x1
       mirroredShape.x2 = 2 * centerX - selectedShape.x2
     } else if (selectedShape.type === 'circle') {
-      mirroredShape.scaleX = -1
+      mirroredShape.scaleX = (selectedShape.scaleX || 1) * -1
     } else if (selectedShape.type === 'rectangle') {
       mirroredShape.scaleX = (selectedShape.scaleX || 1) * -1
     } else if (selectedShape.type === 'polygon' || selectedShape.type === 'freehand') {
@@ -56,7 +127,7 @@ function TransformToolsWindow() {
       }
       mirroredShape.points = points
     } else if (selectedShape.type === 'arc') {
-      mirroredShape.scaleX = -1
+      mirroredShape.scaleX = (selectedShape.scaleX || 1) * -1
     }
     
     if (transformSettings.createCopy) {
@@ -228,15 +299,38 @@ function TransformToolsWindow() {
               <select value={mirrorAxisType} onChange={(e) => setMirrorAxisType(e.target.value)}>
                 <option value="horizontal">Horizontal</option>
                 <option value="vertical">Vertical</option>
+                <option value="line">Select Line</option>
               </select>
             </label>
+            {mirrorAxisType === 'line' && (
+              <div className="button-row">
+                <button 
+                  onClick={handleSelectMirrorAxis}
+                  style={{ background: selectingMirrorAxis ? '#00FF00' : '#0088ff' }}
+                >
+                  {selectingMirrorAxis ? 'Click a Line...' : 'Select Axis Line'}
+                </button>
+                {mirrorAxisLineId && (
+                  <button onClick={() => setMirrorAxisLineId(null)}>Clear</button>
+                )}
+              </div>
+            )}
             <div className="button-row">
-              <button onClick={handleMirrorHorizontal} disabled={!selectedShapeId || mirrorAxisType !== 'horizontal'}>
-                Flip Horizontal
-              </button>
-              <button onClick={handleMirrorVertical} disabled={!selectedShapeId || mirrorAxisType !== 'vertical'}>
-                Flip Vertical
-              </button>
+              {mirrorAxisType === 'horizontal' && (
+                <button onClick={handleMirrorHorizontal} disabled={!selectedShapeId}>
+                  Flip Horizontal
+                </button>
+              )}
+              {mirrorAxisType === 'vertical' && (
+                <button onClick={handleMirrorVertical} disabled={!selectedShapeId}>
+                  Flip Vertical
+                </button>
+              )}
+              {mirrorAxisType === 'line' && (
+                <button onClick={handleMirrorAcrossLine} disabled={!selectedShapeId || !mirrorAxisLineId}>
+                  Mirror Across Line
+                </button>
+              )}
             </div>
             <label>
               <input 
@@ -246,6 +340,9 @@ function TransformToolsWindow() {
               />
               Create Copy
             </label>
+            {mirrorAxisLineId && (
+              <p className="hint">Axis: Line {mirrorAxisLineId.substring(0, 8)}</p>
+            )}
           </div>
         )}
         
