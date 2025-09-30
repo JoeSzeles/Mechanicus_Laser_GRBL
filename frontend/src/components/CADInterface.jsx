@@ -29,6 +29,7 @@ function CADInterface() {
   const updateGuide = useCadStore((state) => state.updateGuide)
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
   const setSelectedShapeId = useCadStore((state) => state.setSelectedShapeId)
+  const updateShape = useCadStore((state) => state.updateShape)
   
   const [showDrawingTools, setShowDrawingTools] = useState(true)
   const [showSnapTools, setShowSnapTools] = useState(true)
@@ -44,6 +45,8 @@ function CADInterface() {
   const [previewShape, setPreviewShape] = useState(null)
   const [markerState, setMarkerState] = useState(null)
   const [draggedGuide, setDraggedGuide] = useState(null)
+  const [draggedHandle, setDraggedHandle] = useState(null)
+  const [initialBbox, setInitialBbox] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -908,6 +911,45 @@ function CADInterface() {
                             fill="white"
                             stroke="#0088FF"
                             strokeWidth={1 / viewport.zoom}
+                            draggable
+                            onDragStart={(e) => {
+                              setDraggedHandle(i)
+                              setInitialBbox(bbox)
+                            }}
+                            onDragMove={(e) => {
+                              if (draggedHandle === null || !initialBbox) return
+                              
+                              const pos = e.target.position()
+                              const worldX = pos.x
+                              const worldY = pos.y
+                              
+                              const newShape = { ...shape }
+                              const scaleX = Math.abs((worldX - bbox.x) / bbox.width)
+                              const scaleY = Math.abs((worldY - bbox.y) / bbox.height)
+                              
+                              if (shape.type === 'circle') {
+                                const centerX = shape.x
+                                const centerY = shape.y
+                                const radius = Math.sqrt(Math.pow(worldX - centerX, 2) + Math.pow(worldY - centerY, 2))
+                                newShape.radius = radius
+                              } else if (shape.type === 'rectangle') {
+                                if (i === 4) {
+                                  newShape.width = worldX - shape.x
+                                  newShape.height = worldY - shape.y
+                                }
+                              } else if (shape.type === 'line') {
+                                if (i === 4) {
+                                  newShape.x2 = worldX
+                                  newShape.y2 = worldY
+                                }
+                              }
+                              
+                              updateShape(selectedShapeId, newShape)
+                            }}
+                            onDragEnd={() => {
+                              setDraggedHandle(null)
+                              setInitialBbox(null)
+                            }}
                           />
                         ))}
                       </React.Fragment>

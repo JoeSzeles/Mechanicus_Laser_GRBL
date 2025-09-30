@@ -79,6 +79,17 @@
   font-size: 13px;
 }
 
+.mirror-tab select,
+.clone-tab select {
+  flex: 1;
+  padding: 6px 8px;
+  background: #1e1e1e;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
 .scale-tab input[type="checkbox"],
 .mirror-tab input[type="checkbox"],
 .clone-tab input[type="checkbox"],
