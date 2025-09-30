@@ -1,0 +1,28 @@
+.snap-tools-window {
+  min-width: 180px;
+}
+
+.snap-option {
+  margin-bottom: 8px;
+}
+
+.snap-option:last-child {
+  margin-bottom: 0;
+}
+
+.snap-option label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-size: 12px;
+}
+
+.snap-option input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.snap-option span {
+  user-select: none;
+}

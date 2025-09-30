@@ -1,4 +1,3 @@
-/* CAD Interface - Single Viewport Design (Python tkinter style) */
 .cad-interface {
   height: 100vh;
   display: flex;
@@ -8,7 +7,6 @@
   overflow: hidden;
 }
 
-/* Top Menu Bar */
 .top-menu {
   height: 50px;
   background-color: #263d42;
@@ -26,7 +24,7 @@
   margin: 0;
   font-size: 16px;
   font-weight: bold;
-  color: #00ff00;
+  color: #4CAF50;
 }
 
 .menu-center {
@@ -35,7 +33,7 @@
 }
 
 .menu-center button {
-  background-color: #1a2a2f;
+  background-color: #2b2b2b;
   color: white;
   border: 1px solid #444;
   padding: 6px 12px;
@@ -46,7 +44,7 @@
 }
 
 .menu-center button:hover {
-  background-color: #2a3a3f;
+  background-color: #3a3a3a;
 }
 
 .menu-right {
@@ -70,34 +68,34 @@
   background-color: #b71c1c;
 }
 
-/* Main Workspace - Single Large Viewport */
 .main-workspace {
   flex: 1;
   display: flex;
-  background-color: #1a2a2f;
+  background-color: #263d42;
   overflow: hidden;
 }
 
-/* Left Toolbar Panel */
 .toolbar-panel {
   width: 200px;
-  background-color: #263d42;
+  background-color: #2b2b2b;
   border-right: 1px solid #1a2a2f;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  padding: 15px;
 }
 
 .tool-options {
-  padding: 15px;
-  border-top: 1px solid #1a2a2f;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .tool-options label {
-  display: block;
+  display: flex;
+  flex-direction: column;
   color: white;
   font-size: 12px;
-  margin-bottom: 10px;
   cursor: pointer;
 }
 
@@ -106,13 +104,14 @@
 }
 
 .tool-options input[type="number"] {
-  width: 60px;
-  margin-left: 8px;
-  padding: 4px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px;
   background-color: #1a2a2f;
   color: white;
   border: 1px solid #444;
   border-radius: 3px;
+  font-size: 12px;
 }
 
 .grid-input {
@@ -122,36 +121,32 @@
   border-radius: 3px;
 }
 
-/* Canvas Viewport with Rulers - Single Scroll Container */
 .canvas-viewport {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: #f5f5f5;
+  background-color: #263d42;
   position: relative;
-  overflow: hidden; /* No scrolling here */
+  overflow: hidden;
 }
 
-/* Horizontal Ruler */
 .h-ruler {
   height: 25px;
   background-color: #f0f0f0;
   border-bottom: 1px solid #ccc;
-  margin-left: 25px; /* Space for vertical ruler */
+  margin-left: 25px;
   overflow: hidden;
   position: relative;
   z-index: 10;
 }
 
-/* Canvas Workspace */
 .canvas-workspace {
   flex: 1;
   display: flex;
   position: relative;
-  overflow: hidden; /* No scrolling here */
+  overflow: hidden;
 }
 
-/* Vertical Ruler */
 .v-ruler {
   width: 25px;
   background-color: #f0f0f0;
@@ -161,241 +156,13 @@
   z-index: 10;
 }
 
-/* Main Canvas Container - ONLY SCROLLABLE SURFACE */
 .canvas-container {
   flex: 1;
   position: relative;
-  overflow: auto; /* SINGLE scroll source */
-  background-color: #ffffff;
-}
-
-.main-canvas {
-  display: block;
-  background-color: white;
-}
-
-/* Right Side Panels */
-.side-panels {
-  width: 300px;
+  overflow: hidden;
   background-color: #263d42;
-  border-left: 1px solid #1a2a2f;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  flex-shrink: 0;
 }
 
-/* Toolbar Styles */
-.toolbar {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-}
-
-.toolbar-section {
-  margin-bottom: 15px;
-}
-
-.toolbar-section h3 {
-  color: white;
-  font-size: 12px;
-  margin: 0 0 8px 0;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
-}
-
-.tool-button {
-  background-color: #1a2a2f;
-  color: white;
-  border: 1px solid #444;
-  padding: 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 11px;
-  text-align: center;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 35px;
-}
-
-.tool-button:hover {
-  background-color: #2a3a3f;
-  border-color: #666;
-}
-
-.tool-button.active {
-  background-color: #00ff00;
-  color: #000;
-  border-color: #00ff00;
-  font-weight: bold;
-}
-
-.zoom-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.zoom-button {
-  background-color: #1a2a2f;
-  color: white;
-  border: 1px solid #444;
-  padding: 6px 12px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 11px;
-  transition: background-color 0.2s;
-}
-
-.zoom-button:hover {
-  background-color: #2a3a3f;
-}
-
-.zoom-display {
-  color: white;
-  font-size: 11px;
-  text-align: center;
-  padding: 4px;
-}
-
-/* Panel Styles */
-.panel {
-  background-color: #263d42;
-  border-bottom: 1px solid #1a2a2f;
-  margin-bottom: 1px;
-}
-
-.panel-header {
-  background-color: #1a2a2f;
-  color: white;
-  padding: 8px 15px;
-  font-size: 12px;
-  font-weight: bold;
-  border-bottom: 1px solid #333;
-  cursor: pointer;
-  user-select: none;
-}
-
-.panel-header:hover {
-  background-color: #2a3a3f;
-}
-
-.panel-content {
-  padding: 10px;
-  color: white;
-  font-size: 12px;
-}
-
-.panel-content.collapsed {
-  display: none;
-}
-
-/* Layer Panel */
-.layer-item {
-  display: flex;
-  align-items: center;
-  padding: 4px 0;
-  border-bottom: 1px solid #1a2a2f;
-}
-
-.layer-item:last-child {
-  border-bottom: none;
-}
-
-.layer-visibility {
-  margin-right: 8px;
-}
-
-.layer-name {
-  flex: 1;
-  color: white;
-  font-size: 11px;
-}
-
-/* Properties Panel */
-.property-group {
-  margin-bottom: 12px;
-}
-
-.property-label {
-  display: block;
-  color: #ccc;
-  font-size: 11px;
-  margin-bottom: 4px;
-}
-
-.property-input {
-  width: 100%;
-  padding: 4px 6px;
-  background-color: #1a2a2f;
-  color: white;
-  border: 1px solid #444;
-  border-radius: 3px;
-  font-size: 11px;
-}
-
-.property-input:focus {
-  outline: none;
-  border-color: #00ff00;
-}
-
-/* Serial Control Panel */
-.serial-status {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-.status-indicator.connected {
-  background-color: #4caf50;
-}
-
-.status-indicator.disconnected {
-  background-color: #f44336;
-}
-
-.serial-button {
-  background-color: #1a2a2f;
-  color: white;
-  border: 1px solid #444;
-  padding: 6px 12px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 11px;
-  margin-right: 5px;
-  margin-bottom: 5px;
-}
-
-.serial-button:hover {
-  background-color: #2a3a3f;
-}
-
-.serial-button.primary {
-  background-color: #00ff00;
-  color: #000;
-  border-color: #00ff00;
-}
-
-.serial-button.primary:hover {
-  background-color: #00dd00;
-}
-
-/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -414,27 +181,14 @@
   background: #666;
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
   .toolbar-panel {
     width: 180px;
-  }
-  
-  .side-panels {
-    width: 250px;
   }
 }
 
 @media (max-width: 900px) {
   .toolbar-panel {
     width: 150px;
-  }
-  
-  .side-panels {
-    width: 200px;
-  }
-  
-  .tool-grid {
-    grid-template-columns: 1fr;
   }
 }

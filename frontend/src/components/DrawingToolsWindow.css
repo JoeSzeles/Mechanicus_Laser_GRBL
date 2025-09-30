@@ -1,0 +1,32 @@
+.drawing-tools-window {
+  min-width: 220px;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.tool-btn {
+  background-color: #1a2a2f;
+  color: white;
+  border: 1px solid #444;
+  padding: 10px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.2s;
+}
+
+.tool-btn:hover {
+  background-color: #2a3a3f;
+  border-color: #666;
+}
+
+.tool-btn.active {
+  background-color: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+  font-weight: bold;
+}
