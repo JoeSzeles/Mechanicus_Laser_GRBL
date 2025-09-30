@@ -6,6 +6,11 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   animation: panel-slide-in 0.2s ease-out;
+  user-select: none;
+}
+
+.floating-panel.dragging {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 @keyframes panel-slide-in {

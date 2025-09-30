@@ -97,6 +97,31 @@ function CADInterface() {
   const [selectionRect, setSelectionRect] = useState(null)
   const [selectedShapeIds, setSelectedShapeIds] = useState([])
   
+  const [panelPositions, setPanelPositions] = useState(() => {
+    const defaultPositions = {}
+    const panels = [
+      'drawingTools',
+      'layers',
+      'shapeProperties',
+      'snapTools',
+      'markersGuides',
+      'transformTools',
+      'lineEditorTools',
+      'textTools'
+    ]
+    
+    panels.forEach((panelId, index) => {
+      defaultPositions[panelId] = {
+        x: window.innerWidth - 360,
+        y: 80 + (index * 60),
+        zIndex: 100 + index
+      }
+    })
+    
+    return defaultPositions
+  })
+  const [topZIndex, setTopZIndex] = useState(200)
+  
   const containerRef = useRef(null)
   const stageRef = useRef(null)
   const hRulerRef = useRef(null)
@@ -872,6 +897,31 @@ function CADInterface() {
       window.removeEventListener('keyup', handleKeyUp)
     }
   }, [])
+
+  const updatePanelPosition = (panelId, x, y) => {
+    setPanelPositions(prev => ({
+      ...prev,
+      [panelId]: {
+        ...prev[panelId],
+        x: Math.max(0, Math.min(x, window.innerWidth - 320)),
+        y: Math.max(0, Math.min(y, window.innerHeight - 100))
+      }
+    }))
+  }
+
+  const bringPanelToFront = (panelId) => {
+    setTopZIndex(prev => {
+      const newZIndex = prev + 1
+      setPanelPositions(positions => ({
+        ...positions,
+        [panelId]: {
+          ...positions[panelId],
+          zIndex: newZIndex
+        }
+      }))
+      return newZIndex
+    })
+  }
 
   const drawGrid = () => {
     if (!showGrid) return []
@@ -2263,83 +2313,105 @@ function CADInterface() {
           </div>
         </div>
 
-        <div className="floating-panels-container">
-          <FloatingPanel 
-            title="Drawing Tools" 
-            isOpen={showDrawingTools}
-            onClose={() => setShowDrawingTools(false)}
-            zIndex={10}
-          >
-            <DrawingToolsWindow />
-          </FloatingPanel>
+        <FloatingPanel 
+          title="Drawing Tools" 
+          isOpen={showDrawingTools}
+          onClose={() => setShowDrawingTools(false)}
+          position={panelPositions.drawingTools}
+          zIndex={panelPositions.drawingTools.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('drawingTools', x, y)}
+          onBringToFront={() => bringPanelToFront('drawingTools')}
+        >
+          <DrawingToolsWindow />
+        </FloatingPanel>
 
-          <FloatingPanel 
-            title="Layers" 
-            isOpen={showLayers}
-            onClose={() => setShowLayers(false)}
-            zIndex={10}
-          >
-            <LayersWindow />
-          </FloatingPanel>
+        <FloatingPanel 
+          title="Layers" 
+          isOpen={showLayers}
+          onClose={() => setShowLayers(false)}
+          position={panelPositions.layers}
+          zIndex={panelPositions.layers.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('layers', x, y)}
+          onBringToFront={() => bringPanelToFront('layers')}
+        >
+          <LayersWindow />
+        </FloatingPanel>
 
-          <FloatingPanel 
-            title="Shape Properties" 
-            isOpen={showShapeProperties}
-            onClose={() => setShowShapeProperties(false)}
-            zIndex={10}
-          >
-            <ShapePropertiesWindow />
-          </FloatingPanel>
+        <FloatingPanel 
+          title="Shape Properties" 
+          isOpen={showShapeProperties}
+          onClose={() => setShowShapeProperties(false)}
+          position={panelPositions.shapeProperties}
+          zIndex={panelPositions.shapeProperties.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('shapeProperties', x, y)}
+          onBringToFront={() => bringPanelToFront('shapeProperties')}
+        >
+          <ShapePropertiesWindow />
+        </FloatingPanel>
 
-          <FloatingPanel 
-            title="Snap Tools" 
-            isOpen={showSnapTools}
-            onClose={() => setShowSnapTools(false)}
-            zIndex={10}
-          >
-            <SnapToolsWindow />
-          </FloatingPanel>
+        <FloatingPanel 
+          title="Snap Tools" 
+          isOpen={showSnapTools}
+          onClose={() => setShowSnapTools(false)}
+          position={panelPositions.snapTools}
+          zIndex={panelPositions.snapTools.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('snapTools', x, y)}
+          onBringToFront={() => bringPanelToFront('snapTools')}
+        >
+          <SnapToolsWindow />
+        </FloatingPanel>
 
-          <FloatingPanel 
-            title="Markers & Guides" 
-            isOpen={showMarkersWindow}
-            onClose={() => setShowMarkersWindow(false)}
-            zIndex={10}
-          >
-            <MarkersWindow onActivateTool={setActiveTool} />
-          </FloatingPanel>
+        <FloatingPanel 
+          title="Markers & Guides" 
+          isOpen={showMarkersWindow}
+          onClose={() => setShowMarkersWindow(false)}
+          position={panelPositions.markersGuides}
+          zIndex={panelPositions.markersGuides.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('markersGuides', x, y)}
+          onBringToFront={() => bringPanelToFront('markersGuides')}
+        >
+          <MarkersWindow onActivateTool={setActiveTool} />
+        </FloatingPanel>
 
-          <FloatingPanel 
-            title="Transform Tools" 
-            isOpen={showTransformTools}
-            onClose={() => setShowTransformTools(false)}
-            zIndex={10}
-          >
-            <TransformToolsWindow 
-              onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
-              mirrorAxisLineId={mirrorAxisLineId}
-              onClearMirrorAxis={() => setMirrorAxisLineId(null)}
-            />
-          </FloatingPanel>
+        <FloatingPanel 
+          title="Transform Tools" 
+          isOpen={showTransformTools}
+          onClose={() => setShowTransformTools(false)}
+          position={panelPositions.transformTools}
+          zIndex={panelPositions.transformTools.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('transformTools', x, y)}
+          onBringToFront={() => bringPanelToFront('transformTools')}
+        >
+          <TransformToolsWindow 
+            onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
+            mirrorAxisLineId={mirrorAxisLineId}
+            onClearMirrorAxis={() => setMirrorAxisLineId(null)}
+          />
+        </FloatingPanel>
 
-          <FloatingPanel 
-            title="Line Editor Tools" 
-            isOpen={showLineEditorTools}
-            onClose={() => setShowLineEditorTools(false)}
-            zIndex={10}
-          >
-            <LineEditorToolsWindow />
-          </FloatingPanel>
+        <FloatingPanel 
+          title="Line Editor Tools" 
+          isOpen={showLineEditorTools}
+          onClose={() => setShowLineEditorTools(false)}
+          position={panelPositions.lineEditorTools}
+          zIndex={panelPositions.lineEditorTools.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('lineEditorTools', x, y)}
+          onBringToFront={() => bringPanelToFront('lineEditorTools')}
+        >
+          <LineEditorToolsWindow />
+        </FloatingPanel>
 
-          <FloatingPanel 
-            title="Text & Font Tools" 
-            isOpen={showTextTools}
-            onClose={() => setShowTextTools(false)}
-            zIndex={10}
-          >
-            <TextFontToolsWindow />
-          </FloatingPanel>
-        </div>
+        <FloatingPanel 
+          title="Text & Font Tools" 
+          isOpen={showTextTools}
+          onClose={() => setShowTextTools(false)}
+          position={panelPositions.textTools}
+          zIndex={panelPositions.textTools.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('textTools', x, y)}
+          onBringToFront={() => bringPanelToFront('textTools')}
+        >
+          <TextFontToolsWindow />
+        </FloatingPanel>
       </div>
     </div>
   )
