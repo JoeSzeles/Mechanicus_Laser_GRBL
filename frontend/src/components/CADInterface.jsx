@@ -56,6 +56,7 @@ function CADInterface() {
   const [mirrorAxisLineId, setMirrorAxisLineId] = useState(null)
   const [hoveredShapeId, setHoveredShapeId] = useState(null)
   const [adjustLineState, setAdjustLineState] = useState(null)
+  const [trimPreviewLines, setTrimPreviewLines] = useState([])
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -94,6 +95,7 @@ function CADInterface() {
         setMarkerState(null)
         setMirrorAxisSelectionCallback(null)
         setMirrorAxisLineId(null)
+        setTrimPreviewLines([])
         if (lineEditorState) {
           const selectedLines = lineEditorState.selectedLines || []
           selectedLines.forEach(id => {
@@ -163,6 +165,31 @@ function CADInterface() {
       setIsPanning(true)
       setPanStart({ x: e.evt.clientX - viewport.pan.x, y: e.evt.clientY - viewport.pan.y })
       return
+    }
+    
+    const clickedOnEmpty = e.target === e.target.getStage()
+    if (clickedOnEmpty && e.evt.button === 0) {
+      setSelectedShapeId(null)
+      if (showLineEditorTools && lineEditorState) {
+        const selectedLines = lineEditorState.selectedLines || []
+        selectedLines.forEach(id => {
+          const shape = shapes.find(s => s.id === id)
+          if (shape && shape.originalStroke) {
+            updateShape(id, {
+              stroke: shape.originalStroke,
+              strokeWidth: shape.originalStrokeWidth
+            })
+          }
+        })
+        setLineEditorState({
+          ...lineEditorState,
+          selectedLines: [],
+          trimState: lineEditorState.currentTool === 'trim' ? 'first_line' : lineEditorState.trimState,
+          extendState: lineEditorState.currentTool === 'extend' ? 'select_boundary' : lineEditorState.extendState,
+          boundaryLines: []
+        })
+      }
+      setTrimPreviewLines([])
     }
     
     if (lineEditorState?.currentTool === 'adjustLine' && e.evt.button === 0) {
@@ -364,6 +391,189 @@ function CADInterface() {
           points: [...drawingState.points, currentPoint.x, currentPoint.y]
         })
       }
+    }
+    
+    if (showLineEditorTools && lineEditorState) {
+      const currentPoint = getWorldPoint(e)
+      const previewLines = []
+      
+      const pointToLineDistance = (px, py, x1, y1, x2, y2) => {
+        const A = px - x1
+        const B = py - y1
+        const C = x2 - x1
+        const D = y2 - y1
+        const dot = A * C + B * D
+        const lenSq = C * C + D * D
+        const param = lenSq !== 0 ? dot / lenSq : -1
+        let xx, yy
+        if (param < 0) {
+          xx = x1
+          yy = y1
+        } else if (param > 1) {
+          xx = x2
+          yy = y2
+        } else {
+          xx = x1 + param * C
+          yy = y1 + param * D
+        }
+        const dx = px - xx
+        const dy = py - yy
+        return Math.sqrt(dx * dx + dy * dy)
+      }
+      
+      if (lineEditorState.trimState === 'select_segment' && lineEditorState.selectedLines && lineEditorState.selectedLines.length === 2 && lineEditorState.intersection) {
+        const tolerance = 15 / viewport.zoom
+        let hoveredLine = null
+        let minDist = Infinity
+        
+        for (const lineId of lineEditorState.selectedLines) {
+          const line = shapes.find(s => s.id === lineId)
+          if (line && line.type === 'line') {
+            const dist = pointToLineDistance(currentPoint.x, currentPoint.y, line.x1, line.y1, line.x2, line.y2)
+            if (dist < tolerance && dist < minDist) {
+              minDist = dist
+              hoveredLine = line
+            }
+          }
+        }
+        
+        if (hoveredLine) {
+          const distToStart = Math.sqrt((currentPoint.x - hoveredLine.x1)**2 + (currentPoint.y - hoveredLine.y1)**2)
+          const distToEnd = Math.sqrt((currentPoint.x - hoveredLine.x2)**2 + (currentPoint.y - hoveredLine.y2)**2)
+          
+          const keepEndSegment = distToStart < distToEnd
+          
+          if (keepEndSegment) {
+            previewLines.push({
+              x1: lineEditorState.intersection.x,
+              y1: lineEditorState.intersection.y,
+              x2: hoveredLine.x2,
+              y2: hoveredLine.y2
+            })
+          } else {
+            previewLines.push({
+              x1: hoveredLine.x1,
+              y1: hoveredLine.y1,
+              x2: lineEditorState.intersection.x,
+              y2: lineEditorState.intersection.y
+            })
+          }
+        }
+      } else if (lineEditorState.trimState === 'trim_crossing' && lineEditorState.boundaryLines && lineEditorState.boundaryLines.length === 2) {
+        const tolerance = 15 / viewport.zoom
+        let hoveredLine = null
+        let minDist = Infinity
+        
+        for (const shape of shapes) {
+          if (shape.type === 'line' && !lineEditorState.boundaryLines.includes(shape.id)) {
+            const dist = pointToLineDistance(currentPoint.x, currentPoint.y, shape.x1, shape.y1, shape.x2, shape.y2)
+            if (dist < tolerance && dist < minDist) {
+              minDist = dist
+              hoveredLine = shape
+            }
+          }
+        }
+        
+        if (hoveredLine) {
+          const boundary1 = shapes.find(s => s.id === lineEditorState.boundaryLines[0])
+          const boundary2 = shapes.find(s => s.id === lineEditorState.boundaryLines[1])
+          
+          const int1 = findLineIntersection(boundary1, hoveredLine)
+          const int2 = findLineIntersection(boundary2, hoveredLine)
+          
+          if (int1 && int2) {
+            const dist1ToStart = Math.sqrt((int1.x - hoveredLine.x1)**2 + (int1.y - hoveredLine.y1)**2)
+            const dist2ToStart = Math.sqrt((int2.x - hoveredLine.x1)**2 + (int2.y - hoveredLine.y1)**2)
+            
+            const startInt = dist1ToStart < dist2ToStart ? int1 : int2
+            const endInt = dist1ToStart < dist2ToStart ? int2 : int1
+            
+            previewLines.push({
+              x1: hoveredLine.x1,
+              y1: hoveredLine.y1,
+              x2: startInt.x,
+              y2: startInt.y
+            })
+            
+            previewLines.push({
+              x1: endInt.x,
+              y1: endInt.y,
+              x2: hoveredLine.x2,
+              y2: hoveredLine.y2
+            })
+          }
+        }
+      } else if (lineEditorState.extendState === 'extend_lines' && lineEditorState.boundaryLines && lineEditorState.boundaryLines.length > 0) {
+        const tolerance = 15 / viewport.zoom
+        let hoveredLine = null
+        let nearEndpoint = null
+        
+        for (const shape of shapes) {
+          if (shape.type === 'line' && !lineEditorState.boundaryLines.includes(shape.id)) {
+            const distToStart = Math.sqrt((currentPoint.x - shape.x1)**2 + (currentPoint.y - shape.y1)**2)
+            const distToEnd = Math.sqrt((currentPoint.x - shape.x2)**2 + (currentPoint.y - shape.y2)**2)
+            
+            if (distToStart < tolerance) {
+              hoveredLine = shape
+              nearEndpoint = 'start'
+              break
+            } else if (distToEnd < tolerance) {
+              hoveredLine = shape
+              nearEndpoint = 'end'
+              break
+            }
+          }
+        }
+        
+        if (hoveredLine && nearEndpoint) {
+          const extendFromStart = nearEndpoint === 'start'
+          const px = extendFromStart ? hoveredLine.x1 : hoveredLine.x2
+          const py = extendFromStart ? hoveredLine.y1 : hoveredLine.y2
+          const vx = extendFromStart ? (hoveredLine.x1 - hoveredLine.x2) : (hoveredLine.x2 - hoveredLine.x1)
+          const vy = extendFromStart ? (hoveredLine.y1 - hoveredLine.y2) : (hoveredLine.y2 - hoveredLine.y1)
+          const len = Math.sqrt(vx*vx + vy*vy)
+          const dirX = vx / len
+          const dirY = vy / len
+          
+          const extendedX = px + dirX * 10000
+          const extendedY = py + dirY * 10000
+          
+          let bestIntersection = null
+          let minDist = Infinity
+          
+          lineEditorState.boundaryLines.forEach(boundaryId => {
+            const boundary = shapes.find(s => s.id === boundaryId)
+            if (!boundary) return
+            
+            const inters = findLineIntersection(
+              { x1: px, y1: py, x2: extendedX, y2: extendedY },
+              boundary
+            )
+            
+            if (inters) {
+              const dist = Math.sqrt((inters.x - px)**2 + (inters.y - py)**2)
+              const dot = (inters.x - px) * dirX + (inters.y - py) * dirY
+              if (dot > 0 && dist < minDist) {
+                minDist = dist
+                bestIntersection = inters
+              }
+            }
+          })
+          
+          if (bestIntersection) {
+            previewLines.push({
+              x1: px,
+              y1: py,
+              x2: bestIntersection.x,
+              y2: bestIntersection.y
+            })
+          }
+        }
+      }
+      
+      setTrimPreviewLines(previewLines)
+    } else {
+      setTrimPreviewLines([])
     }
   }
 
@@ -1272,6 +1482,17 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
+                  
+                  {trimPreviewLines.map((line, index) => (
+                    <Line
+                      key={`trim-preview-${index}`}
+                      points={[line.x1, line.y1, line.x2, line.y2]}
+                      stroke="#FF0000"
+                      strokeWidth={2}
+                      dash={[10, 5]}
+                      listening={false}
+                    />
+                  ))}
                   
                   {guidesVisible && guides.map(guide => {
                     if (guide.type === 'horizontal') {
