@@ -122,6 +122,9 @@ const useCadStore = create((set) => ({
   })),
   
   setLineEditorState: (state) => set({ lineEditorState: state }),
+  updateLineEditorState: (updates) => set((state) => ({
+    lineEditorState: { ...(state.lineEditorState || {}), ...updates }
+  })),
   
   pushUndo: (command) => set((state) => ({
     undo: [...state.undo, command]
