@@ -110,33 +110,31 @@ function CADInterface() {
       'textTools'
     ]
     
-    const PANEL_HEIGHT = 550
     const PANEL_WIDTH = 320
+    const START_X = 80
     const START_Y = 80
-    const viewportHeight = window.innerHeight
-    const viewportWidth = window.innerWidth
+    const SPACING = 40
     
     let currentY = START_Y
     let currentColumn = 0
     
     panels.forEach((panelId, index) => {
-      if (currentY + PANEL_HEIGHT > viewportHeight && currentY > START_Y) {
+      defaultPositions[panelId] = {
+        x: START_X + (currentColumn * (PANEL_WIDTH + 20)),
+        y: currentY,
+        zIndex: 10 + index
+      }
+      
+      currentY += SPACING
+      if (currentY > 500) {
         currentColumn++
         currentY = START_Y
       }
-      
-      defaultPositions[panelId] = {
-        x: Math.max(10, viewportWidth - (PANEL_WIDTH + 20) - (currentColumn * (PANEL_WIDTH + 20))),
-        y: currentY,
-        zIndex: 100 + index
-      }
-      
-      currentY += Math.min(200, viewportHeight - currentY - PANEL_HEIGHT - 20)
     })
     
     return defaultPositions
   })
-  const [topZIndex, setTopZIndex] = useState(200)
+  const [topZIndex, setTopZIndex] = useState(50)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -162,8 +160,7 @@ function CADInterface() {
   useEffect(() => {
     const handleResize = () => {
       const PANEL_WIDTH = 320
-      const PANEL_HEIGHT = 550
-      const MIN_VISIBLE = 50
+      const MIN_VISIBLE = 100
       
       setPanelPositions(prev => {
         const updated = {}
@@ -172,7 +169,7 @@ function CADInterface() {
           updated[panelId] = {
             ...pos,
             x: Math.max(MIN_VISIBLE - PANEL_WIDTH, Math.min(pos.x, window.innerWidth - MIN_VISIBLE)),
-            y: Math.max(0, Math.min(pos.y, Math.max(50, window.innerHeight - PANEL_HEIGHT)))
+            y: Math.max(0, pos.y)
           }
         })
         return updated
@@ -940,15 +937,14 @@ function CADInterface() {
 
   const updatePanelPosition = (panelId, x, y) => {
     const PANEL_WIDTH = 320
-    const PANEL_HEIGHT = 550
-    const MIN_VISIBLE = 50
+    const MIN_VISIBLE = 100
     
     setPanelPositions(prev => ({
       ...prev,
       [panelId]: {
         ...prev[panelId],
         x: Math.max(MIN_VISIBLE - PANEL_WIDTH, Math.min(x, window.innerWidth - MIN_VISIBLE)),
-        y: Math.max(0, Math.min(y, Math.max(50, window.innerHeight - PANEL_HEIGHT)))
+        y: Math.max(0, y)
       }
     }))
   }
