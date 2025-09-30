@@ -1,0 +1,10 @@
+.menu-bar {
+  height: 40px;
+  background: #1a1d24;
+  border-bottom: 1px solid #3a3f47;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  flex-shrink: 0;
+  z-index: 100;
+}

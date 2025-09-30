@@ -21,6 +21,7 @@ import {
   LineEditorIcon, ShapePropertiesIcon, TextToolsIcon, LayersIcon,
   UserIcon, LogoutIcon
 } from './ToolIcons'
+import MenuBar from './MenuBar'
 import './CADInterface.css'
 
 function CADInterface() {
@@ -1484,68 +1485,33 @@ function CADInterface() {
 
   return (
     <div className="cad-interface">
-      <div className="top-menu">
-        <div className="menu-left">
-          <h2>Mechanicus CAD - {machineProfile.bedSizeX}x{machineProfile.bedSizeY}mm</h2>
-        </div>
-        <div className="menu-center">
-          <button onClick={() => setShowDrawingTools(!showDrawingTools)}>
-            {showDrawingTools ? 'Hide' : 'Show'} Drawing Tools
-          </button>
-          <button onClick={() => setShowSnapTools(!showSnapTools)}>
-            {showSnapTools ? 'Hide' : 'Show'} Snap Tools
-          </button>
-          <button onClick={() => setShowMarkersWindow(!showMarkersWindow)}>
-            {showMarkersWindow ? 'Hide' : 'Show'} Markers
-          </button>
-          <button onClick={() => setShowTransformTools(!showTransformTools)}>
-            {showTransformTools ? 'Hide' : 'Show'} Transform
-          </button>
-          <button onClick={() => setShowLineEditorTools(!showLineEditorTools)}>
-            {showLineEditorTools ? 'Hide' : 'Show'} Line Editor
-          </button>
-          <button onClick={() => setShowShapeProperties(!showShapeProperties)}>
-            {showShapeProperties ? 'Hide' : 'Show'} Shape Properties
-          </button>
-          <button onClick={() => setShowTextTools(!showTextTools)}>
-            {showTextTools ? 'Hide' : 'Show'} Text Tools
-          </button>
-          <button onClick={() => setShowLayers(!showLayers)}>
-            {showLayers ? 'Hide' : 'Show'} Layers
-          </button>
-          <label style={{ cursor: 'pointer', padding: '8px 16px', background: '#4CAF50', color: 'white', borderRadius: '4px' }}>
-            Import SVG
-            <input type="file" accept=".svg" onChange={handleImportSVG} style={{ display: 'none' }} />
-          </label>
-          <button onClick={handleExportSVG} style={{ background: '#4CAF50' }}>Export SVG</button>
-          <button 
-            onClick={undo} 
-            style={{ background: '#2196F3', color: 'white' }}
-            disabled={undoStack.length === 0}
-          >
-            ⟲ Undo (Ctrl+Z)
-          </button>
-          <button 
-            onClick={redo} 
-            style={{ background: '#2196F3', color: 'white' }}
-            disabled={redoStack.length === 0}
-          >
-            ⟳ Redo (Ctrl+Y)
-          </button>
+      <MenuBar 
+        onImportSVG={() => document.getElementById('svg-import-input').click()}
+        onExportSVG={handleExportSVG}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+        onZoomReset={handleZoomReset}
+        onZoomFit={() => console.log('Zoom to fit')}
+        setShowGrid={setShowGrid}
+        showGrid={showGrid}
+      />
+      <div className="top-toolbar">
+        <div className="toolbar-left">
           <button 
             onClick={handleDeleteSelected} 
-            style={{ background: '#f44336', color: 'white' }}
+            className="delete-button"
             disabled={selectedShapeIds.length === 0}
           >
             Delete Selected
           </button>
+        </div>
+        <div className="toolbar-center">
+          <h3>Mechanicus CAD - {machineProfile.bedSizeX}x{machineProfile.bedSizeY}mm</h3>
+        </div>
+        <div className="toolbar-right">
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
           <button onClick={handleZoomReset}>Reset Zoom ({Math.round(viewport.zoom * 100)}%)</button>
-        </div>
-        <div className="menu-right">
-          <span>User: {user?.email}</span>
-          <button onClick={logout}>Logout</button>
         </div>
       </div>
 
