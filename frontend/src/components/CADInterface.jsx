@@ -602,6 +602,8 @@ function CADInterface() {
   }
 
   const handleTrimClick = (shape, clickX, clickY) => {
+    if (shape.type !== 'line') return
+    
     const { trimState, selectedLines = [], intersection } = lineEditorState
     
     if (trimState === 'first_line') {
@@ -681,6 +683,8 @@ function CADInterface() {
   }
 
   const handleTrimMidClick = (shape) => {
+    if (shape.type !== 'line') return
+    
     const { trimState, selectedLines = [], boundaryLines = [] } = lineEditorState
     
     if (trimState === 'first_line') {
@@ -749,11 +753,30 @@ function CADInterface() {
         removeShape(shape.id)
         addShape(newLine1)
         addShape(newLine2)
+        
+        boundaryLines.forEach(id => {
+          const s = shapes.find(sh => sh.id === id)
+          if (s && s.originalStroke) {
+            updateShape(id, {
+              stroke: s.originalStroke,
+              strokeWidth: s.originalStrokeWidth
+            })
+          }
+        })
+        
+        setLineEditorState({
+          currentTool: 'trimMid',
+          trimState: 'first_line',
+          selectedLines: [],
+          boundaryLines: []
+        })
       }
     }
   }
 
   const handleExtendClick = (shape, clickX, clickY) => {
+    if (shape.type !== 'line') return
+    
     const { extendState, boundaryLines = [] } = lineEditorState
     
     if (extendState === 'select_boundary') {
@@ -818,8 +841,40 @@ function CADInterface() {
             y2: bestIntersection.y
           })
         }
+        
+        boundaryLines.forEach(id => {
+          const s = shapes.find(sh => sh.id === id)
+          if (s && s.originalStroke) {
+            updateShape(id, {
+              stroke: s.originalStroke,
+              strokeWidth: s.originalStrokeWidth
+            })
+          }
+        })
+        
+        setLineEditorState({
+          currentTool: 'extend',
+          extendState: 'select_boundary',
+          boundaryLines: []
+        })
       } else {
         alert('Could not find valid extension point')
+        
+        boundaryLines.forEach(id => {
+          const s = shapes.find(sh => sh.id === id)
+          if (s && s.originalStroke) {
+            updateShape(id, {
+              stroke: s.originalStroke,
+              strokeWidth: s.originalStrokeWidth
+            })
+          }
+        })
+        
+        setLineEditorState({
+          currentTool: 'extend',
+          extendState: 'select_boundary',
+          boundaryLines: []
+        })
       }
     }
   }
