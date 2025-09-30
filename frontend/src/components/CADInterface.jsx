@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from 'react'
-import { Stage, Layer, Line, Rect, Circle, Text } from 'react-konva'
+import { Stage, Layer, Line, Rect, Circle, Text, RegularPolygon, Arc, Wedge } from 'react-konva'
 import AuthContext from '../contexts/AuthContext'
 import useCadStore from '../store/cadStore'
 import PopupWindow from './PopupWindow'
@@ -15,6 +15,8 @@ function CADInterface() {
   const updateViewport = useCadStore((state) => state.updateViewport)
   const shapes = useCadStore((state) => state.shapes)
   const snap = useCadStore((state) => state.snap)
+  const activeTool = useCadStore((state) => state.activeTool)
+  const addShape = useCadStore((state) => state.addShape)
   
   const [showDrawingTools, setShowDrawingTools] = useState(true)
   const [showSnapTools, setShowSnapTools] = useState(true)
@@ -24,6 +26,8 @@ function CADInterface() {
   const [gridSize, setGridSize] = useState(10)
   const [showGrid, setShowGrid] = useState(true)
   const [snapIndicator, setSnapIndicator] = useState(null)
+  const [drawingState, setDrawingState] = useState(null)
+  const [previewShape, setPreviewShape] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -78,10 +82,48 @@ function CADInterface() {
     updateViewport({ zoom: clampedScale, pan: newPos })
   }
 
+  const getWorldPoint = (e) => {
+    const stage = stageRef.current
+    if (!stage) return { x: 0, y: 0 }
+    
+    const point = stage.getPointerPosition()
+    let worldX = (point.x - viewport.pan.x) / viewport.zoom
+    let worldY = (point.y - viewport.pan.y) / viewport.zoom
+    
+    const gridSpacing = gridSize * machineProfile.mmToPx
+    const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
+    
+    if (snapResult) {
+      worldX = snapResult.x
+      worldY = snapResult.y
+    }
+    
+    return { x: worldX, y: worldY }
+  }
+
   const handleMouseDown = (e) => {
     if (e.evt.button === 0 && spaceKeyPressed.current) {
       setIsPanning(true)
       setPanStart({ x: e.evt.clientX - viewport.pan.x, y: e.evt.clientY - viewport.pan.y })
+      return
+    }
+    
+    if (activeTool && e.evt.button === 0) {
+      const point = getWorldPoint(e)
+      
+      if (activeTool === 'line') {
+        setDrawingState({ tool: 'line', startX: point.x, startY: point.y })
+      } else if (activeTool === 'circle') {
+        setDrawingState({ tool: 'circle', centerX: point.x, centerY: point.y })
+      } else if (activeTool === 'rectangle') {
+        setDrawingState({ tool: 'rectangle', startX: point.x, startY: point.y })
+      } else if (activeTool === 'polygon') {
+        setDrawingState({ tool: 'polygon', centerX: point.x, centerY: point.y })
+      } else if (activeTool === 'arc') {
+        setDrawingState({ tool: 'arc', centerX: point.x, centerY: point.y })
+      } else if (activeTool === 'freehand') {
+        setDrawingState({ tool: 'freehand', points: [point.x, point.y] })
+      }
     }
   }
 
@@ -92,30 +134,125 @@ function CADInterface() {
         y: e.evt.clientY - panStart.y
       }
       updateViewport({ pan: newPan })
-    } else {
-      const stage = stageRef.current
-      if (!stage) return
+      return
+    }
+    
+    const stage = stageRef.current
+    if (!stage) return
+    
+    const point = stage.getPointerPosition()
+    const worldX = (point.x - viewport.pan.x) / viewport.zoom
+    const worldY = (point.y - viewport.pan.y) / viewport.zoom
+    
+    const gridSpacing = gridSize * machineProfile.mmToPx
+    const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
+    
+    setSnapIndicator(snapResult)
+    
+    if (drawingState) {
+      const currentPoint = getWorldPoint(e)
       
-      const point = stage.getPointerPosition()
-      const worldX = (point.x - viewport.pan.x) / viewport.zoom
-      const worldY = (point.y - viewport.pan.y) / viewport.zoom
-      
-      const gridSpacing = gridSize * machineProfile.mmToPx
-      const snapResult = findSnapPoint(
-        worldX, 
-        worldY, 
-        viewport.zoom, 
-        snap, 
-        gridSpacing, 
-        showGrid
-      )
-      
-      setSnapIndicator(snapResult)
+      if (drawingState.tool === 'line') {
+        setPreviewShape({
+          type: 'line',
+          x1: drawingState.startX,
+          y1: drawingState.startY,
+          x2: currentPoint.x,
+          y2: currentPoint.y
+        })
+      } else if (drawingState.tool === 'circle') {
+        const radius = Math.sqrt(
+          Math.pow(currentPoint.x - drawingState.centerX, 2) +
+          Math.pow(currentPoint.y - drawingState.centerY, 2)
+        )
+        setPreviewShape({
+          type: 'circle',
+          x: drawingState.centerX,
+          y: drawingState.centerY,
+          radius
+        })
+      } else if (drawingState.tool === 'rectangle') {
+        setPreviewShape({
+          type: 'rectangle',
+          x: Math.min(drawingState.startX, currentPoint.x),
+          y: Math.min(drawingState.startY, currentPoint.y),
+          width: Math.abs(currentPoint.x - drawingState.startX),
+          height: Math.abs(currentPoint.y - drawingState.startY)
+        })
+      } else if (drawingState.tool === 'polygon') {
+        const radius = Math.sqrt(
+          Math.pow(currentPoint.x - drawingState.centerX, 2) +
+          Math.pow(currentPoint.y - drawingState.centerY, 2)
+        )
+        setPreviewShape({
+          type: 'polygon',
+          x: drawingState.centerX,
+          y: drawingState.centerY,
+          radius
+        })
+      } else if (drawingState.tool === 'arc') {
+        const radius = Math.sqrt(
+          Math.pow(currentPoint.x - drawingState.centerX, 2) +
+          Math.pow(currentPoint.y - drawingState.centerY, 2)
+        )
+        setPreviewShape({
+          type: 'arc',
+          x: drawingState.centerX,
+          y: drawingState.centerY,
+          radius
+        })
+      } else if (drawingState.tool === 'freehand') {
+        setDrawingState({
+          ...drawingState,
+          points: [...drawingState.points, currentPoint.x, currentPoint.y]
+        })
+        setPreviewShape({
+          type: 'freehand',
+          points: [...drawingState.points, currentPoint.x, currentPoint.y]
+        })
+      }
     }
   }
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
     setIsPanning(false)
+    
+    if (drawingState && previewShape) {
+      const currentPoint = getWorldPoint(e)
+      const newShape = {
+        id: `shape-${Date.now()}`,
+        stroke: '#000',
+        strokeWidth: 2,
+        ...previewShape
+      }
+      
+      if (drawingState.tool === 'polygon') {
+        const sides = 6
+        const points = []
+        for (let i = 0; i < sides; i++) {
+          const angle = (i / sides) * Math.PI * 2 - Math.PI / 2
+          points.push(
+            drawingState.centerX + previewShape.radius * Math.cos(angle),
+            drawingState.centerY + previewShape.radius * Math.sin(angle)
+          )
+        }
+        newShape.type = 'polygon'
+        newShape.points = points
+        delete newShape.x
+        delete newShape.y
+        delete newShape.radius
+      } else if (drawingState.tool === 'arc') {
+        newShape.type = 'arc'
+        newShape.angle = 0
+        newShape.innerRadius = 0
+        newShape.outerRadius = previewShape.radius
+        newShape.rotation = 0
+      }
+      
+      addShape(newShape)
+      setDrawingState(null)
+      setPreviewShape(null)
+    }
   }
 
   useEffect(() => {
@@ -361,9 +498,165 @@ function CADInterface() {
                           strokeWidth={shape.strokeWidth}
                         />
                       )
+                    } else if (shape.type === 'rectangle') {
+                      return (
+                        <Rect
+                          key={shape.id}
+                          x={shape.x}
+                          y={shape.y}
+                          width={shape.width}
+                          height={shape.height}
+                          stroke={shape.stroke}
+                          strokeWidth={shape.strokeWidth}
+                        />
+                      )
+                    } else if (shape.type === 'polygon') {
+                      return (
+                        <Line
+                          key={shape.id}
+                          points={shape.points}
+                          closed
+                          stroke={shape.stroke}
+                          strokeWidth={shape.strokeWidth}
+                        />
+                      )
+                    } else if (shape.type === 'arc') {
+                      return (
+                        <Wedge
+                          key={shape.id}
+                          x={shape.x}
+                          y={shape.y}
+                          radius={shape.outerRadius}
+                          angle={90}
+                          stroke={shape.stroke}
+                          strokeWidth={shape.strokeWidth}
+                        />
+                      )
+                    } else if (shape.type === 'freehand') {
+                      return (
+                        <Line
+                          key={shape.id}
+                          points={shape.points}
+                          stroke={shape.stroke}
+                          strokeWidth={shape.strokeWidth}
+                          lineCap="round"
+                          lineJoin="round"
+                        />
+                      )
                     }
                     return null
                   })}
+                  
+                  {drawingState && drawingState.tool === 'line' && (
+                    <Circle
+                      x={drawingState.startX}
+                      y={drawingState.startY}
+                      radius={5 / viewport.zoom}
+                      fill="#00FF00"
+                      listening={false}
+                    />
+                  )}
+                  
+                  {drawingState && (drawingState.tool === 'circle' || drawingState.tool === 'polygon' || drawingState.tool === 'arc') && (
+                    <Circle
+                      x={drawingState.centerX}
+                      y={drawingState.centerY}
+                      radius={5 / viewport.zoom}
+                      fill="#00FF00"
+                      listening={false}
+                    />
+                  )}
+                  
+                  {drawingState && drawingState.tool === 'rectangle' && (
+                    <Circle
+                      x={drawingState.startX}
+                      y={drawingState.startY}
+                      radius={5 / viewport.zoom}
+                      fill="#00FF00"
+                      listening={false}
+                    />
+                  )}
+                  
+                  {previewShape && previewShape.type === 'line' && (
+                    <Line
+                      points={[previewShape.x1, previewShape.y1, previewShape.x2, previewShape.y2]}
+                      stroke="#00FF00"
+                      strokeWidth={1}
+                      dash={[5, 5]}
+                      listening={false}
+                    />
+                  )}
+                  
+                  {previewShape && previewShape.type === 'circle' && (
+                    <Circle
+                      x={previewShape.x}
+                      y={previewShape.y}
+                      radius={previewShape.radius}
+                      stroke="#00FF00"
+                      strokeWidth={1}
+                      dash={[5, 5]}
+                      listening={false}
+                    />
+                  )}
+                  
+                  {previewShape && previewShape.type === 'rectangle' && (
+                    <Rect
+                      x={previewShape.x}
+                      y={previewShape.y}
+                      width={previewShape.width}
+                      height={previewShape.height}
+                      stroke="#00FF00"
+                      strokeWidth={1}
+                      dash={[5, 5]}
+                      listening={false}
+                    />
+                  )}
+                  
+                  {previewShape && previewShape.type === 'polygon' && (() => {
+                    const sides = 6
+                    const points = []
+                    for (let i = 0; i < sides; i++) {
+                      const angle = (i / sides) * Math.PI * 2 - Math.PI / 2
+                      points.push(
+                        previewShape.x + previewShape.radius * Math.cos(angle),
+                        previewShape.y + previewShape.radius * Math.sin(angle)
+                      )
+                    }
+                    return (
+                      <Line
+                        points={points}
+                        closed
+                        stroke="#00FF00"
+                        strokeWidth={1}
+                        dash={[5, 5]}
+                        listening={false}
+                      />
+                    )
+                  })()}
+                  
+                  {previewShape && previewShape.type === 'arc' && (
+                    <Wedge
+                      x={previewShape.x}
+                      y={previewShape.y}
+                      radius={previewShape.radius}
+                      angle={90}
+                      stroke="#00FF00"
+                      strokeWidth={1}
+                      dash={[5, 5]}
+                      listening={false}
+                    />
+                  )}
+                  
+                  {previewShape && previewShape.type === 'freehand' && (
+                    <Line
+                      points={previewShape.points}
+                      stroke="#00FF00"
+                      strokeWidth={1}
+                      lineCap="round"
+                      lineJoin="round"
+                      listening={false}
+                    />
+                  )}
                   
                   {snapIndicator && (
                     <>
