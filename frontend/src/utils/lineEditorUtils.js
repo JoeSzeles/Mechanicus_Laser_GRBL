@@ -39,6 +39,16 @@ export function calculateAngle(x1, y1, x2, y2) {
   return Math.atan2(y2 - y1, x2 - x1)
 }
 
+export function calculateAngleBetweenLines(line1, line2) {
+  const angle1 = calculateAngle(line1.x1, line1.y1, line1.x2, line1.y2)
+  const angle2 = calculateAngle(line2.x1, line2.y1, line2.x2, line2.y2)
+  let diff = Math.abs(angle2 - angle1)
+  if (diff > Math.PI) {
+    diff = 2 * Math.PI - diff
+  }
+  return diff
+}
+
 export function pointToLineDistance(px, py, x1, y1, x2, y2) {
   const A = px - x1
   const B = py - y1

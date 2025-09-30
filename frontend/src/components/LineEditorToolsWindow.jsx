@@ -7,7 +7,8 @@ import {
   getShapeCenter,
   rotateShape,
   findClosestEndpoint,
-  calculateDistance
+  calculateDistance,
+  calculateAngleBetweenLines
 } from '../utils/lineEditorUtils'
 import './LineEditorToolsWindow.css'
 
@@ -52,11 +53,24 @@ function LineEditorToolsWindow() {
       return
     }
     
+    if (size <= 0) {
+      alert('Fillet radius must be greater than 0')
+      return
+    }
+    
     const line1 = shapes.find(s => s.id === selectedLines[0])
     const line2 = shapes.find(s => s.id === selectedLines[1])
     
     if (!line1 || !line2 || line1.type !== 'line' || line2.type !== 'line') {
       alert('Both shapes must be lines')
+      return
+    }
+    
+    const angleBetween = calculateAngleBetweenLines(line1, line2)
+    const minAngle = (2 * Math.PI) / 180
+    
+    if (angleBetween < minAngle || angleBetween > (Math.PI - minAngle)) {
+      alert('Lines are too close to parallel for fillet (angle must be > 2°)')
       return
     }
     
@@ -83,8 +97,11 @@ function LineEditorToolsWindow() {
     try {
       const arcData = createFilletArc(line1, line2, size, intersection)
       
-      if (isNaN(arcData.tangent1.x) || isNaN(arcData.tangent1.y) || 
-          isNaN(arcData.tangent2.x) || isNaN(arcData.tangent2.y)) {
+      if (!isFinite(arcData.tangent1.x) || !isFinite(arcData.tangent1.y) || 
+          !isFinite(arcData.tangent2.x) || !isFinite(arcData.tangent2.y) ||
+          !isFinite(arcData.centerX) || !isFinite(arcData.centerY) ||
+          !isFinite(arcData.radius) || !isFinite(arcData.arcAngle) ||
+          !isFinite(arcData.startAngle)) {
         alert('Invalid fillet geometry (angle too small or lines nearly parallel)')
         return
       }
@@ -145,11 +162,24 @@ function LineEditorToolsWindow() {
       return
     }
     
+    if (size <= 0) {
+      alert('Chamfer size must be greater than 0')
+      return
+    }
+    
     const line1 = shapes.find(s => s.id === selectedLines[0])
     const line2 = shapes.find(s => s.id === selectedLines[1])
     
     if (!line1 || !line2 || line1.type !== 'line' || line2.type !== 'line') {
       alert('Both shapes must be lines')
+      return
+    }
+    
+    const angleBetween = calculateAngleBetweenLines(line1, line2)
+    const minAngle = (2 * Math.PI) / 180
+    
+    if (angleBetween < minAngle || angleBetween > (Math.PI - minAngle)) {
+      alert('Lines are too close to parallel for chamfer (angle must be > 2°)')
       return
     }
     
@@ -176,8 +206,8 @@ function LineEditorToolsWindow() {
     try {
       const chamferData = createChamfer(line1, line2, size, intersection)
       
-      if (isNaN(chamferData.point1.x) || isNaN(chamferData.point1.y) || 
-          isNaN(chamferData.point2.x) || isNaN(chamferData.point2.y)) {
+      if (!isFinite(chamferData.point1.x) || !isFinite(chamferData.point1.y) || 
+          !isFinite(chamferData.point2.x) || !isFinite(chamferData.point2.y)) {
         alert('Invalid chamfer geometry (angle too small or lines nearly parallel)')
         return
       }
