@@ -102,6 +102,7 @@ function CADInterface() {
     
     const PANEL_WIDTH = 320
     const START_Y = 80
+    const SPACING = 150
     const viewportWidth = window.innerWidth
     
     // Default panels on RIGHT (lower z-index, behind other panels)
@@ -109,7 +110,7 @@ function CADInterface() {
     rightPanels.forEach((panelId, index) => {
       defaultPositions[panelId] = {
         x: viewportWidth - PANEL_WIDTH - 20,
-        y: START_Y + (index * 200),
+        y: START_Y + (index * SPACING),
         zIndex: 10 + index
       }
     })
@@ -119,7 +120,7 @@ function CADInterface() {
     leftPanels.forEach((panelId, index) => {
       defaultPositions[panelId] = {
         x: 80,
-        y: START_Y + (index * 200),
+        y: START_Y + (index * SPACING),
         zIndex: 20 + index
       }
     })

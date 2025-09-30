@@ -34,8 +34,12 @@ const FloatingPanel = ({
   const handleMouseMove = (e) => {
     if (!isDragging) return
     
-    const newX = e.clientX - dragStart.x
-    const newY = e.clientY - dragStart.y
+    let newX = e.clientX - dragStart.x
+    let newY = e.clientY - dragStart.y
+    
+    // Clamp Y position - must stay below menu bar (which is 40px tall)
+    const MENU_BAR_HEIGHT = 50
+    newY = Math.max(MENU_BAR_HEIGHT, newY)
     
     if (onPositionChange) {
       onPositionChange(newX, newY)
