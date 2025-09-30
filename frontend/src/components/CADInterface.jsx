@@ -53,6 +53,7 @@ function CADInterface() {
   const [initialBbox, setInitialBbox] = useState(null)
   const [mirrorAxisSelectionCallback, setMirrorAxisSelectionCallback] = useState(null)
   const [mirrorAxisLineId, setMirrorAxisLineId] = useState(null)
+  const [hoveredShapeId, setHoveredShapeId] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -553,6 +554,47 @@ function CADInterface() {
     }
   }
 
+  const handleShapeHover = (shape, isEntering) => {
+    if (showLineEditorTools && lineEditorState?.currentTool) {
+      const isSelected = lineEditorState.selectedLines?.includes(shape.id)
+      if (!isSelected) {
+        if (isEntering) {
+          setHoveredShapeId(shape.id)
+        } else {
+          setHoveredShapeId(null)
+        }
+      }
+    }
+  }
+
+  const getShapeStroke = (shape) => {
+    const isSelected = lineEditorState?.selectedLines?.includes(shape.id)
+    const isHovered = hoveredShapeId === shape.id
+    
+    if (isSelected) {
+      return '#FF0000'
+    } else if (isHovered && showLineEditorTools && lineEditorState?.currentTool) {
+      return '#0088FF'
+    }
+    return shape.stroke
+  }
+
+  const getShapeStrokeWidth = (shape) => {
+    const isSelected = lineEditorState?.selectedLines?.includes(shape.id)
+    const isHovered = hoveredShapeId === shape.id
+    
+    if (isSelected) {
+      return 3
+    } else if (isHovered && showLineEditorTools && lineEditorState?.currentTool) {
+      return 2
+    }
+    return shape.strokeWidth
+  }
+
+  const getHitStrokeWidth = (shape) => {
+    return Math.max(15, shape.strokeWidth || 2)
+  }
+
   return (
     <div className="cad-interface">
       <div className="top-menu">
@@ -645,9 +687,12 @@ function CADInterface() {
                         <Line
                           key={shape.id}
                           points={[shape.x1, shape.y1, shape.x2, shape.y2]}
-                          stroke={shape.stroke}
-                          strokeWidth={shape.strokeWidth}
+                          stroke={getShapeStroke(shape)}
+                          strokeWidth={getShapeStrokeWidth(shape)}
+                          hitStrokeWidth={getHitStrokeWidth(shape)}
                           onClick={() => handleShapeClick(shape)}
+                          onMouseEnter={() => handleShapeHover(shape, true)}
+                          onMouseLeave={() => handleShapeHover(shape, false)}
                         />
                       )
                     } else if (shape.type === 'circle') {
@@ -657,12 +702,15 @@ function CADInterface() {
                           x={shape.x}
                           y={shape.y}
                           radius={shape.radius}
-                          stroke={shape.stroke}
-                          strokeWidth={shape.strokeWidth}
+                          stroke={getShapeStroke(shape)}
+                          strokeWidth={getShapeStrokeWidth(shape)}
+                          hitStrokeWidth={getHitStrokeWidth(shape)}
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
                           onClick={() => handleShapeClick(shape)}
+                          onMouseEnter={() => handleShapeHover(shape, true)}
+                          onMouseLeave={() => handleShapeHover(shape, false)}
                         />
                       )
                     } else if (shape.type === 'rectangle') {
@@ -673,12 +721,15 @@ function CADInterface() {
                           y={shape.y}
                           width={shape.width}
                           height={shape.height}
-                          stroke={shape.stroke}
-                          strokeWidth={shape.strokeWidth}
+                          stroke={getShapeStroke(shape)}
+                          strokeWidth={getShapeStrokeWidth(shape)}
+                          hitStrokeWidth={getHitStrokeWidth(shape)}
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
                           onClick={() => handleShapeClick(shape)}
+                          onMouseEnter={() => handleShapeHover(shape, true)}
+                          onMouseLeave={() => handleShapeHover(shape, false)}
                         />
                       )
                     } else if (shape.type === 'polygon') {
@@ -687,9 +738,12 @@ function CADInterface() {
                           key={shape.id}
                           points={shape.points}
                           closed
-                          stroke={shape.stroke}
-                          strokeWidth={shape.strokeWidth}
+                          stroke={getShapeStroke(shape)}
+                          strokeWidth={getShapeStrokeWidth(shape)}
+                          hitStrokeWidth={getHitStrokeWidth(shape)}
                           onClick={() => handleShapeClick(shape)}
+                          onMouseEnter={() => handleShapeHover(shape, true)}
+                          onMouseLeave={() => handleShapeHover(shape, false)}
                         />
                       )
                     } else if (shape.type === 'arc') {
@@ -700,12 +754,15 @@ function CADInterface() {
                           y={shape.y}
                           radius={shape.outerRadius}
                           angle={90}
-                          stroke={shape.stroke}
-                          strokeWidth={shape.strokeWidth}
+                          stroke={getShapeStroke(shape)}
+                          strokeWidth={getShapeStrokeWidth(shape)}
+                          hitStrokeWidth={getHitStrokeWidth(shape)}
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
                           onClick={() => handleShapeClick(shape)}
+                          onMouseEnter={() => handleShapeHover(shape, true)}
+                          onMouseLeave={() => handleShapeHover(shape, false)}
                         />
                       )
                     } else if (shape.type === 'freehand') {
@@ -713,11 +770,14 @@ function CADInterface() {
                         <Line
                           key={shape.id}
                           points={shape.points}
-                          stroke={shape.stroke}
-                          strokeWidth={shape.strokeWidth}
+                          stroke={getShapeStroke(shape)}
+                          strokeWidth={getShapeStrokeWidth(shape)}
+                          hitStrokeWidth={getHitStrokeWidth(shape)}
                           lineCap="round"
                           lineJoin="round"
                           onClick={() => handleShapeClick(shape)}
+                          onMouseEnter={() => handleShapeHover(shape, true)}
+                          onMouseLeave={() => handleShapeHover(shape, false)}
                         />
                       )
                     }

@@ -92,48 +92,57 @@ export function findClosestEndpoint(px, py, line, threshold) {
 }
 
 export function createFilletArc(line1, line2, radius, intersection) {
-  const angle1 = calculateAngle(intersection.x, intersection.y, line1.x1, line1.y1)
-  const angle2 = calculateAngle(intersection.x, intersection.y, line1.x2, line1.y2)
+  const xInt = intersection.x
+  const yInt = intersection.y
   
-  let workingAngle = angle1
-  const dx1 = line1.x1 - intersection.x
-  const dy1 = line1.y1 - intersection.y
-  const dist1 = Math.sqrt(dx1 * dx1 + dy1 * dy1)
+  let v1x = line1.x2 - line1.x1
+  let v1y = line1.y2 - line1.y1
+  let v2x = line2.x2 - line2.x1
+  let v2y = line2.y2 - line2.y1
   
-  if (dist1 < 0.1) {
-    workingAngle = angle2
+  const len1 = Math.sqrt(v1x * v1x + v1y * v1y)
+  const len2 = Math.sqrt(v2x * v2x + v2y * v2y)
+  v1x /= len1
+  v1y /= len1
+  v2x /= len2
+  v2y /= len2
+  
+  if ((xInt - line1.x1) * v1x + (yInt - line1.y1) * v1y > 0) {
+    v1x = -v1x
+    v1y = -v1y
   }
   
-  const angle3 = calculateAngle(intersection.x, intersection.y, line2.x1, line2.y1)
-  const angle4 = calculateAngle(intersection.x, intersection.y, line2.x2, line2.y2)
-  
-  let workingAngle2 = angle3
-  const dx2 = line2.x1 - intersection.x
-  const dy2 = line2.y1 - intersection.y
-  const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2)
-  
-  if (dist2 < 0.1) {
-    workingAngle2 = angle4
+  if ((xInt - line2.x1) * v2x + (yInt - line2.y1) * v2y > 0) {
+    v2x = -v2x
+    v2y = -v2y
   }
   
-  let angleDiff = workingAngle2 - workingAngle
-  if (angleDiff > Math.PI) angleDiff -= 2 * Math.PI
-  if (angleDiff < -Math.PI) angleDiff += 2 * Math.PI
+  const cross = v1x * v2y - v1y * v2x
+  const dot = v1x * v2x + v1y * v2y
+  const angle = Math.atan2(Math.abs(cross), dot)
+  const halfAngle = angle / 2
   
-  const bisector = workingAngle + angleDiff / 2
-  const halfAngle = Math.abs(angleDiff) / 2
+  if (halfAngle < 0.01) {
+    throw new Error('Lines are too close to parallel for filleting')
+  }
   
   const distToTangent = radius / Math.tan(halfAngle)
   
-  const tangent1X = intersection.x + distToTangent * Math.cos(workingAngle)
-  const tangent1Y = intersection.y + distToTangent * Math.sin(workingAngle)
+  const tangent1X = xInt + distToTangent * v1x
+  const tangent1Y = yInt + distToTangent * v1y
   
-  const tangent2X = intersection.x + distToTangent * Math.cos(workingAngle2)
-  const tangent2Y = intersection.y + distToTangent * Math.sin(workingAngle2)
+  const tangent2X = xInt + distToTangent * v2x
+  const tangent2Y = yInt + distToTangent * v2y
+  
+  const bisectorX = v1x + v2x
+  const bisectorY = v1y + v2y
+  const bisectorLen = Math.sqrt(bisectorX * bisectorX + bisectorY * bisectorY)
+  const unitBisX = bisectorX / bisectorLen
+  const unitBisY = bisectorY / bisectorLen
   
   const centerDist = radius / Math.sin(halfAngle)
-  const centerX = intersection.x + centerDist * Math.cos(bisector)
-  const centerY = intersection.y + centerDist * Math.sin(bisector)
+  const centerX = xInt + centerDist * unitBisX
+  const centerY = yInt + centerDist * unitBisY
   
   const startAngle = Math.atan2(tangent1Y - centerY, tangent1X - centerX) * 180 / Math.PI
   const endAngle = Math.atan2(tangent2Y - centerY, tangent2X - centerX) * 180 / Math.PI
@@ -154,35 +163,36 @@ export function createFilletArc(line1, line2, radius, intersection) {
 }
 
 export function createChamfer(line1, line2, size, intersection) {
-  const angle1 = calculateAngle(intersection.x, intersection.y, line1.x1, line1.y1)
-  const angle2 = calculateAngle(intersection.x, intersection.y, line1.x2, line1.y2)
+  const xInt = intersection.x
+  const yInt = intersection.y
   
-  let workingAngle = angle1
-  const dx1 = line1.x1 - intersection.x
-  const dy1 = line1.y1 - intersection.y
-  const dist1 = Math.sqrt(dx1 * dx1 + dy1 * dy1)
+  let v1x = line1.x2 - line1.x1
+  let v1y = line1.y2 - line1.y1
+  let v2x = line2.x2 - line2.x1
+  let v2y = line2.y2 - line2.y1
   
-  if (dist1 < 0.1) {
-    workingAngle = angle2
+  const len1 = Math.sqrt(v1x * v1x + v1y * v1y)
+  const len2 = Math.sqrt(v2x * v2x + v2y * v2y)
+  v1x /= len1
+  v1y /= len1
+  v2x /= len2
+  v2y /= len2
+  
+  if ((xInt - line1.x1) * v1x + (yInt - line1.y1) * v1y > 0) {
+    v1x = -v1x
+    v1y = -v1y
   }
   
-  const angle3 = calculateAngle(intersection.x, intersection.y, line2.x1, line2.y1)
-  const angle4 = calculateAngle(intersection.x, intersection.y, line2.x2, line2.y2)
-  
-  let workingAngle2 = angle3
-  const dx2 = line2.x1 - intersection.x
-  const dy2 = line2.y1 - intersection.y
-  const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2)
-  
-  if (dist2 < 0.1) {
-    workingAngle2 = angle4
+  if ((xInt - line2.x1) * v2x + (yInt - line2.y1) * v2y > 0) {
+    v2x = -v2x
+    v2y = -v2y
   }
   
-  const chamfer1X = intersection.x + size * Math.cos(workingAngle)
-  const chamfer1Y = intersection.y + size * Math.sin(workingAngle)
+  const chamfer1X = xInt + size * v1x
+  const chamfer1Y = yInt + size * v1y
   
-  const chamfer2X = intersection.x + size * Math.cos(workingAngle2)
-  const chamfer2Y = intersection.y + size * Math.sin(workingAngle2)
+  const chamfer2X = xInt + size * v2x
+  const chamfer2Y = yInt + size * v2y
   
   return {
     point1: { x: chamfer1X, y: chamfer1Y },
