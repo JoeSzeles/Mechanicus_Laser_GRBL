@@ -238,6 +238,14 @@
   font-weight: normal;
 }
 
+.auto-execute-notice {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #FFA726;
+  font-weight: normal;
+  font-style: italic;
+}
+
 .apply-tool-btn {
   width: 100%;
   padding: 10px;

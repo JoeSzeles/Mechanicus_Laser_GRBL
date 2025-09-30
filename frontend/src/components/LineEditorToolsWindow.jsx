@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import useCadStore from '../store/cadStore'
 import {
   findLineIntersection,
@@ -20,6 +20,7 @@ function LineEditorToolsWindow() {
   const lineEditorState = useCadStore((state) => state.lineEditorState)
   const setLineEditorState = useCadStore((state) => state.setLineEditorState)
   const viewport = useCadStore((state) => state.viewport)
+  const setActiveTool = useCadStore((state) => state.setActiveTool)
   
   const [size, setSize] = useState(10)
   const [snapEnabled, setSnapEnabled] = useState(true)
@@ -49,6 +50,14 @@ function LineEditorToolsWindow() {
     return true
   }
   
+  useEffect(() => {
+    if (currentTool === 'fillet' && selectedLines.length === 2) {
+      executeFillet()
+    } else if (currentTool === 'chamfer' && selectedLines.length === 2) {
+      executeChamfer()
+    }
+  }, [selectedLines.length, currentTool])
+  
   const clearSelection = () => {
     if (lineEditorState) {
       selectedLines.forEach(id => {
@@ -68,6 +77,7 @@ function LineEditorToolsWindow() {
   }
   
   const startToolSelection = (toolName) => {
+    setActiveTool(null)
     clearSelection()
     setLineEditorState({
       selectedLines: [],
@@ -550,7 +560,7 @@ function LineEditorToolsWindow() {
       {currentTool && toolRequirements[currentTool] && (
         <div className="tool-status-panel">
           <div className="tool-status">
-            <strong>{toolRequirements[currentTool].label}</strong>
+            <strong>{toolRequirements[currentTool].label} Active</strong>
             <div className="selection-progress">
               {toolRequirements[currentTool].maxLines ? (
                 <>Select {toolRequirements[currentTool].minLines} line(s): {selectedLines.length}/{toolRequirements[currentTool].maxLines}</>
@@ -558,13 +568,10 @@ function LineEditorToolsWindow() {
                 <>Select at least {toolRequirements[currentTool].minLines} line(s): {selectedLines.length} selected</>
               )}
             </div>
+            {(currentTool === 'fillet' || currentTool === 'chamfer') && selectedLines.length === toolRequirements[currentTool].maxLines && (
+              <div className="auto-execute-notice">Will execute automatically</div>
+            )}
           </div>
-          
-          {canApplyTool() && (
-            <button className="apply-tool-btn" onClick={applyCurrentTool}>
-              Apply {toolRequirements[currentTool].label}
-            </button>
-          )}
         </div>
       )}
       

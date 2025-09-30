@@ -83,6 +83,34 @@ function CADInterface() {
     updateSpatialIndex(shapes)
   }, [shapes])
 
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.key === 'Escape') {
+        setActiveTool(null)
+        setDrawingState(null)
+        setMarkerState(null)
+        setMirrorAxisSelectionCallback(null)
+        setMirrorAxisLineId(null)
+        if (lineEditorState) {
+          const selectedLines = lineEditorState.selectedLines || []
+          selectedLines.forEach(id => {
+            const shape = shapes.find(s => s.id === id)
+            if (shape && shape.originalStroke) {
+              updateShape(id, {
+                stroke: shape.originalStroke,
+                strokeWidth: shape.originalStrokeWidth
+              })
+            }
+          })
+          setLineEditorState({ selectedLines: [], currentTool: null })
+        }
+      }
+    }
+    
+    window.addEventListener('keydown', handleEscKey)
+    return () => window.removeEventListener('keydown', handleEscKey)
+  }, [lineEditorState, shapes, setActiveTool, updateShape, setLineEditorState])
+
   const handleWheel = (e) => {
     e.evt.preventDefault()
     const stage = stageRef.current
