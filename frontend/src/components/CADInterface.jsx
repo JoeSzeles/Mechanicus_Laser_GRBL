@@ -799,14 +799,19 @@ function CADInterface() {
 
   const handleLineEditorToolClick = (shape, clickX, clickY) => {
     const tool = lineEditorState?.currentTool
+    console.log('[CAD] handleLineEditorToolClick - tool:', tool, 'shape:', shape.id, 'lineEditorState:', lineEditorState)
     
     if (tool === 'trim') {
+      console.log('[CAD] Calling handleTrimClick')
       handleTrimClick(shape, clickX, clickY)
     } else if (tool === 'trimMid') {
+      console.log('[CAD] Calling handleTrimMidClick')
       handleTrimMidClick(shape)
     } else if (tool === 'extend') {
+      console.log('[CAD] Calling handleExtendClick')
       handleExtendClick(shape, clickX, clickY)
     } else {
+      console.log('[CAD] Calling handleDefaultLineEditorClick')
       handleDefaultLineEditorClick(shape)
     }
   }
@@ -815,8 +820,10 @@ function CADInterface() {
     if (shape.type !== 'line') return
     
     const { trimState, selectedLines = [], intersection } = lineEditorState
+    console.log('[CAD] handleTrimClick - trimState:', trimState, 'selectedLines:', selectedLines)
     
     if (trimState === 'first_line') {
+      console.log('[CAD] Trim: Selecting first line')
       setLineEditorState({
         ...lineEditorState,
         selectedLines: [shape.id],

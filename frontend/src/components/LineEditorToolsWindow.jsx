@@ -77,18 +77,24 @@ function LineEditorToolsWindow() {
   }
   
   const startToolSelection = (toolName) => {
+    console.log('[LINE EDITOR] startToolSelection called with:', toolName)
     setActiveTool(null)
     clearSelection()
     
     if (toolName === 'trim') {
+      console.log('[LINE EDITOR] Calling executeTrim()')
       executeTrim()
     } else if (toolName === 'trimMid') {
+      console.log('[LINE EDITOR] Calling executeTrimMid()')
       executeTrimMid()
     } else if (toolName === 'extend') {
+      console.log('[LINE EDITOR] Calling executeExtend()')
       executeExtend()
     } else if (toolName === 'adjustLine') {
+      console.log('[LINE EDITOR] Calling executeAdjustLine()')
       executeAdjustLine()
     } else {
+      console.log('[LINE EDITOR] Setting generic tool state')
       setLineEditorState({
         selectedLines: [],
         currentTool: toolName
@@ -300,6 +306,7 @@ function LineEditorToolsWindow() {
   }
   
   const executeTrim = () => {
+    console.log('[LINE EDITOR] executeTrim: Setting state to trim mode with trimState=first_line')
     setLineEditorState({
       selectedLines: [],
       currentTool: 'trim',
@@ -309,6 +316,7 @@ function LineEditorToolsWindow() {
   }
   
   const executeTrimMid = () => {
+    console.log('[LINE EDITOR] executeTrimMid: Setting state to trimMid mode with trimState=first_line')
     setLineEditorState({
       selectedLines: [],
       currentTool: 'trimMid',
@@ -318,6 +326,7 @@ function LineEditorToolsWindow() {
   }
   
   const executeExtend = () => {
+    console.log('[LINE EDITOR] executeExtend: Setting state to extend mode with extendState=select_boundary')
     setLineEditorState({
       selectedLines: [],
       currentTool: 'extend',
