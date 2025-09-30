@@ -81,6 +81,7 @@ function CADInterface() {
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
   const [gridSize, setGridSize] = useState(10)
   const [showGrid, setShowGrid] = useState(true)
+  const [gridSnap, setGridSnap] = useState(false)
   const [snapIndicator, setSnapIndicator] = useState(null)
   const [drawingState, setDrawingState] = useState(null)
   const [previewShape, setPreviewShape] = useState(null)
@@ -1509,6 +1510,33 @@ function CADInterface() {
           <h3>Mechanicus CAD - {machineProfile.bedSizeX}x{machineProfile.bedSizeY}mm</h3>
         </div>
         <div className="toolbar-right">
+          <label className="toolbar-checkbox">
+            <input 
+              type="checkbox" 
+              checked={showGrid}
+              onChange={(e) => setShowGrid(e.target.checked)}
+            />
+            Show Grid
+          </label>
+          <label className="toolbar-input-label">
+            Grid Size:
+            <input 
+              type="number" 
+              value={gridSize}
+              onChange={(e) => setGridSize(Number(e.target.value))}
+              className="toolbar-number-input"
+              min="1"
+              max="100"
+            />
+          </label>
+          <label className="toolbar-checkbox">
+            <input 
+              type="checkbox" 
+              checked={gridSnap}
+              onChange={(e) => setGridSnap(e.target.checked)}
+            />
+            Grid Snap
+          </label>
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
           <button onClick={handleZoomReset}>Reset Zoom ({Math.round(viewport.zoom * 100)}%)</button>
@@ -1517,28 +1545,6 @@ function CADInterface() {
 
       <div className="main-workspace">
         <div className="toolbar-panel">
-          <div className="tool-options">
-            <label>
-              <input 
-                type="checkbox" 
-                checked={showGrid}
-                onChange={(e) => setShowGrid(e.target.checked)}
-              />
-              Show Grid
-            </label>
-            <label>
-              Grid Size (mm):
-              <input 
-                type="number" 
-                value={gridSize}
-                onChange={(e) => setGridSize(Number(e.target.value))}
-                className="grid-input"
-                min="1"
-                max="100"
-              />
-            </label>
-          </div>
-
           <div className="tool-button-grid">
             <ToolButton 
               icon={<ImportIcon />} 
