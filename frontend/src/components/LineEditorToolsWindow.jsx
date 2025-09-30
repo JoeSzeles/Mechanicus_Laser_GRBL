@@ -79,10 +79,21 @@ function LineEditorToolsWindow() {
   const startToolSelection = (toolName) => {
     setActiveTool(null)
     clearSelection()
-    setLineEditorState({
-      selectedLines: [],
-      currentTool: toolName
-    })
+    
+    if (toolName === 'trim') {
+      executeTrim()
+    } else if (toolName === 'trimMid') {
+      executeTrimMid()
+    } else if (toolName === 'extend') {
+      executeExtend()
+    } else if (toolName === 'adjustLine') {
+      executeAdjustLine()
+    } else {
+      setLineEditorState({
+        selectedLines: [],
+        currentTool: toolName
+      })
+    }
   }
   
   const executeFillet = () => {

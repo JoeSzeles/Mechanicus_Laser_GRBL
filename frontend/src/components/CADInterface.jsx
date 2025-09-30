@@ -1264,6 +1264,7 @@ function CADInterface() {
                     width={canvasWidth}
                     height={canvasHeight}
                     fill="white"
+                    listening={false}
                   />
                   {drawGrid()}
                   
