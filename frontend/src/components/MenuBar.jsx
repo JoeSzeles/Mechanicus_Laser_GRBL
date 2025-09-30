@@ -12,7 +12,10 @@ const MenuBar = ({
   onZoomReset,
   onZoomFit,
   setShowGrid,
-  showGrid
+  showGrid,
+  onSaveWorkspace,
+  onRestoreWorkspace,
+  onResetWorkspace
 }) => {
   const { logout } = useContext(AuthContext)
   const undo = useCadStore((state) => state.undo)
@@ -78,9 +81,9 @@ const MenuBar = ({
   ]
 
   const workspaceMenuItems = [
-    { label: 'Save Workspace Layout', onClick: () => console.log('Save Workspace'), disabled: true },
-    { label: 'Restore Default Layout', onClick: () => console.log('Restore Default'), disabled: true },
-    { label: 'Reset All Panels', onClick: () => console.log('Reset Panels'), disabled: true }
+    { label: 'Save Workspace Layout', onClick: onSaveWorkspace },
+    { label: 'Restore Default Layout', onClick: onResetWorkspace },
+    { label: 'Reset All Panels', onClick: onResetWorkspace }
   ]
 
   const settingsMenuItems = [

@@ -60,6 +60,13 @@ function CADInterface() {
   const undo = useCadStore((state) => state.undo)
   const redo = useCadStore((state) => state.redo)
   
+  const workspace = useCadStore((state) => state.workspace)
+  const setPanelState = useCadStore((state) => state.setPanelState)
+  const setPanelPosition = useCadStore((state) => state.setPanelPosition)
+  const saveWorkspaceState = useCadStore((state) => state.saveWorkspaceState)
+  const loadWorkspaceState = useCadStore((state) => state.loadWorkspaceState)
+  const resetWorkspaceState = useCadStore((state) => state.resetWorkspaceState)
+  
   useEffect(() => {
     if (typeof updateLineEditorState !== 'function') {
       console.error('🚨 CRITICAL: updateLineEditorState is NOT a function!', typeof updateLineEditorState)
@@ -68,14 +75,37 @@ function CADInterface() {
     }
   }, [])
   
-  const [showDrawingTools, setShowDrawingTools] = useState(true)
-  const [showSnapTools, setShowSnapTools] = useState(false)
-  const [showMarkersWindow, setShowMarkersWindow] = useState(false)
-  const [showTransformTools, setShowTransformTools] = useState(false)
-  const [showLineEditorTools, setShowLineEditorTools] = useState(false)
-  const [showShapeProperties, setShowShapeProperties] = useState(true)
-  const [showTextTools, setShowTextTools] = useState(false)
-  const [showLayers, setShowLayers] = useState(true)
+  useEffect(() => {
+    console.log('🔄 Loading workspace on mount...')
+    loadWorkspaceState()
+  }, [])
+  
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      console.log('💾 Auto-saving workspace...')
+      saveWorkspaceState()
+    }, 1000)
+    
+    return () => clearTimeout(debounceTimeout)
+  }, [workspace])
+  
+  const showDrawingTools = workspace.panelStates.drawingTools
+  const showSnapTools = workspace.panelStates.snapTools
+  const showMarkersWindow = workspace.panelStates.markersGuides
+  const showTransformTools = workspace.panelStates.transformTools
+  const showLineEditorTools = workspace.panelStates.lineEditorTools
+  const showShapeProperties = workspace.panelStates.shapeProperties
+  const showTextTools = workspace.panelStates.textTools
+  const showLayers = workspace.panelStates.layers
+  
+  const setShowDrawingTools = (isOpen) => setPanelState('drawingTools', isOpen)
+  const setShowSnapTools = (isOpen) => setPanelState('snapTools', isOpen)
+  const setShowMarkersWindow = (isOpen) => setPanelState('markersGuides', isOpen)
+  const setShowTransformTools = (isOpen) => setPanelState('transformTools', isOpen)
+  const setShowLineEditorTools = (isOpen) => setPanelState('lineEditorTools', isOpen)
+  const setShowShapeProperties = (isOpen) => setPanelState('shapeProperties', isOpen)
+  const setShowTextTools = (isOpen) => setPanelState('textTools', isOpen)
+  const setShowLayers = (isOpen) => setPanelState('layers', isOpen)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -98,6 +128,7 @@ function CADInterface() {
   const [selectedShapeIds, setSelectedShapeIds] = useState([])
   
   const [panelPositions, setPanelPositions] = useState(() => {
+    const savedPositions = workspace.panelPositions || {}
     const defaultPositions = {}
     
     const PANEL_WIDTH = 320
@@ -108,7 +139,7 @@ function CADInterface() {
     // Default panels on RIGHT (lower z-index, behind other panels)
     const rightPanels = ['drawingTools', 'layers', 'shapeProperties']
     rightPanels.forEach((panelId, index) => {
-      defaultPositions[panelId] = {
+      defaultPositions[panelId] = savedPositions[panelId] || {
         x: viewportWidth - PANEL_WIDTH - 20,
         y: START_Y + (index * SPACING),
         zIndex: 10 + index
@@ -118,7 +149,7 @@ function CADInterface() {
     // Other panels on LEFT (higher z-index to appear above defaults, but below menu bar which is 100)
     const leftPanels = ['snapTools', 'markersGuides', 'transformTools', 'lineEditorTools', 'textTools']
     leftPanels.forEach((panelId, index) => {
-      defaultPositions[panelId] = {
+      defaultPositions[panelId] = savedPositions[panelId] || {
         x: 80,
         y: START_Y + (index * SPACING),
         zIndex: 20 + index
@@ -128,6 +159,15 @@ function CADInterface() {
     return defaultPositions
   })
   const [topZIndex, setTopZIndex] = useState(50)
+  
+  useEffect(() => {
+    if (workspace.panelPositions && Object.keys(workspace.panelPositions).length > 0) {
+      setPanelPositions(prevPositions => ({
+        ...prevPositions,
+        ...workspace.panelPositions
+      }))
+    }
+  }, [workspace.panelPositions])
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -932,14 +972,22 @@ function CADInterface() {
     const PANEL_WIDTH = 320
     const MIN_VISIBLE = 100
     
-    setPanelPositions(prev => ({
-      ...prev,
-      [panelId]: {
-        ...prev[panelId],
-        x: Math.max(MIN_VISIBLE - PANEL_WIDTH, Math.min(x, window.innerWidth - MIN_VISIBLE)),
-        y: Math.max(0, y)
+    const newPosition = {
+      x: Math.max(MIN_VISIBLE - PANEL_WIDTH, Math.min(x, window.innerWidth - MIN_VISIBLE)),
+      y: Math.max(0, y)
+    }
+    
+    setPanelPositions(prev => {
+      const updated = {
+        ...prev,
+        [panelId]: {
+          ...prev[panelId],
+          ...newPosition
+        }
       }
-    }))
+      setPanelPosition(panelId, updated[panelId])
+      return updated
+    })
   }
 
   const bringPanelToFront = (panelId) => {
@@ -1578,6 +1626,18 @@ function CADInterface() {
         onZoomFit={() => console.log('Zoom to fit')}
         setShowGrid={setShowGrid}
         showGrid={showGrid}
+        onSaveWorkspace={() => {
+          saveWorkspaceState()
+          alert('Workspace layout saved!')
+        }}
+        onRestoreWorkspace={() => {
+          loadWorkspaceState()
+          alert('Workspace layout restored!')
+        }}
+        onResetWorkspace={() => {
+          resetWorkspaceState()
+          window.location.reload()
+        }}
       />
       <div className="top-toolbar">
         <div className="toolbar-left">
