@@ -7,6 +7,7 @@ import DrawingToolsWindow from './DrawingToolsWindow'
 import SnapToolsWindow from './SnapToolsWindow'
 import MarkersWindow from './MarkersWindow'
 import TransformToolsWindow from './TransformToolsWindow'
+import LineEditorToolsWindow from './LineEditorToolsWindow'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import './CADInterface.css'
 
@@ -30,11 +31,14 @@ function CADInterface() {
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
   const setSelectedShapeId = useCadStore((state) => state.setSelectedShapeId)
   const updateShape = useCadStore((state) => state.updateShape)
+  const lineEditorState = useCadStore((state) => state.lineEditorState)
+  const setLineEditorState = useCadStore((state) => state.setLineEditorState)
   
   const [showDrawingTools, setShowDrawingTools] = useState(true)
   const [showSnapTools, setShowSnapTools] = useState(true)
   const [showMarkersWindow, setShowMarkersWindow] = useState(false)
   const [showTransformTools, setShowTransformTools] = useState(false)
+  const [showLineEditorTools, setShowLineEditorTools] = useState(false)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -482,6 +486,45 @@ function CADInterface() {
     updateViewport({ zoom: 1, pan: { x: 0, y: 0 } })
   }
 
+  const handleShapeClick = (shape) => {
+    if (mirrorAxisSelectionCallback) {
+      mirrorAxisSelectionCallback(shape.id)
+      setMirrorAxisLineId(shape.id)
+      setMirrorAxisSelectionCallback(null)
+    } else if (showLineEditorTools && lineEditorState) {
+      const currentSelected = lineEditorState.selectedLines || []
+      if (currentSelected.includes(shape.id)) {
+        const newSelection = currentSelected.filter(id => id !== shape.id)
+        if (shape.originalStroke) {
+          updateShape(shape.id, {
+            stroke: shape.originalStroke,
+            strokeWidth: shape.originalStrokeWidth
+          })
+        }
+        setLineEditorState({
+          ...lineEditorState,
+          selectedLines: newSelection
+        })
+      } else {
+        const newSelection = [...currentSelected, shape.id]
+        if (!shape.originalStroke) {
+          updateShape(shape.id, {
+            originalStroke: shape.stroke,
+            originalStrokeWidth: shape.strokeWidth,
+            stroke: '#FF0000',
+            strokeWidth: 3
+          })
+        }
+        setLineEditorState({
+          ...lineEditorState,
+          selectedLines: newSelection
+        })
+      }
+    } else {
+      setSelectedShapeId(shape.id)
+    }
+  }
+
   return (
     <div className="cad-interface">
       <div className="top-menu">
@@ -500,6 +543,9 @@ function CADInterface() {
           </button>
           <button onClick={() => setShowTransformTools(!showTransformTools)}>
             {showTransformTools ? 'Hide' : 'Show'} Transform
+          </button>
+          <button onClick={() => setShowLineEditorTools(!showLineEditorTools)}>
+            {showLineEditorTools ? 'Hide' : 'Show'} Line Editor
           </button>
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
@@ -573,15 +619,7 @@ function CADInterface() {
                           points={[shape.x1, shape.y1, shape.x2, shape.y2]}
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
-                          onClick={() => {
-                            if (mirrorAxisSelectionCallback) {
-                              mirrorAxisSelectionCallback(shape.id)
-                              setMirrorAxisLineId(shape.id)
-                              setMirrorAxisSelectionCallback(null)
-                            } else {
-                              setSelectedShapeId(shape.id)
-                            }
-                          }}
+                          onClick={() => handleShapeClick(shape)}
                         />
                       )
                     } else if (shape.type === 'circle') {
@@ -596,7 +634,7 @@ function CADInterface() {
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
-                          onClick={() => setSelectedShapeId(shape.id)}
+                          onClick={() => handleShapeClick(shape)}
                         />
                       )
                     } else if (shape.type === 'rectangle') {
@@ -612,7 +650,7 @@ function CADInterface() {
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
-                          onClick={() => setSelectedShapeId(shape.id)}
+                          onClick={() => handleShapeClick(shape)}
                         />
                       )
                     } else if (shape.type === 'polygon') {
@@ -623,7 +661,7 @@ function CADInterface() {
                           closed
                           stroke={shape.stroke}
                           strokeWidth={shape.strokeWidth}
-                          onClick={() => setSelectedShapeId(shape.id)}
+                          onClick={() => handleShapeClick(shape)}
                         />
                       )
                     } else if (shape.type === 'arc') {
@@ -639,7 +677,7 @@ function CADInterface() {
                           rotation={shape.rotation || 0}
                           scaleX={shape.scaleX || 1}
                           scaleY={shape.scaleY || 1}
-                          onClick={() => setSelectedShapeId(shape.id)}
+                          onClick={() => handleShapeClick(shape)}
                         />
                       )
                     } else if (shape.type === 'freehand') {
@@ -651,7 +689,7 @@ function CADInterface() {
                           strokeWidth={shape.strokeWidth}
                           lineCap="round"
                           lineJoin="round"
-                          onClick={() => setSelectedShapeId(shape.id)}
+                          onClick={() => handleShapeClick(shape)}
                         />
                       )
                     }
@@ -1121,6 +1159,15 @@ function CADInterface() {
           mirrorAxisLineId={mirrorAxisLineId}
           onClearMirrorAxis={() => setMirrorAxisLineId(null)}
         />
+      </PopupWindow>
+
+      <PopupWindow
+        title="Line Editor Tools"
+        isOpen={showLineEditorTools}
+        onClose={() => setShowLineEditorTools(false)}
+        defaultPosition={{ x: 800, y: 100 }}
+      >
+        <LineEditorToolsWindow />
       </PopupWindow>
     </div>
   )
