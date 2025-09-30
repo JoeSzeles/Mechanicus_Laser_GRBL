@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { saveWorkspace, loadWorkspace, resetWorkspace as resetWorkspaceStorage, getDefaultWorkspace } from '../utils/workspaceManager'
 
 const useCadStore = create((set) => ({
   shapes: [
@@ -72,6 +73,26 @@ const useCadStore = create((set) => ({
   undoStack: [],
   redoStack: [],
   maxUndoStack: 50,
+  
+  workspace: {
+    panelStates: {
+      drawingTools: true,
+      layers: true,
+      shapeProperties: true,
+      snapTools: false,
+      markersGuides: false,
+      transformTools: false,
+      lineEditorTools: false,
+      textTools: false
+    },
+    panelPositions: {},
+    gridVisible: true,
+    gridSize: 10,
+    gridSnap: false,
+    selectedTool: 'select',
+    zoomLevel: 100,
+    viewportPosition: { x: 0, y: 0 }
+  },
 
   setShapes: (shapes) => set({ shapes }),
   addShape: (shape) => set((state) => ({ shapes: [...state.shapes, shape] })),
@@ -235,7 +256,52 @@ const useCadStore = create((set) => ({
     redoStack: []
   })),
   
-  clearHistory: () => set({ undoStack: [], redoStack: [] })
+  clearHistory: () => set({ undoStack: [], redoStack: [] }),
+  
+  updateWorkspace: (updates) => set((state) => ({
+    workspace: { ...state.workspace, ...updates }
+  })),
+  
+  setPanelState: (panelId, isOpen) => set((state) => ({
+    workspace: {
+      ...state.workspace,
+      panelStates: { ...state.workspace.panelStates, [panelId]: isOpen }
+    }
+  })),
+  
+  setPanelPosition: (panelId, position) => set((state) => ({
+    workspace: {
+      ...state.workspace,
+      panelPositions: { ...state.workspace.panelPositions, [panelId]: position }
+    }
+  })),
+  
+  saveWorkspaceState: () => {
+    const state = useCadStore.getState()
+    const success = saveWorkspace(state.workspace)
+    if (success) {
+      console.log('✅ Workspace saved successfully')
+    }
+    return success
+  },
+  
+  loadWorkspaceState: () => {
+    const loaded = loadWorkspace()
+    if (loaded) {
+      set({ workspace: loaded })
+      console.log('✅ Workspace loaded successfully')
+      return true
+    }
+    return false
+  },
+  
+  resetWorkspaceState: () => {
+    const defaultWorkspace = getDefaultWorkspace()
+    resetWorkspaceStorage()
+    set({ workspace: defaultWorkspace })
+    console.log('✅ Workspace reset to defaults')
+    return true
+  }
 }))
 
 export default useCadStore
