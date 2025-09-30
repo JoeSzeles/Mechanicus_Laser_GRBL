@@ -8,6 +8,8 @@ import SnapToolsWindow from './SnapToolsWindow'
 import MarkersWindow from './MarkersWindow'
 import TransformToolsWindow from './TransformToolsWindow'
 import LineEditorToolsWindow from './LineEditorToolsWindow'
+import ShapePropertiesWindow from './ShapePropertiesWindow'
+import TextFontToolsWindow from './TextFontToolsWindow'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import './CADInterface.css'
@@ -50,6 +52,8 @@ function CADInterface() {
   const [showMarkersWindow, setShowMarkersWindow] = useState(false)
   const [showTransformTools, setShowTransformTools] = useState(false)
   const [showLineEditorTools, setShowLineEditorTools] = useState(false)
+  const [showShapeProperties, setShowShapeProperties] = useState(false)
+  const [showTextTools, setShowTextTools] = useState(false)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -106,6 +110,7 @@ function CADInterface() {
         setMirrorAxisSelectionCallback(null)
         setMirrorAxisLineId(null)
         setTrimPreviewLines([])
+        
         if (lineEditorState) {
           const selectedLines = lineEditorState.selectedLines || []
           selectedLines.forEach(id => {
@@ -113,11 +118,43 @@ function CADInterface() {
             if (shape && shape.originalStroke) {
               updateShape(id, {
                 stroke: shape.originalStroke,
-                strokeWidth: shape.originalStrokeWidth
+                strokeWidth: shape.originalStrokeWidth,
+                originalStroke: undefined,
+                originalStrokeWidth: undefined
               })
             }
           })
           setLineEditorState({ selectedLines: [], currentTool: null })
+        }
+        
+        const shapePropertiesState = useCadStore.getState().shapePropertiesState
+        if (shapePropertiesState?.selectedShapeId) {
+          const shape = shapes.find(s => s.id === shapePropertiesState.selectedShapeId)
+          if (shape && shape.originalStroke !== undefined) {
+            updateShape(shapePropertiesState.selectedShapeId, {
+              stroke: shape.originalStroke,
+              strokeWidth: shape.originalStrokeWidth,
+              originalStroke: undefined,
+              originalStrokeWidth: undefined
+            })
+          }
+          const setShapePropertiesState = useCadStore.getState().setShapePropertiesState
+          setShapePropertiesState(null)
+        }
+        
+        const textToolState = useCadStore.getState().textToolState
+        if (textToolState?.selectedTextId) {
+          const text = shapes.find(s => s.id === textToolState.selectedTextId)
+          if (text && text.originalStroke !== undefined) {
+            updateShape(textToolState.selectedTextId, {
+              stroke: text.originalStroke,
+              strokeWidth: text.originalStrokeWidth,
+              originalStroke: undefined,
+              originalStrokeWidth: undefined
+            })
+          }
+          const setTextToolState = useCadStore.getState().setTextToolState
+          setTextToolState(null)
         }
       }
     }
@@ -660,6 +697,33 @@ function CADInterface() {
       setMarkerState(null)
       setActiveTool(null)
     }
+    
+    const textToolState = useCadStore.getState().textToolState
+    if (textToolState?.placeMode && textToolState.pendingText) {
+      const clickPoint = getWorldPoint(e)
+      const newText = {
+        id: `text-${Date.now()}`,
+        type: 'text',
+        x: clickPoint.x,
+        y: clickPoint.y,
+        text: textToolState.pendingText.text,
+        font: textToolState.pendingText.font,
+        fontSize: textToolState.pendingText.fontSize,
+        fill: textToolState.pendingText.fill,
+        base_x: clickPoint.x / machineProfile.mmToPx,
+        base_y: clickPoint.y / machineProfile.mmToPx
+      }
+      
+      addShape(newText)
+      
+      const setTextToolState = useCadStore.getState().setTextToolState
+      setTextToolState({
+        placeMode: false,
+        selectMode: false,
+        selectedTextId: null,
+        pendingText: null
+      })
+    }
   }
 
   useEffect(() => {
@@ -824,13 +888,11 @@ function CADInterface() {
   const handleTrimClick = (shape, clickX, clickY) => {
     if (shape.type !== 'line') {
       console.log('❌ TRIM: Shape is not a line, ignoring')
-      alert(`ERROR: Shape ${shape.id} is not a line (type: ${shape.type})`)
       return
     }
     
     const { trimState, selectedLines = [], intersection } = lineEditorState
     console.log('✂️ TRIM CLICK - Current state:', { trimState, selectedLines, intersection })
-    alert(`TRIM CLICK\nShape: ${shape.id}\nCurrent State: ${trimState}\nSelected: [${selectedLines.join(', ')}]`)
     
     if (trimState === 'first_line') {
       console.log('  → Selecting FIRST line:', shape.id)
@@ -1174,7 +1236,25 @@ function CADInterface() {
       event.evt.stopPropagation()
     }
     
-    if (mirrorAxisSelectionCallback) {
+    const textToolState = useCadStore.getState().textToolState
+    const shapePropertiesState = useCadStore.getState().shapePropertiesState
+    
+    if (textToolState?.selectMode && shape.type === 'text') {
+      console.log('   → Text selection')
+      const setTextToolState = useCadStore.getState().setTextToolState
+      setTextToolState({
+        selectMode: false,
+        placeMode: false,
+        selectedTextId: shape.id
+      })
+    } else if (shapePropertiesState?.selectMode) {
+      console.log('   → Shape properties selection')
+      const setShapePropertiesState = useCadStore.getState().setShapePropertiesState
+      setShapePropertiesState({
+        selectMode: false,
+        selectedShapeId: shape.id
+      })
+    } else if (mirrorAxisSelectionCallback) {
       console.log('   → Mirror axis callback')
       mirrorAxisSelectionCallback(shape.id)
       setMirrorAxisLineId(shape.id)
@@ -1258,6 +1338,12 @@ function CADInterface() {
           </button>
           <button onClick={() => setShowLineEditorTools(!showLineEditorTools)}>
             {showLineEditorTools ? 'Hide' : 'Show'} Line Editor
+          </button>
+          <button onClick={() => setShowShapeProperties(!showShapeProperties)}>
+            {showShapeProperties ? 'Hide' : 'Show'} Shape Properties
+          </button>
+          <button onClick={() => setShowTextTools(!showTextTools)}>
+            {showTextTools ? 'Hide' : 'Show'} Text Tools
           </button>
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
@@ -1410,6 +1496,27 @@ function CADInterface() {
                           onMouseLeave={() => handleShapeHover(shape, false)}
                         />
                       )
+                    } else if (shape.type === 'text') {
+                      return (
+                        <Text
+                          key={shape.id}
+                          x={shape.x}
+                          y={shape.y}
+                          text={shape.text}
+                          fontSize={shape.fontSize || 50}
+                          fontFamily={shape.font || 'Impact'}
+                          fill={shape.fill || '#000000'}
+                          stroke={shape.stroke}
+                          strokeWidth={shape.strokeWidth || 0}
+                          draggable={true}
+                          onClick={(e) => handleShapeClick(shape, e)}
+                          onDragEnd={(e) => {
+                            const newX = e.target.x()
+                            const newY = e.target.y()
+                            updateShape(shape.id, { x: newX, y: newY })
+                          }}
+                        />
+                      )
                     } else if (shape.type === 'freehand') {
                       return (
                         <Line
@@ -1420,6 +1527,23 @@ function CADInterface() {
                           hitStrokeWidth={getHitStrokeWidth(shape)}
                           lineCap="round"
                           lineJoin="round"
+                          onClick={(e) => handleShapeClick(shape, e)}
+                          onMouseEnter={() => handleShapeHover(shape, true)}
+                          onMouseLeave={() => handleShapeHover(shape, false)}
+                        />
+                      )
+                    } else if (shape.type === 'path-group') {
+                      return (
+                        <Rect
+                          key={shape.id}
+                          x={shape.x}
+                          y={shape.y}
+                          width={shape.width}
+                          height={shape.height}
+                          stroke={shape.stroke || '#000000'}
+                          strokeWidth={shape.strokeWidth || 1}
+                          fill={shape.fill || 'transparent'}
+                          dash={[5, 5]}
                           onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
@@ -1912,6 +2036,24 @@ function CADInterface() {
         defaultPosition={{ x: 800, y: 100 }}
       >
         <LineEditorToolsWindow />
+      </PopupWindow>
+
+      <PopupWindow
+        title="Shape Properties"
+        isOpen={showShapeProperties}
+        onClose={() => setShowShapeProperties(false)}
+        defaultPosition={{ x: 1050, y: 100 }}
+      >
+        <ShapePropertiesWindow />
+      </PopupWindow>
+
+      <PopupWindow
+        title="Text & Font Tools"
+        isOpen={showTextTools}
+        onClose={() => setShowTextTools(false)}
+        defaultPosition={{ x: 1050, y: 400 }}
+      >
+        <TextFontToolsWindow />
       </PopupWindow>
     </div>
   )

@@ -66,6 +66,8 @@ const useCadStore = create((set) => ({
     rotationCenter: null
   },
   lineEditorState: null,
+  shapePropertiesState: null,
+  textToolState: null,
   undo: [],
 
   setShapes: (shapes) => set({ shapes }),
@@ -124,6 +126,16 @@ const useCadStore = create((set) => ({
   setLineEditorState: (state) => set({ lineEditorState: state }),
   updateLineEditorState: (updates) => set((state) => ({
     lineEditorState: { ...(state.lineEditorState || {}), ...updates }
+  })),
+  
+  setShapePropertiesState: (state) => set({ shapePropertiesState: state }),
+  updateShapePropertiesState: (updates) => set((state) => ({
+    shapePropertiesState: { ...(state.shapePropertiesState || {}), ...updates }
+  })),
+  
+  setTextToolState: (state) => set({ textToolState: state }),
+  updateTextToolState: (updates) => set((state) => ({
+    textToolState: { ...(state.textToolState || {}), ...updates }
   })),
   
   pushUndo: (command) => set((state) => ({
