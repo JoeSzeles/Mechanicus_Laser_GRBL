@@ -78,6 +78,8 @@ function CADInterface() {
   const [hoveredShapeId, setHoveredShapeId] = useState(null)
   const [adjustLineState, setAdjustLineState] = useState(null)
   const [trimPreviewLines, setTrimPreviewLines] = useState([])
+  const [selectionRect, setSelectionRect] = useState(null)
+  const [selectedShapeIds, setSelectedShapeIds] = useState([])
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -109,7 +111,7 @@ function CADInterface() {
   }, [shapes])
 
   useEffect(() => {
-    const handleEscKey = (e) => {
+    const handleKeyPress = (e) => {
       if (e.key === 'Escape') {
         setActiveTool(null)
         setDrawingState(null)
@@ -163,12 +165,19 @@ function CADInterface() {
           const setTextToolState = useCadStore.getState().setTextToolState
           setTextToolState(null)
         }
+      } else if (e.key === 'Delete' || e.key === 'Del') {
+        if (selectedShapeIds.length > 0) {
+          selectedShapeIds.forEach(id => {
+            removeShape(id)
+          })
+          setSelectedShapeIds([])
+        }
       }
     }
     
-    window.addEventListener('keydown', handleEscKey)
-    return () => window.removeEventListener('keydown', handleEscKey)
-  }, [lineEditorState, shapes, setActiveTool, updateShape, setLineEditorState])
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [lineEditorState, shapes, selectedShapeIds, setActiveTool, updateShape, setLineEditorState, removeShape])
 
   const handleWheel = (e) => {
     e.evt.preventDefault()
@@ -226,6 +235,7 @@ function CADInterface() {
     const clickedOnEmpty = e.target === e.target.getStage()
     if (clickedOnEmpty && e.evt.button === 0) {
       setSelectedShapeId(null)
+      setSelectedShapeIds([])
       if (showLineEditorTools && lineEditorState) {
         const selectedLines = lineEditorState.selectedLines || []
         selectedLines.forEach(id => {
@@ -246,6 +256,11 @@ function CADInterface() {
         })
       }
       setTrimPreviewLines([])
+      
+      if (!activeTool && !showLineEditorTools) {
+        const point = getWorldPoint(e, false)
+        setSelectionRect({ x: point.x, y: point.y, width: 0, height: 0 })
+      }
     }
     
     if (lineEditorState?.currentTool === 'adjustLine' && e.evt.button === 0) {
@@ -342,6 +357,16 @@ function CADInterface() {
         y: e.evt.clientY - panStart.y
       }
       updateViewport({ pan: newPan })
+      return
+    }
+    
+    if (selectionRect) {
+      const point = getWorldPoint(e, false)
+      const x = Math.min(selectionRect.x, point.x)
+      const y = Math.min(selectionRect.y, point.y)
+      const width = Math.abs(point.x - selectionRect.x)
+      const height = Math.abs(point.y - selectionRect.y)
+      setSelectionRect({ x, y, width, height })
       return
     }
     
@@ -639,6 +664,65 @@ function CADInterface() {
     setIsPanning(false)
     setDraggedGuide(null)
     
+    if (selectionRect && selectionRect.width > 5 && selectionRect.height > 5) {
+      const selectedIds = []
+      shapes.forEach(shape => {
+        const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
+        if (!shapeLayer || !shapeLayer.visible || shapeLayer.locked) return
+        
+        let intersects = false
+        if (shape.type === 'line') {
+          const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2
+          const minX = Math.min(x1, x2), maxX = Math.max(x1, x2)
+          const minY = Math.min(y1, y2), maxY = Math.max(y1, y2)
+          intersects = !(maxX < selectionRect.x || minX > selectionRect.x + selectionRect.width ||
+                        maxY < selectionRect.y || minY > selectionRect.y + selectionRect.height)
+        } else if (shape.type === 'circle') {
+          const cx = shape.x, cy = shape.y, r = shape.radius
+          intersects = !(cx + r < selectionRect.x || cx - r > selectionRect.x + selectionRect.width ||
+                        cy + r < selectionRect.y || cy - r > selectionRect.y + selectionRect.height)
+        } else if (shape.type === 'rectangle') {
+          intersects = !(shape.x + shape.width < selectionRect.x || shape.x > selectionRect.x + selectionRect.width ||
+                        shape.y + shape.height < selectionRect.y || shape.y > selectionRect.y + selectionRect.height)
+        } else if (shape.type === 'polygon' && shape.points) {
+          for (let i = 0; i < shape.points.length; i += 2) {
+            const px = shape.points[i], py = shape.points[i + 1]
+            if (px >= selectionRect.x && px <= selectionRect.x + selectionRect.width &&
+                py >= selectionRect.y && py <= selectionRect.y + selectionRect.height) {
+              intersects = true
+              break
+            }
+          }
+        } else if (shape.type === 'freehand' && shape.points) {
+          for (let i = 0; i < shape.points.length; i += 2) {
+            const px = shape.points[i], py = shape.points[i + 1]
+            if (px >= selectionRect.x && px <= selectionRect.x + selectionRect.width &&
+                py >= selectionRect.y && py <= selectionRect.y + selectionRect.height) {
+              intersects = true
+              break
+            }
+          }
+        } else if (shape.type === 'text') {
+          intersects = shape.x >= selectionRect.x && shape.x <= selectionRect.x + selectionRect.width &&
+                      shape.y >= selectionRect.y && shape.y <= selectionRect.y + selectionRect.height
+        } else if (shape.type === 'arc') {
+          const cx = shape.x, cy = shape.y, r = shape.outerRadius || 50
+          intersects = !(cx + r < selectionRect.x || cx - r > selectionRect.x + selectionRect.width ||
+                        cy + r < selectionRect.y || cy - r > selectionRect.y + selectionRect.height)
+        }
+        
+        if (intersects) {
+          selectedIds.push(shape.id)
+        }
+      })
+      
+      setSelectedShapeIds(selectedIds)
+      setSelectionRect(null)
+      return
+    }
+    
+    setSelectionRect(null)
+    
     if (adjustLineState) {
       const shape = shapes.find(s => s.id === adjustLineState.shapeId)
       if (shape && shape.originalStroke) {
@@ -915,6 +999,15 @@ function CADInterface() {
     }
     
     event.target.value = ''
+  }
+  
+  const handleDeleteSelected = () => {
+    if (selectedShapeIds.length === 0) return
+    
+    selectedShapeIds.forEach(id => {
+      removeShape(id)
+    })
+    setSelectedShapeIds([])
   }
 
   const handleLineEditorToolClick = (shape, clickX, clickY) => {
@@ -1342,7 +1435,7 @@ function CADInterface() {
   }
 
   const getShapeStroke = (shape) => {
-    const isSelected = lineEditorState?.selectedLines?.includes(shape.id)
+    const isSelected = lineEditorState?.selectedLines?.includes(shape.id) || selectedShapeIds.includes(shape.id)
     const isHovered = hoveredShapeId === shape.id
     
     if (isSelected) {
@@ -1354,7 +1447,7 @@ function CADInterface() {
   }
 
   const getShapeStrokeWidth = (shape) => {
-    const isSelected = lineEditorState?.selectedLines?.includes(shape.id)
+    const isSelected = lineEditorState?.selectedLines?.includes(shape.id) || selectedShapeIds.includes(shape.id)
     const isHovered = hoveredShapeId === shape.id
     
     if (isSelected) {
@@ -1405,6 +1498,13 @@ function CADInterface() {
             <input type="file" accept=".svg" onChange={handleImportSVG} style={{ display: 'none' }} />
           </label>
           <button onClick={handleExportSVG} style={{ background: '#4CAF50' }}>Export SVG</button>
+          <button 
+            onClick={handleDeleteSelected} 
+            style={{ background: '#f44336', color: 'white' }}
+            disabled={selectedShapeIds.length === 0}
+          >
+            Delete Selected
+          </button>
           <button onClick={handleZoomIn}>Zoom In</button>
           <button onClick={handleZoomOut}>Zoom Out</button>
           <button onClick={handleZoomReset}>Reset Zoom ({Math.round(viewport.zoom * 100)}%)</button>
@@ -1737,6 +1837,19 @@ function CADInterface() {
                       listening={false}
                     />
                   ))}
+                  
+                  {selectionRect && selectionRect.width > 0 && selectionRect.height > 0 && (
+                    <Rect
+                      x={selectionRect.x}
+                      y={selectionRect.y}
+                      width={selectionRect.width}
+                      height={selectionRect.height}
+                      stroke="#0088FF"
+                      strokeWidth={1 / viewport.zoom}
+                      fill="rgba(0, 136, 255, 0.1)"
+                      listening={false}
+                    />
+                  )}
                   
                   {guidesVisible && guides.map(guide => {
                     if (guide.type === 'horizontal') {
