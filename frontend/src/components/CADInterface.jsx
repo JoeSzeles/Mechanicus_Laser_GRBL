@@ -700,29 +700,35 @@ function CADInterface() {
     
     const textToolState = useCadStore.getState().textToolState
     if (textToolState?.placeMode && textToolState.pendingText) {
-      const clickPoint = getWorldPoint(e)
-      const newText = {
-        id: `text-${Date.now()}`,
-        type: 'text',
-        x: clickPoint.x,
-        y: clickPoint.y,
-        text: textToolState.pendingText.text,
-        font: textToolState.pendingText.font,
-        fontSize: textToolState.pendingText.fontSize,
-        fill: textToolState.pendingText.fill,
-        base_x: clickPoint.x / machineProfile.mmToPx,
-        base_y: clickPoint.y / machineProfile.mmToPx
+      const clickedOnEmpty = e.target === e.target.getStage()
+      if (clickedOnEmpty) {
+        const clickPoint = getWorldPoint(e)
+        const newTextId = `text-${Date.now()}`
+        const newText = {
+          id: newTextId,
+          type: 'text',
+          x: clickPoint.x,
+          y: clickPoint.y,
+          text: textToolState.pendingText.text,
+          font: textToolState.pendingText.font,
+          fontSize: textToolState.pendingText.fontSize,
+          fill: textToolState.pendingText.fill,
+          stroke: textToolState.pendingText.stroke,
+          strokeWidth: textToolState.pendingText.strokeWidth || 0,
+          base_x: clickPoint.x / machineProfile.mmToPx,
+          base_y: clickPoint.y / machineProfile.mmToPx
+        }
+        
+        addShape(newText)
+        
+        const setTextToolState = useCadStore.getState().setTextToolState
+        setTextToolState({
+          placeMode: false,
+          selectMode: false,
+          selectedTextId: newTextId,
+          pendingText: null
+        })
       }
-      
-      addShape(newText)
-      
-      const setTextToolState = useCadStore.getState().setTextToolState
-      setTextToolState({
-        placeMode: false,
-        selectMode: false,
-        selectedTextId: null,
-        pendingText: null
-      })
     }
   }
 
