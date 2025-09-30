@@ -30,6 +30,7 @@ function CADInterface() {
   const markersVisible = useCadStore((state) => state.markersVisible)
   const guidesVisible = useCadStore((state) => state.guidesVisible)
   const guidesLocked = useCadStore((state) => state.guidesLocked)
+  const markerSnapEnabled = useCadStore((state) => state.markerSnapEnabled)
   const addMarker = useCadStore((state) => state.addMarker)
   const updateGuide = useCadStore((state) => state.updateGuide)
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
@@ -187,7 +188,7 @@ function CADInterface() {
     updateViewport({ zoom: clampedScale, pan: newPos })
   }
 
-  const getWorldPoint = (e) => {
+  const getWorldPoint = (e, enableSnap = true) => {
     const stage = stageRef.current
     if (!stage) return { x: 0, y: 0 }
     
@@ -195,12 +196,14 @@ function CADInterface() {
     let worldX = (point.x - viewport.pan.x) / viewport.zoom
     let worldY = (point.y - viewport.pan.y) / viewport.zoom
     
-    const gridSpacing = gridSize * machineProfile.mmToPx
-    const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
-    
-    if (snapResult) {
-      worldX = snapResult.x
-      worldY = snapResult.y
+    if (enableSnap) {
+      const gridSpacing = gridSize * machineProfile.mmToPx
+      const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
+      
+      if (snapResult) {
+        worldX = snapResult.x
+        worldY = snapResult.y
+      }
     }
     
     return { x: worldX, y: worldY }
@@ -309,16 +312,18 @@ function CADInterface() {
       } else if (activeTool === 'freehand') {
         setDrawingState({ tool: 'freehand', points: [point.x, point.y] })
       } else if (activeTool === 'centerPoint') {
+        const markerPoint = getWorldPoint(e, markerSnapEnabled)
         addMarker({
           id: `marker-${Date.now()}`,
           type: 'centerPoint',
-          x: point.x,
-          y: point.y
+          x: markerPoint.x,
+          y: markerPoint.y
         })
         setActiveTool(null)
       } else if (activeTool === 'lineMarker') {
         if (!markerState) {
-          setMarkerState({ tool: 'lineMarker', startX: point.x, startY: point.y })
+          const markerPoint = getWorldPoint(e, markerSnapEnabled)
+          setMarkerState({ tool: 'lineMarker', startX: markerPoint.x, startY: markerPoint.y })
         }
       }
     }
@@ -678,7 +683,7 @@ function CADInterface() {
     }
     
     if (markerState && markerState.tool === 'lineMarker') {
-      const currentPoint = getWorldPoint(e)
+      const currentPoint = getWorldPoint(e, markerSnapEnabled)
       const dx = currentPoint.x - markerState.startX
       const dy = currentPoint.y - markerState.startY
       const distance = Math.sqrt(dx * dx + dy * dy)

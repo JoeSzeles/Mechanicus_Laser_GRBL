@@ -5,9 +5,11 @@ const MarkersWindow = ({ onActivateTool }) => {
     markersVisible, 
     guidesVisible, 
     guidesLocked,
+    markerSnapEnabled,
     setMarkersVisible, 
     setGuidesVisible,
     setGuidesLocked,
+    setMarkerSnapEnabled,
     clearMarkers,
     clearGuides,
     addGuide
@@ -65,6 +67,23 @@ const MarkersWindow = ({ onActivateTool }) => {
         >
           Line Marker
         </button>
+
+        <label style={{
+          display: 'flex',
+          alignItems: 'center',
+          color: '#fff',
+          cursor: 'pointer',
+          marginBottom: '10px',
+          fontSize: '13px'
+        }}>
+          <input
+            type="checkbox"
+            checked={markerSnapEnabled}
+            onChange={(e) => setMarkerSnapEnabled(e.target.checked)}
+            style={{ marginRight: '8px' }}
+          />
+          Enable Snapping
+        </label>
 
         <div style={{ display: 'flex', gap: '5px', marginBottom: '5px' }}>
           <button

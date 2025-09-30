@@ -57,6 +57,7 @@ const useCadStore = create((set) => ({
   markersVisible: true,
   guidesVisible: true,
   guidesLocked: false,
+  markerSnapEnabled: true,
   selectedShapeId: null,
   transformMode: null,
   transformSettings: {
@@ -86,6 +87,7 @@ const useCadStore = create((set) => ({
   })),
   clearMarkers: () => set({ markers: [] }),
   setMarkersVisible: (visible) => set({ markersVisible: visible }),
+  setMarkerSnapEnabled: (enabled) => set({ markerSnapEnabled: enabled }),
   
   setGuides: (guides) => set({ guides }),
   addGuide: (guide) => set((state) => ({ guides: [...state.guides, guide] })),
