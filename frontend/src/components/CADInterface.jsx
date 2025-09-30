@@ -14,6 +14,13 @@ import LayersWindow from './LayersWindow'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
+import ToolButton from './ToolButton'
+import {
+  ImportIcon, ExportIcon, UndoIcon, RedoIcon,
+  DrawingToolsIcon, SnapToolsIcon, MarkersIcon, TransformIcon,
+  LineEditorIcon, ShapePropertiesIcon, TextToolsIcon, LayersIcon,
+  UserIcon, LogoutIcon
+} from './ToolIcons'
 import './CADInterface.css'
 
 function CADInterface() {
@@ -1564,6 +1571,99 @@ function CADInterface() {
                 max="100"
               />
             </label>
+          </div>
+
+          <div className="tool-button-grid">
+            <ToolButton 
+              icon={<ImportIcon />} 
+              label="Import SVG" 
+              onClick={() => document.getElementById('svg-import-input').click()} 
+            />
+            <input 
+              id="svg-import-input" 
+              type="file" 
+              accept=".svg" 
+              onChange={handleImportSVG} 
+              style={{ display: 'none' }} 
+            />
+            <ToolButton 
+              icon={<ExportIcon />} 
+              label="Export SVG" 
+              onClick={handleExportSVG} 
+            />
+            <ToolButton 
+              icon={<UndoIcon />} 
+              label="Undo (Ctrl+Z)" 
+              onClick={undo} 
+              disabled={undoStack.length === 0}
+            />
+            <ToolButton 
+              icon={<RedoIcon />} 
+              label="Redo (Ctrl+Y)" 
+              onClick={redo} 
+              disabled={redoStack.length === 0}
+            />
+
+            <ToolButton 
+              icon={<DrawingToolsIcon />} 
+              label="Drawing Tools" 
+              onClick={() => setShowDrawingTools(!showDrawingTools)}
+              active={showDrawingTools}
+            />
+            <ToolButton 
+              icon={<SnapToolsIcon />} 
+              label="Snap Tools" 
+              onClick={() => setShowSnapTools(!showSnapTools)}
+              active={showSnapTools}
+            />
+            <ToolButton 
+              icon={<MarkersIcon />} 
+              label="Markers" 
+              onClick={() => setShowMarkersWindow(!showMarkersWindow)}
+              active={showMarkersWindow}
+            />
+            <ToolButton 
+              icon={<TransformIcon />} 
+              label="Transform Tools" 
+              onClick={() => setShowTransformTools(!showTransformTools)}
+              active={showTransformTools}
+            />
+
+            <ToolButton 
+              icon={<LineEditorIcon />} 
+              label="Line Editor" 
+              onClick={() => setShowLineEditorTools(!showLineEditorTools)}
+              active={showLineEditorTools}
+            />
+            <ToolButton 
+              icon={<ShapePropertiesIcon />} 
+              label="Shape Properties" 
+              onClick={() => setShowShapeProperties(!showShapeProperties)}
+              active={showShapeProperties}
+            />
+            <ToolButton 
+              icon={<TextToolsIcon />} 
+              label="Text Tools" 
+              onClick={() => setShowTextTools(!showTextTools)}
+              active={showTextTools}
+            />
+            <ToolButton 
+              icon={<LayersIcon />} 
+              label="Layers" 
+              onClick={() => setShowLayers(!showLayers)}
+              active={showLayers}
+            />
+          </div>
+
+          <div className="user-section">
+            <div className="user-info">
+              <UserIcon />
+              <span className="user-email">{user?.email}</span>
+            </div>
+            <button className="logout-button" onClick={logout}>
+              <LogoutIcon />
+              <span>Logout</span>
+            </button>
           </div>
         </div>
 

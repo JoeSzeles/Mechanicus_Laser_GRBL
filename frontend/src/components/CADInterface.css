@@ -76,19 +76,85 @@
 }
 
 .toolbar-panel {
-  width: 200px;
+  width: 250px;
   background-color: #2b2b2b;
   border-right: 1px solid #1a2a2f;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   padding: 15px;
+  gap: 20px;
 }
 
 .tool-options {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.tool-button-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.user-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 15px;
+  border-top: 1px solid #3a3f47;
+  margin-top: auto;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e0e0e0;
+  padding: 8px;
+  background: #1a1d24;
+  border-radius: 6px;
+}
+
+.user-info svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.user-email {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background: #b71c1c;
+  transform: translateY(-1px);
+}
+
+.logout-button svg {
+  width: 16px;
+  height: 16px;
 }
 
 .tool-options label {
