@@ -1,0 +1,66 @@
+.tool-button-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tool-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  border: 1px solid #3a3f47;
+  background: #2a2d35;
+  color: #e0e0e0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.tool-button:hover:not(:disabled) {
+  background: #3a3f47;
+  border-color: #4a9eff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
+}
+
+.tool-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.tool-button.active {
+  background: #4a9eff;
+  border-color: #4a9eff;
+  color: white;
+}
+
+.tool-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.tool-button svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.tool-tooltip {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 8px);
+  transform: translateY(-50%);
+  background: #1a1d24;
+  color: #e0e0e0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
+  border: 1px solid #3a3f47;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
