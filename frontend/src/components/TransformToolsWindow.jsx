@@ -2,7 +2,7 @@ import { useState } from 'react'
 import useCadStore from '../store/cadStore'
 import './TransformToolsWindow.css'
 
-function TransformToolsWindow({ onSelectingMirrorAxis }) {
+function TransformToolsWindow({ onSelectingMirrorAxis, mirrorAxisLineId: externalMirrorAxisLineId, onClearMirrorAxis }) {
   const [activeTab, setActiveTab] = useState('scale')
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
   const shapes = useCadStore((state) => state.shapes)
@@ -22,8 +22,9 @@ function TransformToolsWindow({ onSelectingMirrorAxis }) {
   const [cloneSpacingX, setCloneSpacingX] = useState(20)
   const [cloneSpacingY, setCloneSpacingY] = useState(20)
   const [mirrorAxisType, setMirrorAxisType] = useState('horizontal')
-  const [mirrorAxisLineId, setMirrorAxisLineId] = useState(null)
   const [selectingMirrorAxis, setSelectingMirrorAxis] = useState(false)
+  
+  const mirrorAxisLineId = externalMirrorAxisLineId
   
   const selectedShape = shapes.find(s => s.id === selectedShapeId)
   
@@ -41,7 +42,6 @@ function TransformToolsWindow({ onSelectingMirrorAxis }) {
     setSelectingMirrorAxis(true)
     if (onSelectingMirrorAxis) {
       onSelectingMirrorAxis((lineId) => {
-        setMirrorAxisLineId(lineId)
         setSelectingMirrorAxis(false)
       })
     }
@@ -311,7 +311,7 @@ function TransformToolsWindow({ onSelectingMirrorAxis }) {
                   {selectingMirrorAxis ? 'Click a Line...' : 'Select Axis Line'}
                 </button>
                 {mirrorAxisLineId && (
-                  <button onClick={() => setMirrorAxisLineId(null)}>Clear</button>
+                  <button onClick={onClearMirrorAxis}>Clear</button>
                 )}
               </div>
             )}

@@ -48,6 +48,7 @@ function CADInterface() {
   const [draggedHandle, setDraggedHandle] = useState(null)
   const [initialBbox, setInitialBbox] = useState(null)
   const [mirrorAxisSelectionCallback, setMirrorAxisSelectionCallback] = useState(null)
+  const [mirrorAxisLineId, setMirrorAxisLineId] = useState(null)
   
   const containerRef = useRef(null)
   const stageRef = useRef(null)
@@ -575,6 +576,7 @@ function CADInterface() {
                           onClick={() => {
                             if (mirrorAxisSelectionCallback) {
                               mirrorAxisSelectionCallback(shape.id)
+                              setMirrorAxisLineId(shape.id)
                               setMirrorAxisSelectionCallback(null)
                             } else {
                               setSelectedShapeId(shape.id)
@@ -847,6 +849,21 @@ function CADInterface() {
                     return null
                   })}
                   
+                  {mirrorAxisLineId && (() => {
+                    const axisLine = shapes.find(s => s.id === mirrorAxisLineId && s.type === 'line')
+                    if (!axisLine) return null
+                    
+                    return (
+                      <Line
+                        key={`mirror-axis-${mirrorAxisLineId}`}
+                        points={[axisLine.x1, axisLine.y1, axisLine.x2, axisLine.y2]}
+                        stroke="#FF0000"
+                        strokeWidth={4 / viewport.zoom}
+                        listening={false}
+                      />
+                    )
+                  })()}
+                  
                   {selectedShapeId && (() => {
                     const shape = shapes.find(s => s.id === selectedShapeId)
                     if (!shape) return null
@@ -1101,6 +1118,8 @@ function CADInterface() {
       >
         <TransformToolsWindow 
           onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
+          mirrorAxisLineId={mirrorAxisLineId}
+          onClearMirrorAxis={() => setMirrorAxisLineId(null)}
         />
       </PopupWindow>
     </div>
