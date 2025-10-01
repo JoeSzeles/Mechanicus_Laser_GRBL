@@ -142,7 +142,7 @@ class MechanicusCompanion {
   setupWebSocketServer() {
     this.wss = new WebSocket.Server({ 
       port: 8080,
-      host: '127.0.0.1', // Bind to localhost only for security
+      host: '0.0.0.0', // Bind to all interfaces for network access
       verifyClient: (info) => {
         // Check origin for additional security
         const origin = info.origin;
@@ -221,100 +221,22 @@ class MechanicusCompanion {
     });
     
     this.wss.on('connection', (ws, req) => {
-      let isAuthenticated = false;
       const origin = req.headers.origin;
       
-      log('info', 'websocket', 'Connection attempt', { origin });
+      log('info', 'websocket', 'Client connected', { origin });
       
-      // Send authentication challenge only - no status before auth
+      // Add client immediately - no auth required for read-only serial state updates
+      this.clients.add(ws);
+      
+      // Send current serial state immediately
       this.sendToClient(ws, {
-        type: 'auth_challenge',
-        data: { message: 'Please authenticate' }
+        type: 'serial_state',
+        data: this.serialState
       });
 
       ws.on('message', async (message) => {
         try {
           const data = JSON.parse(message);
-          
-          // Handle authentication first
-          if (!isAuthenticated) {
-            if (data.type === 'authenticate') {
-              const token = data.payload?.token;
-              
-              if (!token) {
-                log('warn', 'auth', 'Authentication failed - no token provided', { origin });
-                this.sendToClient(ws, {
-                  type: 'auth_failed',
-                  data: { message: 'No authentication token provided' }
-                });
-                ws.close();
-                return;
-              }
-              
-              if (token === this.authToken) {
-                isAuthenticated = true;
-                this.clients.add(ws);
-                log('info', 'auth', 'Authentication successful (legacy token)', { origin });
-                
-                this.sendToClient(ws, {
-                  type: 'auth_success',
-                  data: {
-                    status: this.status,
-                    connectedPorts: Array.from(this.connectedPorts.keys()),
-                    machineProfiles: Array.from(this.machineProfiles.entries()),
-                    currentProfile: this.currentProfile
-                  }
-                });
-                
-                return;
-              }
-              
-              const sessionValidation = verifySessionToken(token);
-              
-              if (sessionValidation.valid) {
-                isAuthenticated = true;
-                this.clients.add(ws);
-                log('info', 'auth', 'Authentication successful (session token)', { 
-                  origin: sessionValidation.payload.origin,
-                  com: sessionValidation.payload.com,
-                  baud: sessionValidation.payload.baud
-                });
-                
-                this.sendToClient(ws, {
-                  type: 'auth_success',
-                  data: {
-                    status: this.status,
-                    connectedPorts: Array.from(this.connectedPorts.keys()),
-                    machineProfiles: Array.from(this.machineProfiles.entries()),
-                    currentProfile: this.currentProfile,
-                    sessionData: {
-                      com: sessionValidation.payload.com,
-                      baud: sessionValidation.payload.baud
-                    }
-                  }
-                });
-                
-                return;
-              } else {
-                log('warn', 'auth', 'Authentication failed - invalid or expired session token', { origin });
-                this.sendToClient(ws, {
-                  type: 'auth_failed',
-                  data: { message: 'Invalid or expired session token' }
-                });
-                ws.close();
-                return;
-              }
-            } else {
-              console.warn('🚫 Authentication required');
-              this.sendToClient(ws, {
-                type: 'auth_failed',
-                data: { message: 'Authentication required' }
-              });
-              ws.close();
-              return;
-            }
-          }
-          
           await this.handleClientMessage(ws, data);
         } catch (error) {
           console.error('❌ Error handling client message:', error);
@@ -326,12 +248,8 @@ class MechanicusCompanion {
       });
 
       ws.on('close', () => {
-        if (isAuthenticated) {
-          log('info', 'websocket', 'Client disconnected', { origin });
-          this.clients.delete(ws);
-        } else {
-          log('debug', 'websocket', 'Unauthenticated connection closed', { origin });
-        }
+        log('info', 'websocket', 'Client disconnected', { origin });
+        this.clients.delete(ws);
       });
     });
   }
