@@ -12,6 +12,7 @@ import ShapePropertiesWindow from './ShapePropertiesWindow'
 import TextFontToolsWindow from './TextFontToolsWindow'
 import LayersWindow from './LayersWindow'
 import MachineSettingsPopup from './MachineSettingsPopup'
+import MachineJogControls from './MachineJogControls'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
@@ -1733,9 +1734,29 @@ function CADInterface() {
           </button>
         </div>
         <div className="toolbar-center">
-          <h3>Mechanicus CAD - {machineProfile.bedSizeX}x{machineProfile.bedSizeY}mm</h3>
         </div>
         <div className="toolbar-right">
+          <button
+            onClick={() => setShowMachineSettings(true)}
+            title="Machine Settings"
+            style={{
+              padding: '4px 8px',
+              backgroundColor: '#374151',
+              border: '1px solid #4b5563',
+              borderRadius: '4px',
+              color: '#fff',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              fontSize: '12px'
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 1v6m0 6v6m8.66-15L15 7.5M9 16.5 3.34 20M23 12h-6m-6 0H1m20.66 8L15 16.5M9 7.5 3.34 4"></path>
+            </svg>
+          </button>
           <label className="toolbar-checkbox">
             <input 
               type="checkbox" 
@@ -1854,60 +1875,50 @@ function CADInterface() {
           </div>
 
           <div className="machine-settings-section">
-            <div className="connection-status-indicator" style={{
-              padding: '12px',
-              marginBottom: '8px',
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
-              borderRadius: '6px',
-              fontSize: '12px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <div style={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '50%',
-                  backgroundColor: isConnected && serialState.port ? '#4ade80' : companionStatus === 'connecting' ? '#fbbf24' : '#ef4444',
-                  boxShadow: isConnected && serialState.port ? '0 0 8px #4ade80' : 'none'
-                }} />
-                <span style={{ fontWeight: 'bold', color: '#fff', flex: 1 }}>
-                  {isConnected && serialState.port ? 'Machine Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}
-                </span>
-                {(companionStatus === 'disconnected' || companionStatus === 'error') && (
-                  <button
-                    onClick={connectToCompanion}
-                    style={{
-                      padding: '4px 12px',
-                      fontSize: '11px',
-                      backgroundColor: '#3b82f6',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    Connect
-                  </button>
-                )}
-              </div>
-              {isConnected && serialState.port && (
-                <div style={{ paddingLeft: '18px', color: '#4ade80', fontSize: '11px', fontWeight: 'bold' }}>
-                  ✓ {serialState.port} @ {serialState.baud} baud
-                </div>
+            <MachineJogControls />
+          </div>
+
+          <div className="connection-status-indicator" style={{
+            padding: '12px',
+            marginBottom: '8px',
+            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            borderRadius: '6px',
+            fontSize: '12px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div style={{
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                backgroundColor: isConnected && serialState.port ? '#4ade80' : companionStatus === 'connecting' ? '#fbbf24' : '#ef4444',
+                boxShadow: isConnected && serialState.port ? '0 0 8px #4ade80' : 'none'
+              }} />
+              <span style={{ fontWeight: 'bold', color: '#fff', flex: 1 }}>
+                {isConnected && serialState.port ? 'Machine Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}
+              </span>
+              {(companionStatus === 'disconnected' || companionStatus === 'error') && (
+                <button
+                  onClick={connectToCompanion}
+                  style={{
+                    padding: '4px 12px',
+                    fontSize: '11px',
+                    backgroundColor: '#3b82f6',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Connect
+                </button>
               )}
             </div>
-
-            <button
-              className="settings-button-solo"
-              onClick={() => setShowMachineSettings(true)}
-              title="Machine Settings"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M12 1v6m0 6v6m8.66-15L15 7.5M9 16.5 3.34 20M23 12h-6m-6 0H1m20.66 8L15 16.5M9 7.5 3.34 4"></path>
-              </svg>
-              <span>Machine Settings</span>
-            </button>
+            {isConnected && serialState.port && (
+              <div style={{ paddingLeft: '18px', color: '#4ade80', fontSize: '11px', fontWeight: 'bold' }}>
+                ✓ {serialState.port} @ {serialState.baud} baud
+              </div>
+            )}
           </div>
 
           <div className="user-section">

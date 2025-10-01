@@ -238,7 +238,16 @@ app.put('/api/machine-profiles/:id', authenticateToken, async (req: any, res) =>
     const profileId = parseInt(req.params.id);
     const updates = req.body;
     
-    const profile = await storage.updateMachineConfig(profileId, req.user.userId, updates);
+    // Filter out readonly/auto-managed fields
+    const { id, userId, createdAt, ...safeUpdates } = updates;
+    
+    // Update the updatedAt timestamp
+    const finalUpdates = {
+      ...safeUpdates,
+      updatedAt: new Date()
+    };
+    
+    const profile = await storage.updateMachineConfig(profileId, req.user.userId, finalUpdates);
     
     if (!profile) {
       return res.status(404).json({ error: 'Profile not found' });
