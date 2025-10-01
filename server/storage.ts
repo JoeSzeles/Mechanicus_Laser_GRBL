@@ -1,4 +1,4 @@
-import { users, projects, machineConfigs, userPreferences, type User, type InsertUser, type Project, type InsertProject, type MachineConfig, type InsertMachineConfig, type UserPreferences, type InsertUserPreferences } from "@shared/schema";
+import { users, projects, machineConfigs, machineConnections, userPreferences, type User, type InsertUser, type Project, type InsertProject, type MachineConfig, type InsertMachineConfig, type MachineConnection, type InsertMachineConnection, type UserPreferences, type InsertUserPreferences } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 
@@ -19,9 +19,15 @@ export interface IStorage {
   // Machine config methods
   getUserMachineConfigs(userId: number): Promise<MachineConfig[]>;
   getMachineConfig(id: number, userId: number): Promise<MachineConfig | undefined>;
+  getDefaultMachineConfig(userId: number): Promise<MachineConfig | undefined>;
   createMachineConfig(insertConfig: InsertMachineConfig): Promise<MachineConfig>;
   updateMachineConfig(id: number, userId: number, data: Partial<MachineConfig>): Promise<MachineConfig | undefined>;
+  setDefaultMachineConfig(id: number, userId: number): Promise<MachineConfig | undefined>;
   deleteMachineConfig(id: number, userId: number): Promise<boolean>;
+  
+  // Machine connection methods
+  getMachineConnection(userId: number): Promise<MachineConnection | undefined>;
+  upsertMachineConnection(userId: number, data: Partial<InsertMachineConnection>): Promise<MachineConnection>;
   
   // User preferences methods
   getUserPreferences(userId: number): Promise<UserPreferences | undefined>;
@@ -120,6 +126,58 @@ export class DatabaseStorage implements IStorage {
       .delete(machineConfigs)
       .where(and(eq(machineConfigs.id, id), eq(machineConfigs.userId, userId)));
     return result.rowCount > 0;
+  }
+
+  async getDefaultMachineConfig(userId: number): Promise<MachineConfig | undefined> {
+    const [config] = await db
+      .select()
+      .from(machineConfigs)
+      .where(and(eq(machineConfigs.userId, userId), eq(machineConfigs.isDefault, true)));
+    return config || undefined;
+  }
+
+  async setDefaultMachineConfig(id: number, userId: number): Promise<MachineConfig | undefined> {
+    // First, unset all other defaults for this user
+    await db
+      .update(machineConfigs)
+      .set({ isDefault: false })
+      .where(eq(machineConfigs.userId, userId));
+    
+    // Then set this one as default
+    const [config] = await db
+      .update(machineConfigs)
+      .set({ isDefault: true, updatedAt: new Date() })
+      .where(and(eq(machineConfigs.id, id), eq(machineConfigs.userId, userId)))
+      .returning();
+    return config || undefined;
+  }
+
+  // Machine connection methods
+  async getMachineConnection(userId: number): Promise<MachineConnection | undefined> {
+    const [connection] = await db
+      .select()
+      .from(machineConnections)
+      .where(eq(machineConnections.userId, userId));
+    return connection || undefined;
+  }
+
+  async upsertMachineConnection(userId: number, data: Partial<InsertMachineConnection>): Promise<MachineConnection> {
+    const existing = await this.getMachineConnection(userId);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(machineConnections)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(machineConnections.userId, userId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(machineConnections)
+        .values({ userId, ...data } as InsertMachineConnection)
+        .returning();
+      return created;
+    }
   }
 
   // User preferences methods

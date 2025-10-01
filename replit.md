@@ -4,7 +4,7 @@
 A modern web-based CAD system for laser engraving and CNC machines, inspired by the Python Mechanicus application. Built with React/Vite frontend, Node.js backend, and PostgreSQL database.
 
 ## Current Implementation Status
-✅ **Phase 1-12 Completed** (September 30, 2025)
+✅ **Stages 1 & 2 Completed** (September 30, 2025)
 - Full-stack web application setup with authentication system
 - Main CAD interface with Fabric.js canvas integration
 - Database schema for users, projects, machine configurations, and preferences
@@ -23,6 +23,15 @@ A modern web-based CAD system for laser engraving and CNC machines, inspired by 
 - **Phase 10**: Professional menu bar with 9 dropdown menus (File, Edit, Selection, Tools, View, Workspace, Settings, User, Help)
 - **Phase 11**: Grid controls moved to top toolbar for cleaner layout
 - **Phase 12**: Floating panel system with stacking on right side (Drawing Tools, Layers, Shape Properties default open)
+- **Phase 13**: Workspace persistence with auto-save/restore
+- **Phase 14**: UI polish with animations, accessibility, performance optimization
+
+🚧 **Stage 3: Machine Connection & Companion App** (In Progress - October 1, 2025)
+- **Phase 15**: Database schema expanded with all 42 config variables from Python app
+- **Phase 16**: Connection status panel in sidebar (COM/baud inputs, connect button, red/green indicator)
+- **Backend API**: Complete CRUD operations for machine profiles
+- **State Management**: Zustand store with API integration
+- **In Progress**: Machine Settings Popup with 2 tabs (Connection + Config)
 
 ## Architecture
 - **Frontend**: React + Vite + Fabric.js for canvas operations

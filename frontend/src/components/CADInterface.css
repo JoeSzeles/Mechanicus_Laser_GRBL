@@ -140,13 +140,175 @@
   margin-top: 10px;
 }
 
+.machine-connection-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  margin-top: auto;
+  background: #1a1d24;
+  border-radius: 8px;
+  border: 1px solid #3a3f47;
+}
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #24272f;
+  border-radius: 6px;
+}
+
+.connection-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+  transition: all 0.3s ease;
+}
+
+.connection-indicator.connected {
+  background-color: #4caf50;
+  color: #4caf50;
+}
+
+.connection-indicator.disconnected {
+  background-color: #f44336;
+  color: #f44336;
+}
+
+.connection-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e0e0e0;
+  flex: 1;
+}
+
+.connection-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.connection-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.connection-input-group label {
+  font-size: 11px;
+  color: #b0b0b0;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.connection-input-group input,
+.connection-input-group select {
+  padding: 8px 10px;
+  background-color: #24272f;
+  color: white;
+  border: 1px solid #3a3f47;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.connection-input-group input:focus,
+.connection-input-group select:focus {
+  outline: none;
+  border-color: #4a9eff;
+  background-color: #2a2d35;
+}
+
+.connection-input-group input:disabled,
+.connection-input-group select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.connection-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.connection-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.connection-button.connect {
+  background: #4caf50;
+  color: white;
+}
+
+.connection-button.connect:hover:not(:disabled) {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+.connection-button.disconnect {
+  background: #f44336;
+  color: white;
+}
+
+.connection-button.disconnect:hover:not(:disabled) {
+  background: #da190b;
+  transform: translateY(-1px);
+}
+
+.connection-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.settings-button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  background: #3a3f47;
+  border: 1px solid #4a4f57;
+  border-radius: 6px;
+  color: #e0e0e0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.settings-button:hover {
+  background: #4a4f57;
+  color: #4a9eff;
+  transform: translateY(-1px);
+}
+
+.connection-error {
+  padding: 8px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 4px;
+  color: #f44336;
+  font-size: 11px;
+  text-align: center;
+}
+
 .user-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-top: 15px;
   border-top: 1px solid #3a3f47;
-  margin-top: auto;
+  margin-top: 15px;
 }
 
 .user-info {

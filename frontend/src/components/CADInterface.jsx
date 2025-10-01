@@ -67,6 +67,11 @@ function CADInterface() {
   const loadWorkspaceState = useCadStore((state) => state.loadWorkspaceState)
   const resetWorkspaceState = useCadStore((state) => state.resetWorkspaceState)
   
+  const machineConnection = useCadStore((state) => state.machineConnection)
+  const setQuickConnect = useCadStore((state) => state.setQuickConnect)
+  const setConnectionStatus = useCadStore((state) => state.setConnectionStatus)
+  const loadDefaultProfile = useCadStore((state) => state.loadDefaultProfile)
+  
   useEffect(() => {
     if (typeof updateLineEditorState !== 'function') {
       console.error('🚨 CRITICAL: updateLineEditorState is NOT a function!', typeof updateLineEditorState)
@@ -146,6 +151,8 @@ function CADInterface() {
   const [trimPreviewLines, setTrimPreviewLines] = useState([])
   const [selectionRect, setSelectionRect] = useState(null)
   const [selectedShapeIds, setSelectedShapeIds] = useState([])
+  const [showMachineSettings, setShowMachineSettings] = useState(false)
+  const [wsConnection, setWsConnection] = useState(null)
   
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -1507,6 +1514,59 @@ function CADInterface() {
     }
   }
 
+  const handleConnect = () => {
+    try {
+      const ws = new WebSocket('ws://localhost:8080')
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected')
+        setConnectionStatus('connecting')
+        
+        // Send connect command with port and baud rate
+        ws.send(JSON.stringify({
+          type: 'connect',
+          port: machineConnection.quickConnect.comPort,
+          baud: machineConnection.quickConnect.baudRate
+        }))
+      }
+      
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data)
+        if (data.type === 'connected') {
+          setConnectionStatus('connected')
+          console.log('Machine connected successfully')
+        } else if (data.type === 'error') {
+          setConnectionStatus('disconnected', data.message)
+          console.error('Connection error:', data.message)
+        }
+      }
+      
+      ws.onerror = (error) => {
+        setConnectionStatus('disconnected', 'WebSocket error')
+        console.error('WebSocket error:', error)
+      }
+      
+      ws.onclose = () => {
+        setConnectionStatus('disconnected')
+        console.log('WebSocket disconnected')
+      }
+      
+      setWsConnection(ws)
+    } catch (error) {
+      setConnectionStatus('disconnected', error.message)
+      console.error('Failed to connect:', error)
+    }
+  }
+  
+  const handleDisconnect = () => {
+    if (wsConnection) {
+      wsConnection.send(JSON.stringify({ type: 'disconnect' }))
+      wsConnection.close()
+      setWsConnection(null)
+    }
+    setConnectionStatus('disconnected')
+  }
+
   const handleDefaultLineEditorClick = (shape) => {
     const currentSelected = lineEditorState.selectedLines || []
     if (currentSelected.includes(shape.id)) {
@@ -1788,6 +1848,72 @@ function CADInterface() {
               onClick={() => setShowLayers(!showLayers)}
               active={showLayers}
             />
+          </div>
+
+          <div className="machine-connection-panel">
+            <div className="connection-status">
+              <div className={`connection-indicator ${machineConnection.isConnected ? 'connected' : 'disconnected'}`}></div>
+              <span className="connection-label">
+                {machineConnection.connectionStatus === 'connecting' ? 'Connecting...' :
+                 machineConnection.isConnected ? 'Connected' : 'Disconnected'}
+              </span>
+            </div>
+            
+            <div className="connection-controls">
+              <div className="connection-input-group">
+                <label>COM Port</label>
+                <input
+                  type="text"
+                  value={machineConnection.quickConnect.comPort}
+                  onChange={(e) => setQuickConnect({ comPort: e.target.value })}
+                  disabled={machineConnection.isConnected}
+                  placeholder="COM4"
+                />
+              </div>
+              
+              <div className="connection-input-group">
+                <label>Baud Rate</label>
+                <select
+                  value={machineConnection.quickConnect.baudRate}
+                  onChange={(e) => setQuickConnect({ baudRate: parseInt(e.target.value) })}
+                  disabled={machineConnection.isConnected}
+                >
+                  <option value={9600}>9600</option>
+                  <option value={19200}>19200</option>
+                  <option value={38400}>38400</option>
+                  <option value={57600}>57600</option>
+                  <option value={115200}>115200</option>
+                  <option value={250000}>250000</option>
+                </select>
+              </div>
+              
+              <div className="connection-actions">
+                <button
+                  className={`connection-button ${machineConnection.isConnected ? 'disconnect' : 'connect'}`}
+                  onClick={machineConnection.isConnected ? handleDisconnect : handleConnect}
+                  disabled={machineConnection.connectionStatus === 'connecting'}
+                >
+                  {machineConnection.isConnected ? 'Disconnect' : 'Connect'}
+                </button>
+                
+                <button
+                  className="settings-button"
+                  onClick={() => setShowMachineSettings(true)}
+                  title="Machine Settings"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m8.66-15L15 7.5M9 16.5 3.34 20M23 12h-6m-6 0H1m20.66 8L15 16.5M9 7.5 3.34 4"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            {machineConnection.lastError && (
+              <div className="connection-error">
+                {machineConnection.lastError}
+              </div>
+            )}
           </div>
 
           <div className="user-section">

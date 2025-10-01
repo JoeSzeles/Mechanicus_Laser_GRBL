@@ -179,38 +179,128 @@ app.put('/api/projects/:id', authenticateToken, async (req: any, res) => {
   }
 });
 
-// Machine configs routes
-app.get('/api/machines', authenticateToken, async (req: any, res) => {
+// Machine profile routes - Complete with all 42 config variables
+app.get('/api/machine-profiles', authenticateToken, async (req: any, res) => {
   try {
-    const configs = await storage.getUserMachineConfigs(req.user.userId);
-    res.json(configs);
+    const profiles = await storage.getUserMachineConfigs(req.user.userId);
+    res.json(profiles);
   } catch (error) {
-    console.error('Get machine configs error:', error);
+    console.error('Get machine profiles error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-app.post('/api/machines', authenticateToken, async (req: any, res) => {
+app.get('/api/machine-profiles/default', authenticateToken, async (req: any, res) => {
   try {
-    const { name, comPort, baudRate, bedSizeX, bedSizeY, travelSpeed, drawSpeed, laserPower, isDefault } = req.body;
+    const defaultProfile = await storage.getDefaultMachineConfig(req.user.userId);
+    res.json(defaultProfile || null);
+  } catch (error) {
+    console.error('Get default machine profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/api/machine-profiles/:id', authenticateToken, async (req: any, res) => {
+  try {
+    const profileId = parseInt(req.params.id);
+    const profile = await storage.getMachineConfig(profileId, req.user.userId);
     
-    const newConfig: InsertMachineConfig = {
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+    
+    res.json(profile);
+  } catch (error) {
+    console.error('Get machine profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/machine-profiles', authenticateToken, async (req: any, res) => {
+  try {
+    const profileData = req.body;
+    
+    const newProfile: InsertMachineConfig = {
       userId: req.user.userId,
-      name,
-      comPort: comPort || null,
-      baudRate: baudRate || 115200,
-      bedSizeX: bedSizeX || 300,
-      bedSizeY: bedSizeY || 300,
-      travelSpeed: travelSpeed || 3000,
-      drawSpeed: drawSpeed || 2000,
-      laserPower: laserPower || 1000,
-      isDefault: isDefault || false,
+      ...profileData,
     };
 
-    const config = await storage.createMachineConfig(newConfig);
-    res.json(config);
+    const profile = await storage.createMachineConfig(newProfile);
+    res.json(profile);
   } catch (error) {
-    console.error('Create machine config error:', error);
+    console.error('Create machine profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/api/machine-profiles/:id', authenticateToken, async (req: any, res) => {
+  try {
+    const profileId = parseInt(req.params.id);
+    const updates = req.body;
+    
+    const profile = await storage.updateMachineConfig(profileId, req.user.userId, updates);
+    
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+    
+    res.json(profile);
+  } catch (error) {
+    console.error('Update machine profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/api/machine-profiles/:id', authenticateToken, async (req: any, res) => {
+  try {
+    const profileId = parseInt(req.params.id);
+    const deleted = await storage.deleteMachineConfig(profileId, req.user.userId);
+    
+    if (!deleted) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Delete machine profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/api/machine-profiles/:id/set-default', authenticateToken, async (req: any, res) => {
+  try {
+    const profileId = parseInt(req.params.id);
+    const profile = await storage.setDefaultMachineConfig(profileId, req.user.userId);
+    
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+    
+    res.json(profile);
+  } catch (error) {
+    console.error('Set default profile error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Machine connection status routes
+app.get('/api/machine-connection', authenticateToken, async (req: any, res) => {
+  try {
+    const connection = await storage.getMachineConnection(req.user.userId);
+    res.json(connection || { userId: req.user.userId, isConnected: false });
+  } catch (error) {
+    console.error('Get machine connection error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/api/machine-connection', authenticateToken, async (req: any, res) => {
+  try {
+    const connectionData = req.body;
+    const connection = await storage.upsertMachineConnection(req.user.userId, connectionData);
+    res.json(connection);
+  } catch (error) {
+    console.error('Update machine connection error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

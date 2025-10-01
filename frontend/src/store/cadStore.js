@@ -301,6 +301,190 @@ const useCadStore = create((set) => ({
     set({ workspace: defaultWorkspace })
     console.log('✅ Workspace reset to defaults')
     return true
+  },
+  
+  // Machine Connection State
+  machineConnection: {
+    isConnected: false,
+    currentProfile: null,
+    availableProfiles: [],
+    connectionStatus: 'disconnected',
+    lastError: null,
+    quickConnect: {
+      comPort: 'COM4',
+      baudRate: 250000
+    }
+  },
+  
+  // Machine Connection Actions
+  setMachineConnection: (updates) => set((state) => ({
+    machineConnection: { ...state.machineConnection, ...updates }
+  })),
+  
+  setQuickConnect: (updates) => set((state) => ({
+    machineConnection: {
+      ...state.machineConnection,
+      quickConnect: { ...state.machineConnection.quickConnect, ...updates }
+    }
+  })),
+  
+  setCurrentProfile: (profile) => set((state) => ({
+    machineConnection: { ...state.machineConnection, currentProfile: profile }
+  })),
+  
+  setAvailableProfiles: (profiles) => set((state) => ({
+    machineConnection: { ...state.machineConnection, availableProfiles: profiles }
+  })),
+  
+  setConnectionStatus: (status, error = null) => set((state) => ({
+    machineConnection: { 
+      ...state.machineConnection, 
+      connectionStatus: status,
+      isConnected: status === 'connected',
+      lastError: error
+    }
+  })),
+  
+  // Load machine profiles from API
+  loadMachineProfiles: async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/machine-profiles', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const profiles = await response.json()
+      set((state) => ({
+        machineConnection: { ...state.machineConnection, availableProfiles: profiles }
+      }))
+      return profiles
+    } catch (error) {
+      console.error('Failed to load machine profiles:', error)
+      return []
+    }
+  },
+  
+  // Load default machine profile
+  loadDefaultProfile: async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/machine-profiles/default', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const profile = await response.json()
+      if (profile) {
+        set((state) => ({
+          machineConnection: { ...state.machineConnection, currentProfile: profile }
+        }))
+      }
+      return profile
+    } catch (error) {
+      console.error('Failed to load default profile:', error)
+      return null
+    }
+  },
+  
+  // Save machine profile
+  saveMachineProfile: async (profileData) => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/machine-profiles', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profileData)
+      })
+      const profile = await response.json()
+      
+      // Refresh profiles list
+      const state = useCadStore.getState()
+      await state.loadMachineProfiles()
+      
+      return profile
+    } catch (error) {
+      console.error('Failed to save machine profile:', error)
+      throw error
+    }
+  },
+  
+  // Update machine profile
+  updateMachineProfile: async (profileId, updates) => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch(`/api/machine-profiles/${profileId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updates)
+      })
+      const profile = await response.json()
+      
+      // Refresh profiles list
+      const state = useCadStore.getState()
+      await state.loadMachineProfiles()
+      
+      // Update current profile if it's the one being updated
+      if (state.machineConnection.currentProfile?.id === profileId) {
+        set((st) => ({
+          machineConnection: { ...st.machineConnection, currentProfile: profile }
+        }))
+      }
+      
+      return profile
+    } catch (error) {
+      console.error('Failed to update machine profile:', error)
+      throw error
+    }
+  },
+  
+  // Delete machine profile
+  deleteMachineProfile: async (profileId) => {
+    try {
+      const token = localStorage.getItem('token')
+      await fetch(`/api/machine-profiles/${profileId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      
+      // Refresh profiles list
+      const state = useCadStore.getState()
+      await state.loadMachineProfiles()
+      
+      // Clear current profile if it was deleted
+      if (state.machineConnection.currentProfile?.id === profileId) {
+        set((st) => ({
+          machineConnection: { ...st.machineConnection, currentProfile: null }
+        }))
+      }
+      
+      return true
+    } catch (error) {
+      console.error('Failed to delete machine profile:', error)
+      throw error
+    }
+  },
+  
+  // Set profile as default
+  setDefaultProfile: async (profileId) => {
+    try {
+      const token = localStorage.getItem('token')
+      await fetch(`/api/machine-profiles/${profileId}/set-default`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      
+      // Refresh profiles list
+      const state = useCadStore.getState()
+      await state.loadMachineProfiles()
+      
+      return true
+    } catch (error) {
+      console.error('Failed to set default profile:', error)
+      throw error
+    }
   }
 }))
 
