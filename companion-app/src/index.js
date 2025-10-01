@@ -22,11 +22,6 @@ class MechanicusCompanion {
     this.jobQueue = [];
     this.isTransmitting = false;
     this.authToken = process.env.COMPANION_AUTH_TOKEN || 'mechanicus-' + Math.random().toString(36).substr(2, 9);
-    
-    // Initialize pairing system
-    this.pairedOrigins = new Map();
-    this.pendingRequests = new Map();
-    this.wildcardEnabled = false;
     this.sseClients = [];
     
     // Session-based authentication
@@ -171,10 +166,13 @@ class MechanicusCompanion {
       // Add client immediately - no auth required for read-only serial state updates
       this.clients.add(ws);
       
-      // Send current serial state immediately
+      // Send initial status to confirm connection
       this.sendToClient(ws, {
-        type: 'serial_state',
-        data: this.serialState
+        type: 'status',
+        data: { 
+          connected: true,
+          serialState: this.serialState 
+        }
       });
 
       ws.on('message', async (message) => {
@@ -202,38 +200,14 @@ class MechanicusCompanion {
       return false;
     }
 
-    const localhostOrigins = [
-      'http://localhost:5000',
-      'http://localhost:5001',
-      'http://127.0.0.1:5000',
-      'http://127.0.0.1:5001',
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-      'http://localhost:8008',
-      'http://127.0.0.1:8008',
-      ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
+    // Auto-accept all localhost, local network, and Replit domains
+    const allowedPatterns = [
+      /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,  // localhost
+      /^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+(:\d+)?$/,  // local network
+      /^https?:\/\/[^\/]*\.replit\.dev(:\d+)?$/  // all replit.dev domains
     ];
 
-    if (localhostOrigins.some(allowed => origin.startsWith(allowed.split(':').slice(0, 2).join(':')))) {
-      return true;
-    }
-
-    // Allow local network IPs (172.x.x.x, 192.168.x.x, 10.x.x.x)
-    if (/^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+:\d+/.test(origin)) {
-      return true;
-    }
-
-    if (this.pairedOrigins.has(origin)) {
-      return true;
-    }
-
-    if (this.wildcardEnabled && origin.includes('.replit.dev')) {
-      return true;
-    }
-
-    return false;
+    return allowedPatterns.some(pattern => pattern.test(origin));
   }
 
   setupHttpServer() {
@@ -323,178 +297,14 @@ class MechanicusCompanion {
     
     // Get current status
     this.app.get('/status', (req, res) => {
-      const recentRequests = Array.from(this.sessionRequests.values())
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, 10);
-      
       res.json({
         status: 'running',
         activeConnections: this.clients.size,
-        pairedOrigins: Array.from(this.pairedOrigins.values()),
-        pendingRequests: Array.from(this.pendingRequests.values()),
-        wildcardEnabled: this.wildcardEnabled,
-        serialState: this.serialState,
-        sessionRequests: recentRequests
+        serialState: this.serialState
       });
     });
     
-    // Accept pairing request
-    this.app.post('/pair/accept', (req, res) => {
-      const { origin } = req.body;
-      
-      if (!origin) {
-        return res.status(400).json({ error: 'Origin is required' });
-      }
-      
-      const now = Date.now();
-      this.pairedOrigins.set(origin, {
-        origin,
-        createdAt: now,
-        lastSeen: now
-      });
-      
-      this.pendingRequests.delete(origin);
-      
-      this.broadcastSSE({
-        type: 'status_update',
-        data: {
-          pairedOrigins: Array.from(this.pairedOrigins.values()),
-          activeConnections: this.clients.size
-        }
-      });
-      
-      console.log(`✅ Accepted pairing request from ${origin}`);
-      res.json({ success: true, origin });
-    });
-    
-    // Decline pairing request
-    this.app.post('/pair/decline', (req, res) => {
-      const { origin } = req.body;
-      
-      if (!origin) {
-        return res.status(400).json({ error: 'Origin is required' });
-      }
-      
-      this.pendingRequests.delete(origin);
-      
-      console.log(`❌ Declined pairing request from ${origin}`);
-      res.json({ success: true, origin });
-    });
-    
-    // Remove paired origin
-    this.app.delete('/origin/:origin', (req, res) => {
-      const origin = decodeURIComponent(req.params.origin);
-      
-      if (this.pairedOrigins.has(origin)) {
-        this.pairedOrigins.delete(origin);
-        
-        this.broadcastSSE({
-          type: 'origin_removed',
-          data: { origin }
-        });
-        
-        console.log(`🗑️ Removed paired origin: ${origin}`);
-        res.json({ success: true, origin });
-      } else {
-        res.status(404).json({ error: 'Origin not found' });
-      }
-    });
-    
-    // Update wildcard setting
-    this.app.post('/settings/wildcard', (req, res) => {
-      const { enabled } = req.body;
-      
-      if (typeof enabled !== 'boolean') {
-        return res.status(400).json({ error: 'enabled must be a boolean' });
-      }
-      
-      this.wildcardEnabled = enabled;
-      console.log(`⚙️ Wildcard setting updated: ${enabled}`);
-      res.json({ success: true, enabled });
-    });
-    
-    // Session-based authentication endpoint
-    this.app.post('/session/start', (req, res) => {
-      const { origin, com, baud, profile } = req.body;
-      
-      if (!origin || !com || !baud) {
-        return res.status(400).json({ error: 'origin, com, and baud are required' });
-      }
-      
-      const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      const localhostOrigins = [
-        'http://localhost:5000',
-        'http://localhost:5001',
-        'http://127.0.0.1:5000',
-        'http://127.0.0.1:5001',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
-      ];
-      
-      // Also check for local network IPs
-      const isLocalNetworkIP = /^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+:\d+/.test(origin);
-      const isPaired = this.pairedOrigins.has(origin) || localhostOrigins.includes(origin) || isLocalNetworkIP;
-      const isWildcardAllowed = this.wildcardEnabled && origin.includes('.replit.dev');
-      
-      if (isPaired || isWildcardAllowed) {
-        const { token, expiresAt } = generateSessionToken(origin, com, baud);
-        
-        this.sessionRequests.set(requestId, {
-          requestId,
-          origin,
-          com,
-          baud,
-          profile,
-          sessionToken: token,
-          expiresAt,
-          accepted: true,
-          createdAt: new Date()
-        });
-        
-        console.log(`✅ Session token issued for ${origin} (${com} @ ${baud})`);
-        
-        return res.json({
-          requestId,
-          sessionToken: token,
-          expiresAt,
-          accepted: true
-        });
-      } else {
-        this.sessionRequests.set(requestId, {
-          requestId,
-          origin,
-          com,
-          baud,
-          profile,
-          sessionToken: null,
-          expiresAt: null,
-          accepted: false,
-          createdAt: new Date()
-        });
-        
-        this.pendingRequests.set(origin, { origin, timestamp: Date.now() });
-        
-        this.broadcastSSE({
-          type: 'session_request',
-          data: { requestId, origin, com, baud, profile }
-        });
-        
-        console.log(`📋 Session request pending approval: ${origin} (${com} @ ${baud})`);
-        
-        return res.json({
-          requestId,
-          sessionToken: null,
-          expiresAt: null,
-          accepted: false
-        });
-      }
-    });
-    
-    // POST /serial/connect - Open serial port
+    // Serial connection and control endpoints
     this.app.post('/serial/connect', async (req, res) => {
       try {
         const { requestId, com, baud } = req.body;
@@ -787,17 +597,6 @@ class MechanicusCompanion {
       data: logEntry
     });
   }
-  
-  // Method to simulate a connection request (for testing)
-  simulateConnectionRequest(origin) {
-    const timestamp = Date.now();
-    this.pendingRequests.set(origin, { origin, timestamp });
-    
-    this.broadcastSSE({
-      type: 'connection_request',
-      data: { origin, timestamp }
-    });
-  }
 
   async handleClientMessage(ws, data) {
     const { type, payload } = data;
@@ -991,12 +790,16 @@ class MechanicusCompanion {
 
   async sendGcode(ws, { portPath, gcode, filename }) {
     try {
+      console.log(`🔵 [COMMAND FLOW] Main app sent send_gcode command`);
+      console.log(`🔵 [COMMAND FLOW] Port: ${portPath}, Filename: ${filename || 'manual'}, G-code length: ${gcode?.length || 0} chars`);
+      
       const connection = this.connectedPorts.get(portPath);
       if (!connection) {
         throw new Error(`Port ${portPath} is not connected`);
       }
 
       console.log(`📤 Starting G-code transmission: ${filename || 'manual'}`);
+      console.log(`🔵 [COMMAND FLOW] Companion will now send to machine on ${portPath}`);
       this.isTransmitting = true;
       
       const lines = gcode.split('\n').filter(line => {

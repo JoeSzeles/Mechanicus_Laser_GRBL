@@ -58,9 +58,9 @@ export function SerialProvider({ children }) {
     wsRef.current = ws
 
     ws.onopen = () => {
-      setCompanionStatus('connected')
-      reconnectAttemptRef.current = 0
-      addMessage('success', '✅ Connected to companion app')
+      console.log('✅ WebSocket onopen fired')
+      // Don't set connected until we get a status message from companion
+      // This prevents showing "connected" when companion isn't actually running
     }
 
     ws.onmessage = (event) => {
@@ -103,7 +103,13 @@ export function SerialProvider({ children }) {
     switch (type) {
       case 'status':
       case 'auth_success':
-        // Companion is ready, check serial state
+        // Companion is ready - NOW we can show connected
+        setCompanionStatus('connected')
+        reconnectAttemptRef.current = 0
+        addMessage('success', '✅ Connected to companion app')
+        console.log('✅ Received status from companion, now truly connected')
+        
+        // Check serial state
         if (data?.serialState) {
           setSerialState(data.serialState)
           setIsConnected(data.serialState.connected)
