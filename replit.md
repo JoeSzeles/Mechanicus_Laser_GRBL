@@ -34,6 +34,7 @@ A modern web-based CAD system for laser engraving and CNC machines, inspired by 
 - **Phase 19**: Zustand store integration with default profile loading on user login
 - **Phase 20**: Companion app - Fully functional WebSocket server with serial communication, authentication, machine profiles (GRBL/Marlin/Smoothie), G-code transmission, and auto-detect features
 - **Phase 21**: Session-based authentication system with JWT tokens (2-min expiry), comprehensive logging (logger.js with SSE streaming), tightened CORS security (localhost + local network IPs only), serial connection management (Connect/Disconnect/Scan via companion UI), machine auto-scan with firmware detection (GRBL/Marlin/Smoothie), SerialContext integration with session token flow
+- **Phase 22**: UI reorganization & machine jog controls - Machine Settings moved to top toolbar (icon-only, left of Show Grid), title removed from top menu, left sidebar reorganized (Jog Controls at top, Connection Status above user avatar), complete jog controls component (F speed & step size inputs with validation, 3x3 directional grid + home button, G91/G0/G90 commands), canvas dynamically sizes to machine bed dimensions (bedMaxX/bedMaxY), backend timestamp fix for profile updates, WebSocket connection to local companion (ws://localhost:8080)
 
 ## Architecture
 - **Frontend**: React + Vite + Fabric.js for canvas operations
