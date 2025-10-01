@@ -13,6 +13,7 @@ import TextFontToolsWindow from './TextFontToolsWindow'
 import LayersWindow from './LayersWindow'
 import MachineSettingsPopup from './MachineSettingsPopup'
 import MachineJogControls from './MachineJogControls'
+import MachineConnectionPanel from './MachineConnectionPanel'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
@@ -87,6 +88,7 @@ function CADInterface() {
   useEffect(() => {
     console.log('🔄 Loading workspace on mount...')
     loadWorkspaceState()
+    loadDefaultProfile()
   }, [])
   
   useEffect(() => {
@@ -1933,48 +1935,7 @@ function CADInterface() {
             <MachineJogControls />
           </div>
 
-          <div className="connection-status-indicator" style={{
-            padding: '12px',
-            marginBottom: '8px',
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            borderRadius: '6px',
-            fontSize: '12px'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <div style={{
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                backgroundColor: isConnected && serialState.port ? '#4ade80' : companionStatus === 'connecting' ? '#fbbf24' : '#ef4444',
-                boxShadow: isConnected && serialState.port ? '0 0 8px #4ade80' : 'none'
-              }} />
-              <span style={{ fontWeight: 'bold', color: '#fff', flex: 1 }}>
-                {isConnected && serialState.port ? 'Machine Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}
-              </span>
-              {(companionStatus === 'disconnected' || companionStatus === 'error') && (
-                <button
-                  onClick={connectToCompanion}
-                  style={{
-                    padding: '4px 12px',
-                    fontSize: '11px',
-                    backgroundColor: '#3b82f6',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  Connect
-                </button>
-              )}
-            </div>
-            {isConnected && serialState.port && (
-              <div style={{ paddingLeft: '18px', color: '#4ade80', fontSize: '11px', fontWeight: 'bold' }}>
-                ✓ {serialState.port} @ {serialState.baud} baud
-              </div>
-            )}
-          </div>
+          <MachineConnectionPanel />
 
           <div className="user-section">
             <div className="user-info">
