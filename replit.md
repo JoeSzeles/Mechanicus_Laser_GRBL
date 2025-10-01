@@ -33,6 +33,7 @@ A modern web-based CAD system for laser engraving and CNC machines, inspired by 
 - **Phase 18**: Backend API - 9 complete endpoints for machine profile CRUD operations
 - **Phase 19**: Zustand store integration with default profile loading on user login
 - **Phase 20**: Companion app - Fully functional WebSocket server with serial communication, authentication, machine profiles (GRBL/Marlin/Smoothie), G-code transmission, and auto-detect features
+- **Phase 21**: Session-based authentication system with JWT tokens (2-min expiry), comprehensive logging (logger.js with SSE streaming), tightened CORS security (localhost + local network IPs only), serial connection management (Connect/Disconnect/Scan via companion UI), machine auto-scan with firmware detection (GRBL/Marlin/Smoothie), SerialContext integration with session token flow
 
 ## Architecture
 - **Frontend**: React + Vite + Fabric.js for canvas operations
@@ -54,12 +55,15 @@ A modern web-based CAD system for laser engraving and CNC machines, inspired by 
 ## Companion App Features
 The companion app (`companion-app/`) is a Node.js desktop application that runs locally to bridge serial communication:
 - **WebSocket Server**: Runs on `ws://localhost:8080` for real-time CAD app communication
-- **HTTP API**: Status endpoint on `http://localhost:8081` for health checks
-- **Authentication**: Token-based security to prevent unauthorized connections
+- **HTTP API**: Dashboard and control endpoints on `http://localhost:8008`
+- **Session-Based Authentication**: JWT tokens with 2-minute expiry for enhanced security
 - **Machine Profiles**: Pre-configured profiles for GRBL, Marlin, and Smoothieware
 - **Serial Communication**: Full duplex serial port communication with configurable baud rates
 - **G-code Transmission**: Line-by-line transmission with progress tracking and buffer management
-- **Auto-detect**: Scans available COM ports and tests baud rates automatically
+- **Machine Auto-Scan**: Scans available COM ports and tests baud rates with firmware detection (GRBL/Marlin/Smoothie)
+- **Companion UI Dashboard**: Web interface for manual serial connection (Connect/Disconnect/Scan buttons)
+- **Comprehensive Logging**: In-memory log buffer with SSE streaming (GET /logs endpoint)
+- **CORS Security**: Strict origin validation (localhost + local network IPs only)
 - **Emergency Stop**: Immediate feed hold command to all connected machines
 - **System Notifications**: Desktop notifications for connection status and errors
 - **Graceful Shutdown**: Proper cleanup of serial connections and servers

@@ -147,10 +147,12 @@ class MechanicusCompanion {
         // Check origin for additional security
         const origin = info.origin;
         
-        // Always allow localhost origins
+        // Always allow localhost and local network origins
         const localhostOrigins = [
           'http://localhost:5000',
+          'http://localhost:5001',
           'http://127.0.0.1:5000',
+          'http://127.0.0.1:5001',
           'http://localhost:3000',
           'http://127.0.0.1:3000',
           'http://localhost:5173',
@@ -158,7 +160,14 @@ class MechanicusCompanion {
           ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
         ];
         
+        // Check localhost origins
         if (origin && localhostOrigins.includes(origin)) {
+          return true;
+        }
+        
+        // Allow local network IPs (172.x.x.x, 192.168.x.x, 10.x.x.x)
+        if (origin && /^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+:\d+/.test(origin)) {
+          console.log(`✅ Allowing local network origin: ${origin}`);
           return true;
         }
         
@@ -334,7 +343,9 @@ class MechanicusCompanion {
 
     const localhostOrigins = [
       'http://localhost:5000',
+      'http://localhost:5001',
       'http://127.0.0.1:5000',
+      'http://127.0.0.1:5001',
       'http://localhost:3000',
       'http://127.0.0.1:3000',
       'http://localhost:5173',
@@ -345,6 +356,11 @@ class MechanicusCompanion {
     ];
 
     if (localhostOrigins.some(allowed => origin.startsWith(allowed.split(':').slice(0, 2).join(':')))) {
+      return true;
+    }
+
+    // Allow local network IPs (172.x.x.x, 192.168.x.x, 10.x.x.x)
+    if (/^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+:\d+/.test(origin)) {
       return true;
     }
 
@@ -548,7 +564,9 @@ class MechanicusCompanion {
       
       const localhostOrigins = [
         'http://localhost:5000',
+        'http://localhost:5001',
         'http://127.0.0.1:5000',
+        'http://127.0.0.1:5001',
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'http://localhost:5173',
@@ -556,7 +574,9 @@ class MechanicusCompanion {
         ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
       ];
       
-      const isPaired = this.pairedOrigins.has(origin) || localhostOrigins.includes(origin);
+      // Also check for local network IPs
+      const isLocalNetworkIP = /^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+:\d+/.test(origin);
+      const isPaired = this.pairedOrigins.has(origin) || localhostOrigins.includes(origin) || isLocalNetworkIP;
       const isWildcardAllowed = this.wildcardEnabled && origin.includes('.replit.dev');
       
       if (isPaired || isWildcardAllowed) {

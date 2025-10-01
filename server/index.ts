@@ -270,6 +270,12 @@ app.delete('/api/machine-profiles/:id', authenticateToken, async (req: any, res)
 app.post('/api/machine-profiles/:id/set-default', authenticateToken, async (req: any, res) => {
   try {
     const profileId = parseInt(req.params.id);
+    
+    // Validate profileId is a valid integer
+    if (isNaN(profileId) || !Number.isFinite(profileId)) {
+      return res.status(400).json({ error: 'Invalid profile ID' });
+    }
+    
     const profile = await storage.setDefaultMachineConfig(profileId, req.user.userId);
     
     if (!profile) {
