@@ -28,7 +28,7 @@ import './CADInterface.css'
 
 function CADInterface() {
   const { user, logout } = useContext(AuthContext)
-  const { companionStatus, serialState, isConnected } = useSerial()
+  const { companionStatus, serialState, isConnected, connectToCompanion } = useSerial()
   const machineProfile = useCadStore((state) => state.machineProfile)
   const viewport = useCadStore((state) => state.viewport)
   const updateViewport = useCadStore((state) => state.updateViewport)
@@ -1861,21 +1861,38 @@ function CADInterface() {
               borderRadius: '6px',
               fontSize: '12px'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <div style={{
                   width: '10px',
                   height: '10px',
                   borderRadius: '50%',
-                  backgroundColor: companionStatus === 'connected' ? '#4ade80' : companionStatus === 'connecting' ? '#fbbf24' : '#ef4444',
-                  boxShadow: companionStatus === 'connected' ? '0 0 8px #4ade80' : 'none'
+                  backgroundColor: isConnected && serialState.port ? '#4ade80' : companionStatus === 'connecting' ? '#fbbf24' : '#ef4444',
+                  boxShadow: isConnected && serialState.port ? '0 0 8px #4ade80' : 'none'
                 }} />
-                <span style={{ fontWeight: 'bold', color: '#fff' }}>
-                  {companionStatus === 'connected' ? 'Companion Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Companion Offline'}
+                <span style={{ fontWeight: 'bold', color: '#fff', flex: 1 }}>
+                  {isConnected && serialState.port ? 'Machine Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}
                 </span>
+                {companionStatus === 'disconnected' && (
+                  <button
+                    onClick={connectToCompanion}
+                    style={{
+                      padding: '4px 12px',
+                      fontSize: '11px',
+                      backgroundColor: '#3b82f6',
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Connect
+                  </button>
+                )}
               </div>
               {isConnected && serialState.port && (
-                <div style={{ paddingLeft: '18px', color: '#a0aec0', fontSize: '11px' }}>
-                  Machine: {serialState.port} @ {serialState.baud} baud
+                <div style={{ paddingLeft: '18px', color: '#4ade80', fontSize: '11px', fontWeight: 'bold' }}>
+                  ✓ {serialState.port} @ {serialState.baud} baud
                 </div>
               )}
             </div>

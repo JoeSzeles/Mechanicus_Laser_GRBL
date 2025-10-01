@@ -26,10 +26,8 @@ export function SerialProvider({ children }) {
   const reconnectAttemptRef = useRef(0)
   const maxReconnectAttempts = 10
 
-  // Auto-connect to companion app on mount
+  // Cleanup on unmount
   useEffect(() => {
-    connectToCompanion()
-    
     return () => {
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current)
@@ -179,6 +177,7 @@ export function SerialProvider({ children }) {
     companionStatus,
     serialState,
     messages,
+    connectToCompanion,
     sendGcode,
     emergencyStop,
     clearMessages
