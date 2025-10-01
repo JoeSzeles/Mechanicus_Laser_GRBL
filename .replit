@@ -110,12 +110,12 @@ localPort = 8081
 externalPort = 8081
 
 [[ports]]
-localPort = 34787
-externalPort = 3003
+localPort = 34513
+externalPort = 4200
 
 [[ports]]
-localPort = 35657
-externalPort = 4200
+localPort = 34787
+externalPort = 3003
 
 [[ports]]
 localPort = 46469
