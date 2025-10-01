@@ -91,7 +91,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .delete(projects)
       .where(and(eq(projects.id, id), eq(projects.userId, userId)));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Machine config methods
@@ -125,7 +125,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .delete(machineConfigs)
       .where(and(eq(machineConfigs.id, id), eq(machineConfigs.userId, userId)));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   async getDefaultMachineConfig(userId: number): Promise<MachineConfig | undefined> {

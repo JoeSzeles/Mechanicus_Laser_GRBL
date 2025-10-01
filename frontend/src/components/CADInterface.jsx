@@ -10,6 +10,7 @@ import LineEditorToolsWindow from './LineEditorToolsWindow'
 import ShapePropertiesWindow from './ShapePropertiesWindow'
 import TextFontToolsWindow from './TextFontToolsWindow'
 import LayersWindow from './LayersWindow'
+import MachineSettingsPopup from './MachineSettingsPopup'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
@@ -2651,6 +2652,11 @@ function CADInterface() {
         >
           <TextFontToolsWindow />
         </FloatingPanel>
+        
+        <MachineSettingsPopup 
+          isOpen={showMachineSettings}
+          onClose={() => setShowMachineSettings(false)}
+        />
       </div>
     </div>
   )

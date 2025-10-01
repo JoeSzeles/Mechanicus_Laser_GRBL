@@ -26,12 +26,13 @@ A modern web-based CAD system for laser engraving and CNC machines, inspired by 
 - **Phase 13**: Workspace persistence with auto-save/restore
 - **Phase 14**: UI polish with animations, accessibility, performance optimization
 
-🚧 **Stage 3: Machine Connection & Companion App** (In Progress - October 1, 2025)
-- **Phase 15**: Database schema expanded with all 42 config variables from Python app
-- **Phase 16**: Connection status panel in sidebar (COM/baud inputs, connect button, red/green indicator)
-- **Backend API**: Complete CRUD operations for machine profiles
-- **State Management**: Zustand store with API integration
-- **In Progress**: Machine Settings Popup with 2 tabs (Connection + Config)
+✅ **Stage 3: Machine Connection & Companion App** (Completed - October 1, 2025)
+- **Phase 15**: Database schema with all 42 config variables from config3.py
+- **Phase 16**: Connection status panel in left sidebar (COM/baud inputs, connect/settings buttons, LED indicator)
+- **Phase 17**: Machine Settings Popup with 2 tabs (Connection + Config with conditional rendering)
+- **Phase 18**: Backend API - 9 complete endpoints for machine profile CRUD operations
+- **Phase 19**: Zustand store integration with default profile loading on user login
+- **Phase 20**: Companion app - Fully functional WebSocket server with serial communication, authentication, machine profiles (GRBL/Marlin/Smoothie), G-code transmission, and auto-detect features
 
 ## Architecture
 - **Frontend**: React + Vite + Fabric.js for canvas operations
@@ -50,11 +51,29 @@ A modern web-based CAD system for laser engraving and CNC machines, inspired by 
 5. **User Interface**: Left toolbar, main canvas, right panels (layers/properties)
 6. **Database Integration**: User profiles, preferences, project storage ready
 
+## Companion App Features
+The companion app (`companion-app/`) is a Node.js desktop application that runs locally to bridge serial communication:
+- **WebSocket Server**: Runs on `ws://localhost:8080` for real-time CAD app communication
+- **HTTP API**: Status endpoint on `http://localhost:8081` for health checks
+- **Authentication**: Token-based security to prevent unauthorized connections
+- **Machine Profiles**: Pre-configured profiles for GRBL, Marlin, and Smoothieware
+- **Serial Communication**: Full duplex serial port communication with configurable baud rates
+- **G-code Transmission**: Line-by-line transmission with progress tracking and buffer management
+- **Auto-detect**: Scans available COM ports and tests baud rates automatically
+- **Emergency Stop**: Immediate feed hold command to all connected machines
+- **System Notifications**: Desktop notifications for connection status and errors
+- **Graceful Shutdown**: Proper cleanup of serial connections and servers
+
+To run the companion app locally:
+```bash
+cd companion-app
+npm install
+npm start  # or npm run dev for development
+```
+
 ## Pending Features (Next Phases)
 - [ ] Snap tools (grid, endpoint, midpoint, center snapping)
 - [ ] G-code generation and preview
-- [ ] Machine configuration management
-- [ ] Serial communication bridge for local machines
 - [ ] Advanced drawing tools (text, spiral)
 - [ ] Image processing (PNG/JPEG to G-code)
 

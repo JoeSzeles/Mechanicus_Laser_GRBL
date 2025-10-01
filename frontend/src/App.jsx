@@ -6,11 +6,14 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Dashboard from './components/Dashboard'
 import CADInterface from './components/CADInterface'
+import useCadStore from './store/cadStore'
 import './App.css'
 
 function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const loadDefaultProfile = useCadStore(state => state.loadDefaultProfile)
+  const loadMachineProfiles = useCadStore(state => state.loadMachineProfiles)
 
   useEffect(() => {
     // Check for existing token on app load
@@ -30,8 +33,12 @@ function App() {
           throw new Error('Invalid token')
         }
       })
-      .then(data => {
+      .then(async (data) => {
         setUser(data.user)
+        // Load machine profiles and default profile after authentication
+        await loadMachineProfiles()
+        await loadDefaultProfile()
+        console.log('✅ User authenticated, default profile loaded')
       })
       .catch(err => {
         console.error('Auth error:', err)
@@ -42,11 +49,15 @@ function App() {
     } else {
       setLoading(false)
     }
-  }, [])
+  }, [loadMachineProfiles, loadDefaultProfile])
 
-  const login = (userData, token) => {
+  const login = async (userData, token) => {
     localStorage.setItem('token', token)
     setUser(userData)
+    // Load machine profiles and default profile after login
+    await loadMachineProfiles()
+    await loadDefaultProfile()
+    console.log('✅ User logged in, default profile loaded')
   }
 
   const logout = () => {
