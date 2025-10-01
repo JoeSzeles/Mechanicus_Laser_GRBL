@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useContext } from 'react'
 import { Stage, Layer, Line, Rect, Circle, Text, RegularPolygon, Arc, Wedge } from 'react-konva'
 import AuthContext from '../contexts/AuthContext'
+import { useSerial } from '../contexts/SerialContext'
 import useCadStore from '../store/cadStore'
 import DrawingToolsWindow from './DrawingToolsWindow'
 import SnapToolsWindow from './SnapToolsWindow'
@@ -27,6 +28,7 @@ import './CADInterface.css'
 
 function CADInterface() {
   const { user, logout } = useContext(AuthContext)
+  const { companionStatus, serialState, isConnected } = useSerial()
   const machineProfile = useCadStore((state) => state.machineProfile)
   const viewport = useCadStore((state) => state.viewport)
   const updateViewport = useCadStore((state) => state.updateViewport)
@@ -1852,6 +1854,32 @@ function CADInterface() {
           </div>
 
           <div className="machine-settings-section">
+            <div className="connection-status-indicator" style={{
+              padding: '12px',
+              marginBottom: '8px',
+              backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              borderRadius: '6px',
+              fontSize: '12px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <div style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  backgroundColor: companionStatus === 'connected' ? '#4ade80' : companionStatus === 'connecting' ? '#fbbf24' : '#ef4444',
+                  boxShadow: companionStatus === 'connected' ? '0 0 8px #4ade80' : 'none'
+                }} />
+                <span style={{ fontWeight: 'bold', color: '#fff' }}>
+                  {companionStatus === 'connected' ? 'Companion Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Companion Offline'}
+                </span>
+              </div>
+              {isConnected && serialState.port && (
+                <div style={{ paddingLeft: '18px', color: '#a0aec0', fontSize: '11px' }}>
+                  Machine: {serialState.port} @ {serialState.baud} baud
+                </div>
+              )}
+            </div>
+
             <button
               className="settings-button-solo"
               onClick={() => setShowMachineSettings(true)}

@@ -48,7 +48,13 @@ export function SerialProvider({ children }) {
     setCompanionStatus('connecting')
     addMessage('system', '🔌 Connecting to companion app...')
 
-    const ws = new WebSocket('ws://localhost:8080')
+    // Construct WebSocket URL - use current host but with port 8080
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const wsHost = window.location.hostname
+    const wsUrl = `${wsProtocol}//${wsHost}:8080`
+    
+    console.log('🔗 Connecting to:', wsUrl)
+    const ws = new WebSocket(wsUrl)
     wsRef.current = ws
 
     ws.onopen = () => {

@@ -144,79 +144,22 @@ class MechanicusCompanion {
       port: 8080,
       host: '0.0.0.0', // Bind to all interfaces for network access
       verifyClient: (info) => {
-        // Check origin for additional security
         const origin = info.origin;
         
-        // Always allow localhost and local network origins
-        const localhostOrigins = [
-          'http://localhost:5000',
-          'http://localhost:5001',
-          'http://127.0.0.1:5000',
-          'http://127.0.0.1:5001',
-          'http://localhost:3000',
-          'http://127.0.0.1:3000',
-          'http://localhost:5173',
-          'http://127.0.0.1:5173',
-          ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
+        // Auto-accept all localhost, local network, and Replit domains
+        const allowedPatterns = [
+          /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,  // localhost
+          /^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+(:\d+)?$/,  // local network
+          /^https?:\/\/[^\/]*\.replit\.dev(:\d+)?$/  // all replit.dev domains
         ];
         
-        // Check localhost origins
-        if (origin && localhostOrigins.includes(origin)) {
+        if (origin && allowedPatterns.some(pattern => pattern.test(origin))) {
+          console.log(`✅ Accepted connection from ${origin}`);
           return true;
         }
         
-        // Allow local network IPs (172.x.x.x, 192.168.x.x, 10.x.x.x)
-        if (origin && /^https?:\/\/(172\.|192\.168\.|10\.)[\d.]+:\d+/.test(origin)) {
-          console.log(`✅ Allowing local network origin: ${origin}`);
-          return true;
-        }
-        
-        // Check if origin is paired
-        if (this.pairedOrigins && this.pairedOrigins.has(origin)) {
-          // Update last seen time
-          const paired = this.pairedOrigins.get(origin);
-          paired.lastSeen = Date.now();
-          this.pairedOrigins.set(origin, paired);
-          return true;
-        }
-        
-        // Check wildcard for replit.dev
-        if (this.wildcardEnabled && origin && origin.includes('.replit.dev')) {
-          // Auto-accept and add to paired origins
-          const now = Date.now();
-          if (this.pairedOrigins) {
-            this.pairedOrigins.set(origin, {
-              origin,
-              createdAt: now,
-              lastSeen: now
-            });
-          }
-          console.log(`✅ Auto-accepted wildcard connection from ${origin}`);
-          return true;
-        }
-        
-        // Create a pairing request for unknown origins
-        if (origin && this.pendingRequests && !this.pendingRequests.has(origin)) {
-          const timestamp = Date.now();
-          this.pendingRequests.set(origin, { origin, timestamp });
-          
-          // Broadcast to dashboard
-          if (this.broadcastSSE) {
-            this.broadcastSSE({
-              type: 'connection_request',
-              data: { origin, timestamp }
-            });
-          }
-          
-          console.log(`📋 Connection request from ${origin} - awaiting approval`);
-        }
-        
-        if (origin && !localhostOrigins.includes(origin)) {
-          console.warn(`🚫 Rejected connection from unauthorized origin: ${origin} - awaiting pairing approval`);
-          return false;
-        }
-        
-        return true;
+        console.warn(`🚫 Rejected connection from unauthorized origin: ${origin}`);
+        return false;
       }
     });
     
