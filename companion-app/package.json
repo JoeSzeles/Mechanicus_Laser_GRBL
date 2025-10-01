@@ -13,20 +13,30 @@
   },
   "bin": "src/index.js",
   "pkg": {
-    "assets": ["public/**/*", "config/**/*"]
+    "assets": [
+      "public/**/*",
+      "config/**/*"
+    ]
   },
   "dependencies": {
-    "serialport": "^12.0.0",
-    "ws": "^8.18.3",
-    "express": "^4.19.2",
     "cors": "^2.8.5",
-    "node-notifier": "^10.0.1"
+    "express": "^4.19.2",
+    "node-notifier": "^10.0.1",
+    "open": "^8.4.2",
+    "serialport": "^12.0.0",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
     "pkg": "^5.8.1"
   },
-  "keywords": ["serial", "cad", "laser", "cnc", "mechanicus"],
+  "keywords": [
+    "serial",
+    "cad",
+    "laser",
+    "cnc",
+    "mechanicus"
+  ],
   "author": "Mechanicus Team",
   "license": "MIT"
 }
