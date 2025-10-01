@@ -173,36 +173,6 @@ export function SerialProvider({ children }) {
     setMessages(prev => [...prev.slice(-99), message])
   }
 
-  const connectSerial = (portPath, profileName = 'grbl') => {
-    if (wsRef.current?.readyState !== WebSocket.OPEN) {
-      addMessage('error', '❌ Companion app not connected')
-      return
-    }
-
-    if (!portPath) {
-      addMessage('error', '❌ No port selected')
-      return
-    }
-
-    wsRef.current.send(JSON.stringify({
-      type: 'connect',
-      payload: { portPath, profileName }
-    }))
-    addMessage('info', `🔌 Connecting to ${portPath}...`)
-  }
-
-  const disconnectSerial = (portPath) => {
-    if (wsRef.current?.readyState !== WebSocket.OPEN) {
-      return
-    }
-
-    wsRef.current.send(JSON.stringify({
-      type: 'disconnect',
-      payload: { portPath }
-    }))
-    addMessage('info', `📴 Disconnecting from ${portPath}...`)
-  }
-
   const sendGcode = (gcode) => {
     if (wsRef.current?.readyState === WebSocket.OPEN && isConnected && serialState.port) {
       wsRef.current.send(JSON.stringify({
@@ -214,7 +184,7 @@ export function SerialProvider({ children }) {
       }))
       addMessage('info', `📤 Sending G-code to ${serialState.port}`)
     } else {
-      addMessage('error', '❌ Serial port not connected. Click Connect button first.')
+      addMessage('error', '❌ Not connected. Use companion app to connect to serial port.')
     }
   }
 
@@ -235,8 +205,6 @@ export function SerialProvider({ children }) {
     serialState,
     messages,
     connectToCompanion,
-    connectSerial,
-    disconnectSerial,
     sendGcode,
     emergencyStop,
     clearMessages
