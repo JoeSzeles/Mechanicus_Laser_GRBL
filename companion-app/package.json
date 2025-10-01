@@ -13,7 +13,7 @@
   },
   "bin": "src/index.js",
   "pkg": {
-    "assets": ["config/**/*"]
+    "assets": ["public/**/*", "config/**/*"]
   },
   "dependencies": {
     "serialport": "^12.0.0",

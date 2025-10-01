@@ -8,6 +8,7 @@ const cors = require('cors');
 const notifier = require('node-notifier');
 const fs = require('fs').promises;
 const path = require('path');
+const open = require('open');
 
 class MechanicusCompanion {
   constructor() {
@@ -42,6 +43,11 @@ class MechanicusCompanion {
     console.log('📡 WebSocket Server: ws://localhost:8080');
     console.log('🌐 HTTP Server: http://localhost:8081');
     console.log('📊 Dashboard: http://localhost:8081');
+    
+    // Open dashboard in default browser
+    open('http://localhost:8081').catch(err => {
+      console.warn('Could not auto-open browser:', err.message);
+    });
   }
 
   loadDefaultProfiles() {
