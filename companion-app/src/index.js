@@ -9,6 +9,7 @@ const notifier = require('node-notifier');
 const fs = require('fs').promises;
 const path = require('path');
 const open = require('open');
+const { generateSessionToken, verifySessionToken } = require('./sessionManager');
 
 class MechanicusCompanion {
   constructor() {
@@ -27,6 +28,9 @@ class MechanicusCompanion {
     this.pendingRequests = new Map();
     this.wildcardEnabled = false;
     this.sseClients = [];
+    
+    // Session-based authentication
+    this.sessionRequests = new Map();
     
     console.log(`🔐 Authentication token: ${this.authToken}`);
     
@@ -209,28 +213,73 @@ class MechanicusCompanion {
           
           // Handle authentication first
           if (!isAuthenticated) {
-            if (data.type === 'authenticate' && data.payload?.token === this.authToken) {
-              isAuthenticated = true;
-              this.clients.add(ws);
-              console.log('✅ Client authenticated successfully');
+            if (data.type === 'authenticate') {
+              const token = data.payload?.token;
               
-              // Send current status after authentication
-              this.sendToClient(ws, {
-                type: 'auth_success',
-                data: {
-                  status: this.status,
-                  connectedPorts: Array.from(this.connectedPorts.keys()),
-                  machineProfiles: Array.from(this.machineProfiles.entries()),
-                  currentProfile: this.currentProfile
-                }
-              });
+              if (!token) {
+                console.warn('🚫 Authentication failed: No token provided');
+                this.sendToClient(ws, {
+                  type: 'auth_failed',
+                  data: { message: 'No authentication token provided' }
+                });
+                ws.close();
+                return;
+              }
               
-              return;
+              if (token === this.authToken) {
+                isAuthenticated = true;
+                this.clients.add(ws);
+                console.log('✅ Client authenticated successfully (legacy token)');
+                
+                this.sendToClient(ws, {
+                  type: 'auth_success',
+                  data: {
+                    status: this.status,
+                    connectedPorts: Array.from(this.connectedPorts.keys()),
+                    machineProfiles: Array.from(this.machineProfiles.entries()),
+                    currentProfile: this.currentProfile
+                  }
+                });
+                
+                return;
+              }
+              
+              const sessionValidation = verifySessionToken(token);
+              
+              if (sessionValidation.valid) {
+                isAuthenticated = true;
+                this.clients.add(ws);
+                console.log(`✅ Client authenticated with session token (${sessionValidation.payload.origin})`);
+                
+                this.sendToClient(ws, {
+                  type: 'auth_success',
+                  data: {
+                    status: this.status,
+                    connectedPorts: Array.from(this.connectedPorts.keys()),
+                    machineProfiles: Array.from(this.machineProfiles.entries()),
+                    currentProfile: this.currentProfile,
+                    sessionData: {
+                      com: sessionValidation.payload.com,
+                      baud: sessionValidation.payload.baud
+                    }
+                  }
+                });
+                
+                return;
+              } else {
+                console.warn('🚫 Authentication failed: Invalid or expired session token');
+                this.sendToClient(ws, {
+                  type: 'auth_failed',
+                  data: { message: 'Invalid or expired session token' }
+                });
+                ws.close();
+                return;
+              }
             } else {
-              console.warn('🚫 Authentication failed');
+              console.warn('🚫 Authentication required');
               this.sendToClient(ws, {
                 type: 'auth_failed',
-                data: { message: 'Invalid authentication token' }
+                data: { message: 'Authentication required' }
               });
               ws.close();
               return;
@@ -385,6 +434,83 @@ class MechanicusCompanion {
       this.wildcardEnabled = enabled;
       console.log(`⚙️ Wildcard setting updated: ${enabled}`);
       res.json({ success: true, enabled });
+    });
+    
+    // Session-based authentication endpoint
+    this.app.post('/session/start', (req, res) => {
+      const { origin, com, baud, profile } = req.body;
+      
+      if (!origin || !com || !baud) {
+        return res.status(400).json({ error: 'origin, com, and baud are required' });
+      }
+      
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      const localhostOrigins = [
+        'http://localhost:5000',
+        'http://127.0.0.1:5000',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
+      ];
+      
+      const isPaired = this.pairedOrigins.has(origin) || localhostOrigins.includes(origin);
+      const isWildcardAllowed = this.wildcardEnabled && origin.includes('.replit.dev');
+      
+      if (isPaired || isWildcardAllowed) {
+        const { token, expiresAt } = generateSessionToken(origin, com, baud);
+        
+        this.sessionRequests.set(requestId, {
+          requestId,
+          origin,
+          com,
+          baud,
+          profile,
+          sessionToken: token,
+          expiresAt,
+          accepted: true,
+          createdAt: new Date()
+        });
+        
+        console.log(`✅ Session token issued for ${origin} (${com} @ ${baud})`);
+        
+        return res.json({
+          requestId,
+          sessionToken: token,
+          expiresAt,
+          accepted: true
+        });
+      } else {
+        this.sessionRequests.set(requestId, {
+          requestId,
+          origin,
+          com,
+          baud,
+          profile,
+          sessionToken: null,
+          expiresAt: null,
+          accepted: false,
+          createdAt: new Date()
+        });
+        
+        this.pendingRequests.set(origin, { origin, timestamp: Date.now() });
+        
+        this.broadcastSSE({
+          type: 'session_request',
+          data: { requestId, origin, com, baud, profile }
+        });
+        
+        console.log(`📋 Session request pending approval: ${origin} (${com} @ ${baud})`);
+        
+        return res.json({
+          requestId,
+          sessionToken: null,
+          expiresAt: null,
+          accepted: false
+        });
+      }
     });
 
     this.httpServer = this.app.listen(8081, () => {
