@@ -288,14 +288,27 @@
   background: #666;
 }
 
+body {
+  min-width: 1024px;
+  min-height: 600px;
+}
+
 @media (max-width: 1200px) {
   .toolbar-panel {
     width: 180px;
+  }
+  
+  .tool-button-grid {
+    gap: 6px;
   }
 }
 
 @media (max-width: 900px) {
   .toolbar-panel {
     width: 150px;
+  }
+  
+  .tool-button-grid {
+    gap: 4px;
   }
 }
