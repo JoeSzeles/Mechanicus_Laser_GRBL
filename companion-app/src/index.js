@@ -32,6 +32,16 @@ class MechanicusCompanion {
     // Session-based authentication
     this.sessionRequests = new Map();
     
+    // Serial state management
+    this.serialState = {
+      connected: false,
+      port: null,
+      baud: null,
+      error: null,
+      openedAt: null,
+      byRequestId: null
+    };
+    
     console.log(`🔐 Authentication token: ${this.authToken}`);
     
     // Default machine profiles
@@ -352,12 +362,18 @@ class MechanicusCompanion {
     
     // Get current status
     this.app.get('/status', (req, res) => {
+      const recentRequests = Array.from(this.sessionRequests.values())
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 10);
+      
       res.json({
         status: 'running',
         activeConnections: this.clients.size,
         pairedOrigins: Array.from(this.pairedOrigins.values()),
         pendingRequests: Array.from(this.pendingRequests.values()),
-        wildcardEnabled: this.wildcardEnabled
+        wildcardEnabled: this.wildcardEnabled,
+        serialState: this.serialState,
+        sessionRequests: recentRequests
       });
     });
     
@@ -509,6 +525,273 @@ class MechanicusCompanion {
           sessionToken: null,
           expiresAt: null,
           accepted: false
+        });
+      }
+    });
+    
+    // POST /serial/connect - Open serial port
+    this.app.post('/serial/connect', async (req, res) => {
+      try {
+        const { requestId, com, baud } = req.body;
+        
+        if (!com || !baud) {
+          return res.status(400).json({ 
+            success: false, 
+            error: 'com and baud are required' 
+          });
+        }
+        
+        if (this.serialState.connected) {
+          return res.status(400).json({ 
+            success: false, 
+            error: `Already connected to ${this.serialState.port}`,
+            state: this.serialState
+          });
+        }
+        
+        console.log(`🔌 Attempting to connect to ${com} @ ${baud} baud`);
+        
+        const serialPort = new SerialPort({
+          path: com,
+          baudRate: parseInt(baud),
+          dataBits: 8,
+          stopBits: 1,
+          parity: 'none'
+        });
+        
+        await new Promise((resolve, reject) => {
+          serialPort.on('open', () => {
+            this.port = serialPort;
+            this.serialState = {
+              connected: true,
+              port: com,
+              baud: parseInt(baud),
+              error: null,
+              openedAt: Date.now(),
+              byRequestId: requestId || null
+            };
+            
+            console.log(`✅ Serial port ${com} opened successfully`);
+            
+            this.broadcastSSE({
+              type: 'serial_state',
+              data: this.serialState
+            });
+            
+            resolve();
+          });
+          
+          serialPort.on('error', (error) => {
+            this.serialState = {
+              connected: false,
+              port: null,
+              baud: null,
+              error: error.message,
+              openedAt: null,
+              byRequestId: requestId || null
+            };
+            
+            console.error(`❌ Serial port error: ${error.message}`);
+            
+            this.broadcastSSE({
+              type: 'serial_state',
+              data: this.serialState
+            });
+            
+            reject(error);
+          });
+        });
+        
+        res.json({
+          success: true,
+          state: this.serialState
+        });
+        
+      } catch (error) {
+        console.error('❌ Serial connect failed:', error);
+        
+        this.serialState = {
+          connected: false,
+          port: null,
+          baud: null,
+          error: error.message,
+          openedAt: null,
+          byRequestId: req.body.requestId || null
+        };
+        
+        this.broadcastSSE({
+          type: 'serial_state',
+          data: this.serialState
+        });
+        
+        res.status(500).json({
+          success: false,
+          error: error.message,
+          state: this.serialState
+        });
+      }
+    });
+    
+    // POST /serial/disconnect - Close serial port
+    this.app.post('/serial/disconnect', async (req, res) => {
+      try {
+        const { reason } = req.body;
+        
+        if (!this.serialState.connected || !this.port) {
+          return res.status(400).json({ 
+            success: false, 
+            error: 'No active serial connection' 
+          });
+        }
+        
+        const portPath = this.serialState.port;
+        console.log(`🔌 Disconnecting from ${portPath}${reason ? ` (${reason})` : ''}`);
+        
+        await new Promise((resolve, reject) => {
+          this.port.close((error) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        });
+        
+        this.port = null;
+        this.serialState = {
+          connected: false,
+          port: null,
+          baud: null,
+          error: null,
+          openedAt: null,
+          byRequestId: null
+        };
+        
+        console.log(`✅ Disconnected from ${portPath}`);
+        
+        this.broadcastSSE({
+          type: 'serial_state',
+          data: this.serialState
+        });
+        
+        res.json({ success: true });
+        
+      } catch (error) {
+        console.error('❌ Serial disconnect failed:', error);
+        res.status(500).json({
+          success: false,
+          error: error.message
+        });
+      }
+    });
+    
+    // POST /serial/scan - Auto-detect machine baud rate and firmware
+    this.app.post('/serial/scan', async (req, res) => {
+      try {
+        const { ports } = req.body;
+        
+        const availablePorts = await SerialPort.list();
+        const portsToScan = ports && ports.length > 0 
+          ? ports 
+          : availablePorts.map(p => p.path);
+        
+        console.log(`🔍 Starting auto-scan on ${portsToScan.length} port(s)`);
+        
+        const baudRates = [115200, 250000, 9600, 19200, 38400, 57600];
+        const results = [];
+        
+        this.broadcastSSE({
+          type: 'scan_started',
+          data: { ports: portsToScan, baudRates }
+        });
+        
+        for (const portPath of portsToScan) {
+          console.log(`📡 Scanning port: ${portPath}`);
+          
+          this.broadcastSSE({
+            type: 'scan_progress',
+            data: { port: portPath, status: 'scanning' }
+          });
+          
+          let detected = false;
+          
+          for (const baud of baudRates) {
+            if (detected) break;
+            
+            console.log(`  Testing ${portPath} @ ${baud} baud...`);
+            
+            this.broadcastSSE({
+              type: 'scan_progress',
+              data: { port: portPath, baud, status: 'testing' }
+            });
+            
+            try {
+              const result = await this.testSerialPort(portPath, baud);
+              
+              if (result.success) {
+                console.log(`  ✅ Detected: ${result.firmware} on ${portPath} @ ${baud}`);
+                
+                results.push({
+                  port: portPath,
+                  baud,
+                  firmware: result.firmware,
+                  success: true,
+                  message: `Detected ${result.firmware}`
+                });
+                
+                this.broadcastSSE({
+                  type: 'scan_progress',
+                  data: { 
+                    port: portPath, 
+                    baud, 
+                    firmware: result.firmware,
+                    status: 'detected' 
+                  }
+                });
+                
+                detected = true;
+              }
+            } catch (error) {
+              console.log(`  ❌ ${portPath} @ ${baud}: ${error.message}`);
+            }
+          }
+          
+          if (!detected) {
+            results.push({
+              port: portPath,
+              baud: null,
+              firmware: null,
+              success: false,
+              message: 'No compatible firmware detected'
+            });
+            
+            this.broadcastSSE({
+              type: 'scan_progress',
+              data: { port: portPath, status: 'failed' }
+            });
+          }
+        }
+        
+        console.log(`🔍 Scan complete: ${results.filter(r => r.success).length}/${results.length} detected`);
+        
+        this.broadcastSSE({
+          type: 'scan_complete',
+          data: { results }
+        });
+        
+        res.json({ results });
+        
+      } catch (error) {
+        console.error('❌ Serial scan failed:', error);
+        
+        this.broadcastSSE({
+          type: 'scan_error',
+          data: { error: error.message }
+        });
+        
+        res.status(500).json({
+          error: error.message,
+          results: []
         });
       }
     });
@@ -858,6 +1141,105 @@ class MechanicusCompanion {
   broadcastToClients(message) {
     this.clients.forEach(client => {
       this.sendToClient(client, message);
+    });
+  }
+
+  async testSerialPort(portPath, baud) {
+    return new Promise((resolve, reject) => {
+      let testPort = null;
+      let responseData = '';
+      let timeout = null;
+      let resolved = false;
+      
+      const cleanup = () => {
+        if (timeout) clearTimeout(timeout);
+        if (testPort && testPort.isOpen) {
+          testPort.close();
+        }
+      };
+      
+      const finishTest = (result) => {
+        if (resolved) return;
+        resolved = true;
+        cleanup();
+        if (result.success) {
+          resolve(result);
+        } else {
+          reject(new Error(result.message || 'Test failed'));
+        }
+      };
+      
+      try {
+        testPort = new SerialPort({
+          path: portPath,
+          baudRate: baud,
+          dataBits: 8,
+          stopBits: 1,
+          parity: 'none'
+        });
+        
+        const parser = testPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+        
+        timeout = setTimeout(() => {
+          finishTest({ success: false, message: 'Timeout' });
+        }, 500);
+        
+        parser.on('data', (data) => {
+          responseData += data.toString() + '\n';
+          
+          const dataStr = responseData.toLowerCase();
+          
+          if (dataStr.includes('grbl') || 
+              dataStr.includes('<') && dataStr.includes('>') ||
+              dataStr.includes('ok') ||
+              dataStr.includes('$0=') ||
+              dataStr.includes('$1=')) {
+            finishTest({ 
+              success: true, 
+              firmware: 'GRBL',
+              response: responseData 
+            });
+          }
+          
+          if (dataStr.includes('firmware_name:marlin') || 
+              dataStr.includes('marlin') ||
+              dataStr.includes('echo:') && dataStr.includes('marlin')) {
+            finishTest({ 
+              success: true, 
+              firmware: 'Marlin',
+              response: responseData 
+            });
+          }
+        });
+        
+        testPort.on('open', () => {
+          setTimeout(() => {
+            if (testPort && testPort.isOpen) {
+              testPort.write('?\n');
+              
+              setTimeout(() => {
+                if (testPort && testPort.isOpen) {
+                  testPort.write('$$\n');
+                }
+              }, 100);
+              
+              setTimeout(() => {
+                if (testPort && testPort.isOpen) {
+                  testPort.write('M115\n');
+                }
+              }, 200);
+            }
+          }, 100);
+        });
+        
+        testPort.on('error', (error) => {
+          finishTest({ success: false, message: error.message });
+        });
+        
+      } catch (error) {
+        cleanup();
+        reject(error);
+      }
     });
   }
 
