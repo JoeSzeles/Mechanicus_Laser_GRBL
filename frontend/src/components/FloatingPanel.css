@@ -5,22 +5,31 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  animation: panel-slide-in 0.2s ease-out;
+  animation: panel-slide-in 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
   user-select: none;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  will-change: transform;
+}
+
+.floating-panel:focus-within {
+  border-color: #4a9eff;
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.3);
 }
 
 .floating-panel.dragging {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  cursor: grabbing;
+  transition: none;
 }
 
 @keyframes panel-slide-in {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateY(-10px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -53,18 +62,29 @@
   line-height: 1;
   cursor: pointer;
   border-radius: 4px;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 
 .panel-close-button:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.panel-close-button:focus {
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
+}
+
+.panel-close-button:active {
+  transform: scale(0.95);
 }
 
 .panel-content {
   max-height: 500px;
   overflow-y: auto;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .panel-content::-webkit-scrollbar {

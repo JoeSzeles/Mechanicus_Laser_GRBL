@@ -12,10 +12,17 @@ const ToolButton = ({ icon, label, onClick, active = false, disabled = false }) 
         disabled={disabled}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
+        onFocus={() => setShowTooltip(true)}
+        onBlur={() => setShowTooltip(false)}
+        aria-label={label || 'Tool button'}
+        aria-pressed={active}
+        title={label}
       >
         {icon}
       </button>
-      {showTooltip && <div className="tool-tooltip">{label}</div>}
+      {showTooltip && label && (
+        <div className="tool-tooltip" role="tooltip" aria-hidden="true">{label}</div>
+      )}
     </div>
   )
 }

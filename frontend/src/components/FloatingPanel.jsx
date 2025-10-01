@@ -81,18 +81,32 @@ const FloatingPanel = ({
         zIndex 
       }}
       onClick={handlePanelClick}
+      role="dialog"
+      aria-label={title}
+      aria-modal="false"
     >
       <div 
         className="panel-header"
         onMouseDown={handleMouseDown}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        role="banner"
+        aria-label={`${title} header - drag to move`}
       >
-        <h4 className="panel-title">{title}</h4>
-        <button className="panel-close-button" onClick={onClose}>
+        <h4 className="panel-title" id={`panel-title-${title.replace(/\s+/g, '-').toLowerCase()}`}>{title}</h4>
+        <button 
+          className="panel-close-button" 
+          onClick={onClose}
+          aria-label={`Close ${title} panel`}
+          title={`Close ${title}`}
+        >
           ×
         </button>
       </div>
-      <div className="panel-content">
+      <div 
+        className="panel-content"
+        role="region"
+        aria-labelledby={`panel-title-${title.replace(/\s+/g, '-').toLowerCase()}`}
+      >
         {children}
       </div>
     </div>

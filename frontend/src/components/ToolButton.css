@@ -16,25 +16,46 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
   padding: 0;
+  position: relative;
 }
 
 .tool-button:hover:not(:disabled) {
   background: #3a3f47;
   border-color: #4a9eff;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
+}
+
+.tool-button:focus:not(:disabled) {
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
 }
 
 .tool-button:active:not(:disabled) {
   transform: translateY(0);
+  transition-duration: 0.1s;
 }
 
 .tool-button.active {
   background: #4a9eff;
   border-color: #4a9eff;
   color: white;
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.5);
+}
+
+.tool-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 2px;
+  background: #4a9eff;
+  border-radius: 1px;
 }
 
 .tool-button:disabled {
@@ -63,4 +84,16 @@
   z-index: 1000;
   border: 1px solid #3a3f47;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  animation: tooltip-fade-in 0.15s ease-out;
+}
+
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
 }
