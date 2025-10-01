@@ -21,20 +21,27 @@ class MechanicusCompanion {
     this.isTransmitting = false;
     this.authToken = process.env.COMPANION_AUTH_TOKEN || 'mechanicus-' + Math.random().toString(36).substr(2, 9);
     
+    // Initialize pairing system
+    this.pairedOrigins = new Map();
+    this.pendingRequests = new Map();
+    this.wildcardEnabled = false;
+    this.sseClients = [];
+    
     console.log(`🔐 Authentication token: ${this.authToken}`);
     
     // Default machine profiles
     this.loadDefaultProfiles();
     
+    // Setup HTTP server for status and control (must be before WebSocket for SSE)
+    this.setupHttpServer();
+    
     // Setup WebSocket server for CAD app communication
     this.setupWebSocketServer();
-    
-    // Setup HTTP server for status and control
-    this.setupHttpServer();
     
     console.log('🔧 Mechanicus Companion App Started');
     console.log('📡 WebSocket Server: ws://localhost:8080');
     console.log('🌐 HTTP Server: http://localhost:8081');
+    console.log('📊 Dashboard: http://localhost:8081');
   }
 
   loadDefaultProfiles() {
@@ -114,7 +121,9 @@ class MechanicusCompanion {
       verifyClient: (info) => {
         // Check origin for additional security
         const origin = info.origin;
-        const allowedOrigins = [
+        
+        // Always allow localhost origins
+        const localhostOrigins = [
           'http://localhost:5000',
           'http://127.0.0.1:5000',
           'http://localhost:3000',
@@ -124,8 +133,52 @@ class MechanicusCompanion {
           ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
         ];
         
-        if (origin && !allowedOrigins.includes(origin)) {
-          console.warn(`🚫 Rejected connection from unauthorized origin: ${origin}`);
+        if (origin && localhostOrigins.includes(origin)) {
+          return true;
+        }
+        
+        // Check if origin is paired
+        if (this.pairedOrigins && this.pairedOrigins.has(origin)) {
+          // Update last seen time
+          const paired = this.pairedOrigins.get(origin);
+          paired.lastSeen = Date.now();
+          this.pairedOrigins.set(origin, paired);
+          return true;
+        }
+        
+        // Check wildcard for replit.dev
+        if (this.wildcardEnabled && origin && origin.includes('.replit.dev')) {
+          // Auto-accept and add to paired origins
+          const now = Date.now();
+          if (this.pairedOrigins) {
+            this.pairedOrigins.set(origin, {
+              origin,
+              createdAt: now,
+              lastSeen: now
+            });
+          }
+          console.log(`✅ Auto-accepted wildcard connection from ${origin}`);
+          return true;
+        }
+        
+        // Create a pairing request for unknown origins
+        if (origin && this.pendingRequests && !this.pendingRequests.has(origin)) {
+          const timestamp = Date.now();
+          this.pendingRequests.set(origin, { origin, timestamp });
+          
+          // Broadcast to dashboard
+          if (this.broadcastSSE) {
+            this.broadcastSSE({
+              type: 'connection_request',
+              data: { origin, timestamp }
+            });
+          }
+          
+          console.log(`📋 Connection request from ${origin} - awaiting approval`);
+        }
+        
+        if (origin && !localhostOrigins.includes(origin)) {
+          console.warn(`🚫 Rejected connection from unauthorized origin: ${origin} - awaiting pairing approval`);
           return false;
         }
         
@@ -203,6 +256,9 @@ class MechanicusCompanion {
     this.app = express();
     this.app.use(cors());
     this.app.use(express.json());
+    
+    // Serve static files from public directory
+    this.app.use(express.static(path.join(__dirname, '../public')));
 
     // Health check endpoint
     this.app.get('/health', (req, res) => {
@@ -223,9 +279,133 @@ class MechanicusCompanion {
         res.status(500).json({ error: error.message });
       }
     });
+    
+    // Server-Sent Events endpoint for real-time updates
+    this.app.get('/events', (req, res) => {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      
+      this.sseClients.push(res);
+      
+      res.write('data: {"type":"connected"}\n\n');
+      
+      req.on('close', () => {
+        this.sseClients = this.sseClients.filter(client => client !== res);
+      });
+    });
+    
+    // Get current status
+    this.app.get('/status', (req, res) => {
+      res.json({
+        status: 'running',
+        activeConnections: this.clients.size,
+        pairedOrigins: Array.from(this.pairedOrigins.values()),
+        pendingRequests: Array.from(this.pendingRequests.values()),
+        wildcardEnabled: this.wildcardEnabled
+      });
+    });
+    
+    // Accept pairing request
+    this.app.post('/pair/accept', (req, res) => {
+      const { origin } = req.body;
+      
+      if (!origin) {
+        return res.status(400).json({ error: 'Origin is required' });
+      }
+      
+      const now = Date.now();
+      this.pairedOrigins.set(origin, {
+        origin,
+        createdAt: now,
+        lastSeen: now
+      });
+      
+      this.pendingRequests.delete(origin);
+      
+      this.broadcastSSE({
+        type: 'status_update',
+        data: {
+          pairedOrigins: Array.from(this.pairedOrigins.values()),
+          activeConnections: this.clients.size
+        }
+      });
+      
+      console.log(`✅ Accepted pairing request from ${origin}`);
+      res.json({ success: true, origin });
+    });
+    
+    // Decline pairing request
+    this.app.post('/pair/decline', (req, res) => {
+      const { origin } = req.body;
+      
+      if (!origin) {
+        return res.status(400).json({ error: 'Origin is required' });
+      }
+      
+      this.pendingRequests.delete(origin);
+      
+      console.log(`❌ Declined pairing request from ${origin}`);
+      res.json({ success: true, origin });
+    });
+    
+    // Remove paired origin
+    this.app.delete('/origin/:origin', (req, res) => {
+      const origin = decodeURIComponent(req.params.origin);
+      
+      if (this.pairedOrigins.has(origin)) {
+        this.pairedOrigins.delete(origin);
+        
+        this.broadcastSSE({
+          type: 'origin_removed',
+          data: { origin }
+        });
+        
+        console.log(`🗑️ Removed paired origin: ${origin}`);
+        res.json({ success: true, origin });
+      } else {
+        res.status(404).json({ error: 'Origin not found' });
+      }
+    });
+    
+    // Update wildcard setting
+    this.app.post('/settings/wildcard', (req, res) => {
+      const { enabled } = req.body;
+      
+      if (typeof enabled !== 'boolean') {
+        return res.status(400).json({ error: 'enabled must be a boolean' });
+      }
+      
+      this.wildcardEnabled = enabled;
+      console.log(`⚙️ Wildcard setting updated: ${enabled}`);
+      res.json({ success: true, enabled });
+    });
 
     this.httpServer = this.app.listen(8081, () => {
       console.log('🌐 HTTP API ready on port 8081');
+      console.log('📊 Dashboard available at http://localhost:8081');
+    });
+  }
+  
+  broadcastSSE(message) {
+    const data = `event: ${message.type}\ndata: ${JSON.stringify(message.data)}\n\n`;
+    this.sseClients.forEach(client => {
+      try {
+        client.write(data);
+      } catch (error) {
+        console.error('Error sending SSE:', error);
+      }
+    });
+  }
+  
+  // Method to simulate a connection request (for testing)
+  simulateConnectionRequest(origin) {
+    const timestamp = Date.now();
+    this.pendingRequests.set(origin, { origin, timestamp });
+    
+    this.broadcastSSE({
+      type: 'connection_request',
+      data: { origin, timestamp }
     });
   }
 

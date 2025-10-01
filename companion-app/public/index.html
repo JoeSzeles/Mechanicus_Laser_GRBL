@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanicus Companion - Local Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>
+                    <span class="logo">⚙️</span>
+                    Mechanicus Companion
+                </h1>
+                <div class="status-bar">
+                    <div class="status-indicator">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">Connecting...</span>
+                    </div>
+                    <div class="connection-count" id="connectionCount">
+                        0 connections
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="section">
+                <div class="section-header">
+                    <h2>🔔 Connection Requests</h2>
+                    <span class="badge" id="requestsBadge">0</span>
+                </div>
+                <div id="connectionRequests" class="requests-container">
+                    <div class="empty-state">
+                        <p>No pending connection requests</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-header">
+                    <h2>🔗 Paired Origins</h2>
+                    <button class="btn btn-secondary btn-sm" id="refreshBtn">
+                        <span class="icon">🔄</span> Refresh
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="pairedOriginsTable">
+                        <thead>
+                            <tr>
+                                <th>Origin</th>
+                                <th>Created</th>
+                                <th>Last Seen</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pairedOriginsBody">
+                            <tr class="empty-state-row">
+                                <td colspan="4" class="empty-state">
+                                    <p>No paired origins yet</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-header">
+                    <h2>⚙️ Settings</h2>
+                </div>
+                <div class="settings-container">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h3>Allow *.replit.dev Wildcard</h3>
+                            <p>Automatically accept connections from any Replit development environment</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" id="wildcardToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
