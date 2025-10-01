@@ -1872,7 +1872,7 @@ function CADInterface() {
                 <span style={{ fontWeight: 'bold', color: '#fff', flex: 1 }}>
                   {isConnected && serialState.port ? 'Machine Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}
                 </span>
-                {companionStatus === 'disconnected' && (
+                {(companionStatus === 'disconnected' || companionStatus === 'error') && (
                   <button
                     onClick={connectToCompanion}
                     style={{
