@@ -109,9 +109,29 @@ function CADInterface() {
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
-  const [gridSize, setGridSize] = useState(10)
-  const [showGrid, setShowGrid] = useState(true)
-  const [gridSnap, setGridSnap] = useState(false)
+  
+  const gridSize = workspace.gridSize
+  const showGrid = workspace.gridVisible
+  const gridSnap = workspace.gridSnap
+  
+  const setGridSize = (size) => {
+    const updates = { gridSize: size }
+    useCadStore.setState((state) => ({
+      workspace: { ...state.workspace, ...updates }
+    }))
+  }
+  const setShowGrid = (visible) => {
+    const updates = { gridVisible: visible }
+    useCadStore.setState((state) => ({
+      workspace: { ...state.workspace, ...updates }
+    }))
+  }
+  const setGridSnap = (snap) => {
+    const updates = { gridSnap: snap }
+    useCadStore.setState((state) => ({
+      workspace: { ...state.workspace, ...updates }
+    }))
+  }
   const [snapIndicator, setSnapIndicator] = useState(null)
   const [drawingState, setDrawingState] = useState(null)
   const [previewShape, setPreviewShape] = useState(null)
