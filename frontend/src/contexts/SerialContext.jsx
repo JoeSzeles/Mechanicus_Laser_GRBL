@@ -148,12 +148,15 @@ export function SerialProvider({ children }) {
   }
 
   const sendGcode = (gcode) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN && isConnected) {
+    if (wsRef.current?.readyState === WebSocket.OPEN && isConnected && serialState.port) {
       wsRef.current.send(JSON.stringify({
         type: 'send_gcode',
-        payload: { gcode }
+        payload: { 
+          portPath: serialState.port,
+          gcode 
+        }
       }))
-      addMessage('info', '📤 Sending G-code...')
+      addMessage('info', `📤 Sending G-code to ${serialState.port}`)
     } else {
       addMessage('error', '❌ Not connected. Use companion app to connect to serial port.')
     }

@@ -157,6 +157,7 @@ function CADInterface() {
   const [selectedShapeIds, setSelectedShapeIds] = useState([])
   const [showMachineSettings, setShowMachineSettings] = useState(false)
   const [wsConnection, setWsConnection] = useState(null)
+  const [mousePosition, setMousePosition] = useState(null)
   
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -246,7 +247,7 @@ function CADInterface() {
 
   useEffect(() => {
     updateRulers()
-  }, [viewport, containerSize])
+  }, [viewport, canvasWidth, canvasHeight, machineProfile])
 
   useEffect(() => {
     updateSpatialIndex(shapes)
@@ -499,6 +500,17 @@ function CADInterface() {
   }
 
   const handleMouseMove = (e) => {
+    // Track mouse position for crosshairs
+    const stage = stageRef.current
+    if (stage) {
+      const point = stage.getPointerPosition()
+      if (point) {
+        const worldX = (point.x - viewport.pan.x) / viewport.zoom
+        const worldY = (point.y - viewport.pan.y) / viewport.zoom
+        setMousePosition({ x: worldX, y: worldY })
+      }
+    }
+    
     if (isPanning) {
       const newPan = {
         x: e.evt.clientX - panStart.x,
@@ -548,15 +560,14 @@ function CADInterface() {
       return
     }
     
-    const stage = stageRef.current
     if (!stage) return
     
-    const point = stage.getPointerPosition()
-    const worldX = (point.x - viewport.pan.x) / viewport.zoom
-    const worldY = (point.y - viewport.pan.y) / viewport.zoom
+    const pointForSnap = stage.getPointerPosition()
+    const worldXSnap = (pointForSnap.x - viewport.pan.x) / viewport.zoom
+    const worldYSnap = (pointForSnap.y - viewport.pan.y) / viewport.zoom
     
     const gridSpacing = gridSize * machineProfile.mmToPx
-    const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
+    const snapResult = findSnapPoint(worldXSnap, worldYSnap, viewport.zoom, snap, gridSpacing, showGrid)
     
     setSnapIndicator(snapResult)
     
@@ -1068,6 +1079,31 @@ function CADInterface() {
     return lines
   }
 
+  const drawCrosshairs = () => {
+    if (!mousePosition) return null
+    
+    return (
+      <>
+        <Line
+          key="crosshair-h"
+          points={[0, mousePosition.y, canvasWidth, mousePosition.y]}
+          stroke="#ff0000"
+          strokeWidth={1 / viewport.zoom}
+          dash={[10 / viewport.zoom, 5 / viewport.zoom]}
+          listening={false}
+        />
+        <Line
+          key="crosshair-v"
+          points={[mousePosition.x, 0, mousePosition.x, canvasHeight]}
+          stroke="#ff0000"
+          strokeWidth={1 / viewport.zoom}
+          dash={[10 / viewport.zoom, 5 / viewport.zoom]}
+          listening={false}
+        />
+      </>
+    )
+  }
+
   const updateRulers = () => {
     if (!hRulerRef.current || !vRulerRef.current) return
 
@@ -1075,7 +1111,7 @@ function CADInterface() {
     const rulerWidth = 25
 
     const hRulerCanvas = document.createElement('canvas')
-    hRulerCanvas.width = containerSize.width
+    hRulerCanvas.width = canvasWidth
     hRulerCanvas.height = rulerHeight
     const hCtx = hRulerCanvas.getContext('2d')
     
@@ -1085,27 +1121,36 @@ function CADInterface() {
     hCtx.fillStyle = '#333'
     hCtx.font = '10px Arial'
 
-    const mmStep = Math.max(5, 50 / viewport.zoom)
-    const startMM = Math.floor((-viewport.pan.x / viewport.zoom / machineProfile.mmToPx) / mmStep) * mmStep
-    const endMM = startMM + (containerSize.width / viewport.zoom / machineProfile.mmToPx)
+    // Draw marks every 1mm with varying heights: small (1mm), medium (5mm), long (10mm)
+    const startMM = Math.max(0, Math.floor((-viewport.pan.x / viewport.zoom / machineProfile.mmToPx)))
+    const endMM = Math.min(machineProfile.bedSizeX, startMM + (hRulerCanvas.width / viewport.zoom / machineProfile.mmToPx))
     
-    for (let mmPos = startMM; mmPos <= endMM; mmPos += mmStep) {
-      if (mmPos < 0 || mmPos > machineProfile.bedSizeX) continue
-      
+    for (let mmPos = startMM; mmPos <= endMM; mmPos += 1) {
       const x = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.x
+      if (x < 0 || x > hRulerCanvas.width) continue
+      
+      let tickHeight
+      if (mmPos % 10 === 0) {
+        tickHeight = 12 // Long for 10mm
+      } else if (mmPos % 5 === 0) {
+        tickHeight = 8 // Medium for 5mm
+      } else {
+        tickHeight = 4 // Small for 1mm
+      }
+      
       hCtx.beginPath()
-      hCtx.moveTo(x, rulerHeight - 8)
+      hCtx.moveTo(x, rulerHeight - tickHeight)
       hCtx.lineTo(x, rulerHeight)
       hCtx.stroke()
       
-      if (mmPos % (mmStep * 2) === 0) {
+      if (mmPos % 10 === 0) {
         hCtx.fillText(mmPos.toFixed(0) + 'mm', x + 2, rulerHeight - 12)
       }
     }
 
     const vRulerCanvas = document.createElement('canvas')
     vRulerCanvas.width = rulerWidth
-    vRulerCanvas.height = containerSize.height
+    vRulerCanvas.height = canvasHeight
     const vCtx = vRulerCanvas.getContext('2d')
     
     vCtx.fillStyle = '#f0f0f0'
@@ -1114,19 +1159,29 @@ function CADInterface() {
     vCtx.fillStyle = '#333'
     vCtx.font = '10px Arial'
 
-    const startMMY = Math.floor((-viewport.pan.y / viewport.zoom / machineProfile.mmToPx) / mmStep) * mmStep
-    const endMMY = startMMY + (containerSize.height / viewport.zoom / machineProfile.mmToPx)
+    // Draw marks every 1mm with varying widths: small (1mm), medium (5mm), long (10mm)
+    const startMMY = Math.max(0, Math.floor((-viewport.pan.y / viewport.zoom / machineProfile.mmToPx)))
+    const endMMY = Math.min(machineProfile.bedSizeY, startMMY + (vRulerCanvas.height / viewport.zoom / machineProfile.mmToPx))
     
-    for (let mmPos = startMMY; mmPos <= endMMY; mmPos += mmStep) {
-      if (mmPos < 0 || mmPos > machineProfile.bedSizeY) continue
-      
+    for (let mmPos = startMMY; mmPos <= endMMY; mmPos += 1) {
       const y = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
+      if (y < 0 || y > vRulerCanvas.height) continue
+      
+      let tickWidth
+      if (mmPos % 10 === 0) {
+        tickWidth = 12 // Long for 10mm
+      } else if (mmPos % 5 === 0) {
+        tickWidth = 8 // Medium for 5mm
+      } else {
+        tickWidth = 4 // Small for 1mm
+      }
+      
       vCtx.beginPath()
-      vCtx.moveTo(rulerWidth - 8, y)
+      vCtx.moveTo(rulerWidth - tickWidth, y)
       vCtx.lineTo(rulerWidth, y)
       vCtx.stroke()
       
-      if (mmPos % (mmStep * 2) === 0) {
+      if (mmPos % 10 === 0) {
         vCtx.save()
         vCtx.translate(rulerWidth - 15, y + 2)
         vCtx.rotate(-Math.PI / 2)
@@ -1940,8 +1995,8 @@ function CADInterface() {
             <div className="canvas-container">
               <Stage
                 ref={stageRef}
-                width={containerSize.width}
-                height={containerSize.height}
+                width={canvasWidth}
+                height={canvasHeight}
                 scaleX={viewport.zoom}
                 scaleY={viewport.zoom}
                 x={viewport.pan.x}
@@ -1962,6 +2017,7 @@ function CADInterface() {
                     listening={false}
                   />
                   {drawGrid()}
+                  {drawCrosshairs()}
                   
                   {shapes.filter(shape => {
                     const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
