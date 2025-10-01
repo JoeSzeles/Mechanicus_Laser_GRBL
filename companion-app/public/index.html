@@ -29,6 +29,46 @@
         <main>
             <section class="section">
                 <div class="section-header">
+                    <h2>📡 Serial Connection</h2>
+                </div>
+                <div class="serial-connection-container">
+                    <div class="serial-status">
+                        <div class="serial-status-indicator">
+                            <span class="serial-dot" id="serialDot"></span>
+                            <span id="serialStatusText">Disconnected</span>
+                        </div>
+                        <div class="serial-info" id="serialInfo">
+                            <span class="serial-label">Port:</span> <span id="serialPort">-</span>
+                            <span class="serial-label">Baud:</span> <span id="serialBaud">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="serial-request-info" id="serialRequestInfo" style="display: none;">
+                        <div class="request-info-card">
+                            <h3>Latest Connection Request</h3>
+                            <div class="request-details">
+                                <span class="request-label">Requested COM:</span> <span id="requestedCOM">-</span>
+                                <span class="request-label">Requested Baud:</span> <span id="requestedBaud">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="serial-actions">
+                        <button class="btn btn-primary" id="connectBtn" disabled>
+                            <span class="icon">🔌</span> Connect
+                        </button>
+                        <button class="btn btn-danger" id="disconnectBtn" disabled>
+                            <span class="icon">⏏️</span> Disconnect
+                        </button>
+                        <button class="btn btn-secondary" id="scanBtn">
+                            <span class="icon">🔍</span> Scan Ports
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-header">
                     <h2>🔔 Connection Requests</h2>
                     <span class="badge" id="requestsBadge">0</span>
                 </div>
@@ -87,6 +127,24 @@
         </main>
 
         <div id="notification" class="notification"></div>
+        
+        <div id="scanModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🔍 Port Scan Results</h2>
+                    <button class="modal-close" id="modalClose">&times;</button>
+                </div>
+                <div class="modal-body" id="scanResults">
+                    <div class="scan-progress">
+                        <p>Scanning ports...</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="scanProgress"></div>
+                        </div>
+                        <p id="scanStatus">Initializing...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>

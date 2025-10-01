@@ -37,6 +37,10 @@ args = "Backend"
 task = "workflow.run"
 args = "Frontend"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Companion App"
+
 [[workflows.workflow]]
 name = "Mechanicus CAD App"
 author = "agent"
@@ -73,6 +77,18 @@ waitForPort = 5000
 [workflows.workflow.metadata]
 outputType = "webview"
 
+[[workflows.workflow]]
+name = "Companion App"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd companion-app && npm start"
+waitForPort = 8008
+
 [[ports]]
 localPort = 3001
 externalPort = 3001
@@ -86,12 +102,20 @@ localPort = 5001
 externalPort = 3000
 
 [[ports]]
+localPort = 8008
+externalPort = 8008
+
+[[ports]]
 localPort = 8081
 externalPort = 8081
 
 [[ports]]
 localPort = 34787
 externalPort = 3003
+
+[[ports]]
+localPort = 35657
+externalPort = 4200
 
 [[ports]]
 localPort = 46469

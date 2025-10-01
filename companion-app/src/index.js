@@ -4,12 +4,12 @@ const WebSocket = require('ws');
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 const express = require('express');
-const cors = require('cors');
 const notifier = require('node-notifier');
 const fs = require('fs').promises;
 const path = require('path');
 const open = require('open');
 const { generateSessionToken, verifySessionToken } = require('./sessionManager');
+const { log, getLogs, setBroadcastCallback } = require('./logger');
 
 class MechanicusCompanion {
   constructor() {
@@ -53,13 +53,18 @@ class MechanicusCompanion {
     // Setup WebSocket server for CAD app communication
     this.setupWebSocketServer();
     
+    // Setup logger broadcast callback for SSE
+    setBroadcastCallback((logEntry) => {
+      this.broadcastLog(logEntry);
+    });
+    
     console.log('🔧 Mechanicus Companion App Started');
     console.log('📡 WebSocket Server: ws://localhost:8080');
-    console.log('🌐 HTTP Server: http://localhost:8081');
-    console.log('📊 Dashboard: http://localhost:8081');
+    console.log('🌐 HTTP Server: http://localhost:8008');
+    console.log('📊 Dashboard: http://localhost:8008');
     
     // Open dashboard in default browser
-    open('http://localhost:8081').catch(err => {
+    open('http://localhost:8008').catch(err => {
       console.warn('Could not auto-open browser:', err.message);
     });
   }
@@ -208,8 +213,9 @@ class MechanicusCompanion {
     
     this.wss.on('connection', (ws, req) => {
       let isAuthenticated = false;
+      const origin = req.headers.origin;
       
-      console.log('🔗 CAD app attempting connection');
+      log('info', 'websocket', 'Connection attempt', { origin });
       
       // Send authentication challenge only - no status before auth
       this.sendToClient(ws, {
@@ -227,7 +233,7 @@ class MechanicusCompanion {
               const token = data.payload?.token;
               
               if (!token) {
-                console.warn('🚫 Authentication failed: No token provided');
+                log('warn', 'auth', 'Authentication failed - no token provided', { origin });
                 this.sendToClient(ws, {
                   type: 'auth_failed',
                   data: { message: 'No authentication token provided' }
@@ -239,7 +245,7 @@ class MechanicusCompanion {
               if (token === this.authToken) {
                 isAuthenticated = true;
                 this.clients.add(ws);
-                console.log('✅ Client authenticated successfully (legacy token)');
+                log('info', 'auth', 'Authentication successful (legacy token)', { origin });
                 
                 this.sendToClient(ws, {
                   type: 'auth_success',
@@ -259,7 +265,11 @@ class MechanicusCompanion {
               if (sessionValidation.valid) {
                 isAuthenticated = true;
                 this.clients.add(ws);
-                console.log(`✅ Client authenticated with session token (${sessionValidation.payload.origin})`);
+                log('info', 'auth', 'Authentication successful (session token)', { 
+                  origin: sessionValidation.payload.origin,
+                  com: sessionValidation.payload.com,
+                  baud: sessionValidation.payload.baud
+                });
                 
                 this.sendToClient(ws, {
                   type: 'auth_success',
@@ -277,7 +287,7 @@ class MechanicusCompanion {
                 
                 return;
               } else {
-                console.warn('🚫 Authentication failed: Invalid or expired session token');
+                log('warn', 'auth', 'Authentication failed - invalid or expired session token', { origin });
                 this.sendToClient(ws, {
                   type: 'auth_failed',
                   data: { message: 'Invalid or expired session token' }
@@ -308,18 +318,78 @@ class MechanicusCompanion {
 
       ws.on('close', () => {
         if (isAuthenticated) {
-          console.log('🔌 CAD app disconnected');
+          log('info', 'websocket', 'Client disconnected', { origin });
           this.clients.delete(ws);
         } else {
-          console.log('🔌 Unauthenticated connection closed');
+          log('debug', 'websocket', 'Unauthenticated connection closed', { origin });
         }
       });
     });
   }
 
+  validateOrigin(origin) {
+    if (!origin) {
+      return false;
+    }
+
+    const localhostOrigins = [
+      'http://localhost:5000',
+      'http://127.0.0.1:5000',
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://localhost:8008',
+      'http://127.0.0.1:8008',
+      ...(process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [])
+    ];
+
+    if (localhostOrigins.some(allowed => origin.startsWith(allowed.split(':').slice(0, 2).join(':')))) {
+      return true;
+    }
+
+    if (this.pairedOrigins.has(origin)) {
+      return true;
+    }
+
+    if (this.wildcardEnabled && origin.includes('.replit.dev')) {
+      return true;
+    }
+
+    return false;
+  }
+
   setupHttpServer() {
     this.app = express();
-    this.app.use(cors());
+    
+    this.app.use((req, res, next) => {
+      const origin = req.headers.origin;
+      
+      if (!origin) {
+        log('debug', 'http', 'Request without origin (same-origin or direct)', { method: req.method, path: req.path });
+        next();
+        return;
+      }
+      
+      if (this.validateOrigin(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        
+        if (req.method === 'OPTIONS') {
+          log('debug', 'http', 'CORS preflight request', { origin, path: req.path });
+          return res.status(200).end();
+        }
+        
+        log('debug', 'http', 'CORS request allowed', { method: req.method, path: req.path, origin });
+        next();
+      } else {
+        log('warn', 'http', 'CORS blocked - invalid origin', { origin, path: req.path });
+        res.status(403).json({ error: 'Forbidden: Invalid origin' });
+      }
+    });
+    
     this.app.use(express.json());
     
     // Serve static files from public directory
@@ -333,6 +403,20 @@ class MechanicusCompanion {
         connectedPorts: Array.from(this.connectedPorts.keys()),
         clientsConnected: this.clients.size
       });
+    });
+
+    // Logs endpoint
+    this.app.get('/logs', (req, res) => {
+      const { level, category, limit } = req.query;
+      const filters = {};
+      
+      if (level) filters.level = level;
+      if (category) filters.category = category;
+      if (limit) filters.limit = limit;
+      
+      const logs = getLogs(filters);
+      log('info', 'http', 'Logs retrieved', { filters, count: logs.length });
+      res.json(logs);
     });
 
     // List available serial ports
@@ -549,7 +633,7 @@ class MechanicusCompanion {
           });
         }
         
-        console.log(`🔌 Attempting to connect to ${com} @ ${baud} baud`);
+        log('info', 'serial', 'Attempting to connect', { com, baud, requestId });
         
         const serialPort = new SerialPort({
           path: com,
@@ -571,7 +655,7 @@ class MechanicusCompanion {
               byRequestId: requestId || null
             };
             
-            console.log(`✅ Serial port ${com} opened successfully`);
+            log('info', 'serial', 'Port opened successfully', { com, baud });
             
             this.broadcastSSE({
               type: 'serial_state',
@@ -591,7 +675,7 @@ class MechanicusCompanion {
               byRequestId: requestId || null
             };
             
-            console.error(`❌ Serial port error: ${error.message}`);
+            log('error', 'serial', 'Port error', { com, baud, error: error.message });
             
             this.broadcastSSE({
               type: 'serial_state',
@@ -645,7 +729,7 @@ class MechanicusCompanion {
         }
         
         const portPath = this.serialState.port;
-        console.log(`🔌 Disconnecting from ${portPath}${reason ? ` (${reason})` : ''}`);
+        log('info', 'serial', 'Disconnecting from port', { port: portPath, reason });
         
         await new Promise((resolve, reject) => {
           this.port.close((error) => {
@@ -667,7 +751,7 @@ class MechanicusCompanion {
           byRequestId: null
         };
         
-        console.log(`✅ Disconnected from ${portPath}`);
+        log('info', 'serial', 'Disconnected successfully', { port: portPath });
         
         this.broadcastSSE({
           type: 'serial_state',
@@ -695,7 +779,7 @@ class MechanicusCompanion {
           ? ports 
           : availablePorts.map(p => p.path);
         
-        console.log(`🔍 Starting auto-scan on ${portsToScan.length} port(s)`);
+        log('info', 'scan', 'Starting auto-scan', { portCount: portsToScan.length, ports: portsToScan });
         
         const baudRates = [115200, 250000, 9600, 19200, 38400, 57600];
         const results = [];
@@ -706,7 +790,7 @@ class MechanicusCompanion {
         });
         
         for (const portPath of portsToScan) {
-          console.log(`📡 Scanning port: ${portPath}`);
+          log('debug', 'scan', 'Scanning port', { port: portPath });
           
           this.broadcastSSE({
             type: 'scan_progress',
@@ -729,7 +813,7 @@ class MechanicusCompanion {
               const result = await this.testSerialPort(portPath, baud);
               
               if (result.success) {
-                console.log(`  ✅ Detected: ${result.firmware} on ${portPath} @ ${baud}`);
+                log('info', 'scan', 'Firmware detected', { port: portPath, baud, firmware: result.firmware });
                 
                 results.push({
                   port: portPath,
@@ -752,7 +836,7 @@ class MechanicusCompanion {
                 detected = true;
               }
             } catch (error) {
-              console.log(`  ❌ ${portPath} @ ${baud}: ${error.message}`);
+              log('debug', 'scan', 'Test failed', { port: portPath, baud, error: error.message });
             }
           }
           
@@ -765,6 +849,8 @@ class MechanicusCompanion {
               message: 'No compatible firmware detected'
             });
             
+            log('warn', 'scan', 'No firmware detected on port', { port: portPath });
+            
             this.broadcastSSE({
               type: 'scan_progress',
               data: { port: portPath, status: 'failed' }
@@ -772,7 +858,8 @@ class MechanicusCompanion {
           }
         }
         
-        console.log(`🔍 Scan complete: ${results.filter(r => r.success).length}/${results.length} detected`);
+        const successCount = results.filter(r => r.success).length;
+        log('info', 'scan', 'Scan complete', { total: results.length, successful: successCount });
         
         this.broadcastSSE({
           type: 'scan_complete',
@@ -796,9 +883,9 @@ class MechanicusCompanion {
       }
     });
 
-    this.httpServer = this.app.listen(8081, () => {
-      console.log('🌐 HTTP API ready on port 8081');
-      console.log('📊 Dashboard available at http://localhost:8081');
+    this.httpServer = this.app.listen(8008, () => {
+      console.log('🌐 HTTP API ready on port 8008');
+      console.log('📊 Dashboard available at http://localhost:8008');
     });
   }
   
@@ -808,8 +895,15 @@ class MechanicusCompanion {
       try {
         client.write(data);
       } catch (error) {
-        console.error('Error sending SSE:', error);
+        log('error', 'http', 'SSE broadcast error', { error: error.message });
       }
+    });
+  }
+
+  broadcastLog(logEntry) {
+    this.broadcastSSE({
+      type: 'log',
+      data: logEntry
     });
   }
   
