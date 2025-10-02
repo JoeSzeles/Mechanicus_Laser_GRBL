@@ -87,6 +87,22 @@ function CADInterface() {
   useEffect(() => {
     console.log('🔄 Loading workspace on mount...')
     loadWorkspaceState()
+    
+    // Load default machine profile
+    loadDefaultProfile().then(profile => {
+      if (profile) {
+        console.log('✅ Loaded default profile:', profile.name)
+        // Update machine profile in store to use bed dimensions
+        const mmToPx = 3.7795275591
+        useCadStore.setState({
+          machineProfile: {
+            bedSizeX: profile.bedMaxX || 300,
+            bedSizeY: profile.bedMaxY || 200,
+            mmToPx: mmToPx
+          }
+        })
+      }
+    })
   }, [])
   
   useEffect(() => {

@@ -114,6 +114,16 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       setFormData({ ...profile })
       setCurrentProfile(profile)
       setIsNewProfile(false)
+      
+      // Update canvas dimensions immediately
+      const mmToPx = 3.7795275591
+      useCadStore.setState({
+        machineProfile: {
+          bedSizeX: profile.bedMaxX || 300,
+          bedSizeY: profile.bedMaxY || 200,
+          mmToPx: mmToPx
+        }
+      })
     }
   }
   
@@ -171,6 +181,12 @@ function MachineSettingsPopup({ isOpen, onClose }) {
   }
   
   const handleSave = async () => {
+    // Validate profile name
+    if (!formData.name || formData.name.trim() === '') {
+      setError('Profile name is required')
+      return
+    }
+    
     setIsLoading(true)
     setError(null)
     setSuccess(null)
@@ -183,6 +199,17 @@ function MachineSettingsPopup({ isOpen, onClose }) {
         await updateMachineProfile(machineConnection.currentProfile.id, formData)
         setSuccess('Profile updated successfully!')
       }
+      
+      // Update canvas dimensions immediately
+      const mmToPx = 3.7795275591
+      useCadStore.setState({
+        machineProfile: {
+          bedSizeX: formData.bedMaxX || 300,
+          bedSizeY: formData.bedMaxY || 200,
+          mmToPx: mmToPx
+        }
+      })
+      
       setTimeout(() => setSuccess(null), 3000)
     } catch (err) {
       setError('Failed to save profile: ' + err.message)
