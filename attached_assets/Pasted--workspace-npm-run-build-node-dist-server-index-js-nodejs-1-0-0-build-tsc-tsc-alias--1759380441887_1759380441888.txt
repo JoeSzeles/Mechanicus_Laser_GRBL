@@ -1,0 +1,40 @@
+~/workspace$ npm run build && node dist/server/index.js
+
+> nodejs@1.0.0 build
+> tsc && tsc-alias && cd frontend && npm run build
+
+
+> frontend@0.0.0 build
+> vite build
+
+vite v7.1.7 building for production...
+✓ 162 modules transformed.
+dist/index.html                   0.46 kB │ gzip:   0.29 kB
+dist/assets/index-C8snM1fD.css   35.12 kB │ gzip:   6.87 kB
+dist/assets/index-B2KB3e-l.js   664.07 kB │ gzip: 199.70 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 3.15s
+/home/runner/workspace/node_modules/path-to-regexp/dist/index.js:96
+            throw new PathError(`Missing parameter name at index ${index}`, str);
+            ^
+
+PathError [TypeError]: Missing parameter name at index 2: /*; visit https://git.new/pathToRegexpError for info
+    at name (/home/runner/workspace/node_modules/path-to-regexp/dist/index.js:96:19)
+    at parse (/home/runner/workspace/node_modules/path-to-regexp/dist/index.js:113:68)
+    at pathToRegexp (/home/runner/workspace/node_modules/path-to-regexp/dist/index.js:267:58)
+    at Object.match (/home/runner/workspace/node_modules/path-to-regexp/dist/index.js:237:30)
+    at matcher (/home/runner/workspace/node_modules/router/lib/layer.js:86:23)
+    at new Layer (/home/runner/workspace/node_modules/router/lib/layer.js:93:62)
+    at Function.route (/home/runner/workspace/node_modules/router/index.js:428:17)
+    at Function.route (/home/runner/workspace/node_modules/express/lib/application.js:257:22)
+    at app.<computed> [as get] (/home/runner/workspace/node_modules/express/lib/application.js:478:22)
+    at Object.<anonymous> (/home/runner/workspace/dist/server/index.js:308:5) {
+  originalPath: '/*'
+}
+
+Node.js v22.17.0
+~/workspace$
