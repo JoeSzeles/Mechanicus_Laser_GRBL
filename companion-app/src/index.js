@@ -790,22 +790,45 @@ class MechanicusCompanion {
 
   async sendGcode(ws, { portPath, gcode, filename }) {
     try {
-      console.log(`🔵 [COMMAND FLOW] Main app sent send_gcode command`);
-      console.log(`🔵 [COMMAND FLOW] Port: ${portPath}, Filename: ${filename || 'manual'}, G-code length: ${gcode?.length || 0} chars`);
+      log('info', 'gcode', '📥 Received send_gcode command', { 
+        portPath, 
+        filename: filename || 'manual', 
+        gcodeLength: gcode?.length || 0 
+      });
       
-      const connection = this.connectedPorts.get(portPath);
-      if (!connection) {
-        throw new Error(`Port ${portPath} is not connected`);
+      // Check both connection methods: WebSocket (connectedPorts) and HTTP (this.port)
+      let connection = this.connectedPorts.get(portPath);
+      let serialPort = null;
+      let lineEnding = '\n';
+      
+      if (connection) {
+        log('debug', 'gcode', 'Using WebSocket connection', { portPath });
+        serialPort = connection.port;
+        lineEnding = connection.profile.lineEnding;
+      } else if (this.port && this.serialState.connected && this.serialState.port === portPath) {
+        log('debug', 'gcode', 'Using HTTP connection (fallback)', { portPath });
+        serialPort = this.port;
+        lineEnding = '\n';
+      } else {
+        const errorMsg = `Port ${portPath} is not connected. Current state: ${JSON.stringify(this.serialState)}`;
+        log('error', 'gcode', errorMsg, { 
+          portPath, 
+          connectedPorts: Array.from(this.connectedPorts.keys()),
+          httpPort: this.serialState.port,
+          httpConnected: this.serialState.connected
+        });
+        throw new Error(errorMsg);
       }
 
-      console.log(`📤 Starting G-code transmission: ${filename || 'manual'}`);
-      console.log(`🔵 [COMMAND FLOW] Companion will now send to machine on ${portPath}`);
+      log('info', 'gcode', `📤 Starting G-code transmission to ${portPath}`, { filename: filename || 'manual' });
       this.isTransmitting = true;
       
       const lines = gcode.split('\n').filter(line => {
         const trimmed = line.trim();
         return trimmed && !trimmed.startsWith(';'); // Filter empty lines and comments
       });
+
+      log('info', 'gcode', `Sending ${lines.length} lines of G-code`, { portPath });
 
       this.broadcastToClients({
         type: 'gcode_start',
@@ -816,8 +839,9 @@ class MechanicusCompanion {
       for (const line of lines) {
         if (!this.isTransmitting) break; // Allow stopping transmission
         
-        const command = line.trim() + connection.profile.lineEnding;
-        connection.port.write(command);
+        const command = line.trim() + lineEnding;
+        log('debug', 'gcode', `✅ Writing to ${portPath}`, { line: line.trim(), lineNumber: lineNumber + 1 });
+        serialPort.write(command);
         lineNumber++;
         
         // Send progress update
@@ -842,11 +866,11 @@ class MechanicusCompanion {
         data: { portPath, linesTransmitted: lineNumber }
       });
       
-      console.log(`✅ G-code transmission complete: ${lineNumber} lines`);
+      log('info', 'gcode', `✅ G-code transmission complete: ${lineNumber} lines`, { portPath });
       
     } catch (error) {
       this.isTransmitting = false;
-      console.error('❌ G-code transmission failed:', error);
+      log('error', 'gcode', '❌ G-code transmission failed', { error: error.message, portPath });
       this.sendToClient(ws, {
         type: 'gcode_error',
         data: { message: error.message }

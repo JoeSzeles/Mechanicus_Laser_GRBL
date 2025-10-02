@@ -19,6 +19,21 @@ export default function MachineJogControls() {
     const xMove = xDir * stepSize
     const yMove = yDir * stepSize
 
+    console.log('🕹️ [JOG] Jogging machine:', {
+      direction: { x: xDir, y: yDir },
+      distance: { x: xMove, y: yMove },
+      feedRate,
+      port: serialState.port
+    })
+
+    const gcodeCommands = [
+      'G91',
+      `G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`,
+      'G90'
+    ]
+
+    console.log('🕹️ [JOG] Sending G-code sequence:', gcodeCommands)
+
     sendGcode(`G91`)
     sendGcode(`G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`)
     sendGcode(`G90`)

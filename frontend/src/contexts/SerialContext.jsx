@@ -129,11 +129,17 @@ export function SerialProvider({ children }) {
         break
 
       case 'error':
+        console.error('❌ [WS] Error from companion:', data)
         addMessage('error', `❌ ${data.message}`)
+        break
+      
+      case 'gcode_error':
+        console.error('❌ [GCODE] G-code error:', data)
+        addMessage('error', `❌ G-code error: ${data.message}`)
         break
 
       default:
-        console.log('Received:', type, data)
+        console.log('📨 [WS] Received:', type, data)
     }
   }
 
@@ -149,15 +155,30 @@ export function SerialProvider({ children }) {
 
   const sendGcode = (gcode) => {
     if (wsRef.current?.readyState === WebSocket.OPEN && isConnected && serialState.port) {
-      wsRef.current.send(JSON.stringify({
+      const payload = {
         type: 'send_gcode',
         payload: { 
           portPath: serialState.port,
           gcode 
         }
-      }))
+      }
+      
+      console.log('📤 [GCODE SEND] Sending to companion app:', {
+        destination: 'ws://localhost:8080',
+        port: serialState.port,
+        gcodePreview: gcode.substring(0, 100) + (gcode.length > 100 ? '...' : ''),
+        gcodeLength: gcode.length
+      })
+      
+      wsRef.current.send(JSON.stringify(payload))
       addMessage('info', `📤 Sending G-code to ${serialState.port}`)
     } else {
+      console.error('❌ [GCODE SEND] Cannot send - not connected:', {
+        wsState: wsRef.current?.readyState,
+        wsOpen: wsRef.current?.readyState === WebSocket.OPEN,
+        isConnected,
+        serialPort: serialState.port
+      })
       addMessage('error', '❌ Not connected. Use companion app to connect to serial port.')
     }
   }
