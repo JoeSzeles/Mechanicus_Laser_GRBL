@@ -34,9 +34,11 @@ export class MachinePositionTracker {
   // Send M114 command to get current position
   queryPosition(portPath) {
     if (!this.wsConnection || this.wsConnection.readyState !== WebSocket.OPEN) {
+      console.warn('⚠️ [POSITION] Cannot query - WebSocket not connected')
       return
     }
 
+    console.log('📍 [POSITION] Sending M114 query to:', portPath)
     this.wsConnection.send(JSON.stringify({
       type: 'send_gcode',
       payload: {
@@ -46,18 +48,30 @@ export class MachinePositionTracker {
     }))
   }
 
-  // Parse M114 response: "X:123.45 Y:67.89 Z:10.00 E:0.00"
+  // Parse M114 response: "X:123.45 Y:67.89 Z:10.00" or "x:123.45 y:67.89"
   parsePositionResponse(response) {
-    const match = response.match(/X:([-\d.]+)\s+Y:([-\d.]+)\s+Z:([-\d.]+)/)
+    console.log('📍 [POSITION] Parsing response:', response)
+    
+    // Try uppercase format first (GRBL/Marlin): X:123.45 Y:67.89 Z:10.00
+    let match = response.match(/X:([-\d.]+)\s+Y:([-\d.]+)(?:\s+Z:([-\d.]+))?/i)
+    
+    // Try lowercase format (some firmwares): x:123.45 y:67.89
+    if (!match) {
+      match = response.match(/x:([-\d.]+)\s+y:([-\d.]+)(?:\s+z:([-\d.]+))?/i)
+    }
+    
     if (match) {
       this.position = {
         x: parseFloat(match[1]),
         y: parseFloat(match[2]),
-        z: parseFloat(match[3])
+        z: match[3] ? parseFloat(match[3]) : 0
       }
+      console.log('✅ [POSITION] Updated position:', this.position)
       this.notifyListeners()
       return true
     }
+    
+    console.warn('⚠️ [POSITION] Could not parse response:', response)
     return false
   }
 

@@ -143,10 +143,15 @@ export function SerialProvider({ children }) {
       case 'serial_data':
         addMessage('receive', `📨 ${data.message}`)
         
-        // Parse position from M114 response
-        if (machinePositionTracker.parsePositionResponse(data.message)) {
-          const pos = machinePositionTracker.getPosition()
-          setMachinePosition(pos)
+        // Parse position from M114 response (case-insensitive)
+        const lowerMsg = data.message.toLowerCase()
+        if (lowerMsg.includes('x:') && lowerMsg.includes('y:')) {
+          console.log('📍 [SERIAL_DATA] Potential M114 response detected:', data.message)
+          if (machinePositionTracker.parsePositionResponse(data.message)) {
+            const pos = machinePositionTracker.getPosition()
+            console.log('📍 [SERIAL_DATA] Position parsed and updated:', pos)
+            setMachinePosition(pos)
+          }
         }
         
         // Detect laser state changes
@@ -167,11 +172,14 @@ export function SerialProvider({ children }) {
           z: data.z || 0
         }
         console.log('📍 [POSITION UPDATE] Received from companion:', newPosition)
+        console.log('📍 [POSITION UPDATE] Previous position:', machinePosition)
         setMachinePosition(newPosition)
         
         // Also update the position tracker module
         machinePositionTracker.position = newPosition
         machinePositionTracker.notifyListeners()
+        
+        addMessage('info', `📍 Position: X:${newPosition.x.toFixed(2)} Y:${newPosition.y.toFixed(2)} Z:${newPosition.z.toFixed(2)}`)
         break
 
       case 'error':
