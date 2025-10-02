@@ -33,27 +33,42 @@ class CompanionDashboard {
     }
 
     setupEventListeners() {
-        document.getElementById('wildcardToggle').addEventListener('change', (e) => {
+        const wildcardToggle = document.getElementById('wildcardToggle');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const scanBtn = document.getElementById('scanBtn');
+        const modalClose = document.getElementById('modalClose');
+        const clearLogsBtn = document.getElementById('clearLogsBtn');
+        const autoScrollToggle = document.getElementById('autoScrollToggle');
+
+        if (!wildcardToggle || !refreshBtn || !connectBtn || !disconnectBtn || !scanBtn || !modalClose || !clearLogsBtn || !autoScrollToggle) {
+            console.error('❌ Some required DOM elements are missing. Retrying in 100ms...');
+            setTimeout(() => this.setupEventListeners(), 100);
+            return;
+        }
+
+        wildcardToggle.addEventListener('change', (e) => {
             this.toggleWildcard(e.target.checked);
         });
 
-        document.getElementById('refreshBtn').addEventListener('click', () => {
+        refreshBtn.addEventListener('click', () => {
             this.fetchStatus();
         });
 
-        document.getElementById('connectBtn').addEventListener('click', () => {
+        connectBtn.addEventListener('click', () => {
             this.connectSerial();
         });
 
-        document.getElementById('disconnectBtn').addEventListener('click', () => {
+        disconnectBtn.addEventListener('click', () => {
             this.disconnectSerial();
         });
 
-        document.getElementById('scanBtn').addEventListener('click', () => {
+        scanBtn.addEventListener('click', () => {
             this.scanPorts();
         });
 
-        document.getElementById('modalClose').addEventListener('click', () => {
+        modalClose.addEventListener('click', () => {
             this.closeScanModal();
         });
 
@@ -64,11 +79,11 @@ class CompanionDashboard {
             }
         });
 
-        document.getElementById('clearLogsBtn').addEventListener('click', () => {
+        clearLogsBtn.addEventListener('click', () => {
             this.clearLogs();
         });
 
-        document.getElementById('autoScrollToggle').addEventListener('change', () => {
+        autoScrollToggle.addEventListener('change', () => {
             this.displayCommunicationLogs(); // Refresh display to apply auto-scroll setting
         });
     }
@@ -626,21 +641,32 @@ class CompanionDashboard {
     }
 
     handleScanComplete(data) {
+        console.log('📊 [SCAN COMPLETE] Received data:', data);
         const scanResults = document.getElementById('scanResults');
+        
+        if (!scanResults) {
+            console.error('❌ scanResults element not found!');
+            return;
+        }
 
-        if (data.results && data.results.length > 0) {
-            this.scanResults = data.results;
+        // Filter successful results
+        const successfulResults = data.results ? data.results.filter(r => r.success) : [];
+        
+        console.log('📊 [SCAN COMPLETE] Successful results:', successfulResults);
+
+        if (successfulResults.length > 0) {
+            this.scanResults = successfulResults;
             scanResults.innerHTML = `
                 <div class="scan-complete">
-                    <p class="scan-success">✅ Scan complete! Found ${data.results.length} machine(s)</p>
+                    <p class="scan-success">✅ Scan complete! Found ${successfulResults.length} machine(s)</p>
                     <div class="scan-results-list">
-                        ${data.results.map((result, index) => `
+                        ${successfulResults.map((result, index) => `
                             <div class="scan-result-card" data-index="${index}">
                                 <div class="result-info">
-                                    <h3>${result.firmware || 'Unknown'}</h3>
-                                    <p><strong>Port:</strong> ${result.port}</p>
+                                    <h3>${this.escapeHtml(result.firmware || 'Unknown')}</h3>
+                                    <p><strong>Port:</strong> ${this.escapeHtml(result.port)}</p>
                                     <p><strong>Baud:</strong> ${result.baud}</p>
-                                    ${result.response ? `<p class="result-response">${this.escapeHtml(result.response)}</p>` : ''}
+                                    ${result.message ? `<p class="result-response">${this.escapeHtml(result.message)}</p>` : ''}
                                 </div>
                                 <button class="btn btn-primary btn-sm" onclick="dashboard.selectScanResult(${index})">
                                     <span class="icon">✓</span> Select
@@ -655,9 +681,12 @@ class CompanionDashboard {
                 <div class="scan-complete">
                     <p class="scan-failure">❌ No machines detected</p>
                     <p>Make sure your machine is powered on and connected.</p>
+                    <p>Scanned ${data.results ? data.results.length : 0} port(s)</p>
                 </div>
             `;
         }
+        
+        console.log('📊 [SCAN COMPLETE] Updated UI');
     }
 
     selectScanResult(index) {
@@ -767,4 +796,12 @@ class CompanionDashboard {
     }
 }
 
-const dashboard = new CompanionDashboard();
+let dashboard;
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        dashboard = new CompanionDashboard();
+    });
+} else {
+    dashboard = new CompanionDashboard();
+}
