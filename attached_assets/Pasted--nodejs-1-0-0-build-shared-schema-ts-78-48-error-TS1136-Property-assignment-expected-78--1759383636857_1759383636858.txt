@@ -1,0 +1,84 @@
+
+> nodejs@1.0.0 build
+shared/schema.ts:78:48 - error TS1136: Property assignment expected.
+
+78   smoothness: real("smoothness").default(0.34),</old_str>
+                                                  ~
+
+shared/schema.ts:78:49 - error TS1161: Unterminated regular expression literal.
+
+78   smoothness: real("smoothness").default(0.34),</old_str>
+                                                   ~~~~~~~~~
+
+shared/schema.ts:81:3 - error TS1005: ',' expected.
+
+81   smoothness: real("smoothness").default(0.34),
+     ~~~~~~~~~~
+
+shared/schema.ts:81:13 - error TS1005: ',' expected.
+
+81   smoothness: real("smoothness").default(0.34),
+               ~
+
+shared/schema.ts:82:19 - error TS1005: ',' expected.
+
+82   connectTolerance: real("connect_tolerance").default(0.001),
+                     ~
+
+shared/schema.ts:83:13 - error TS1005: ',' expected.
+
+83   refillPosX: integer("refill_pos_x").default(150),
+               ~
+
+shared/schema.ts:84:13 - error TS1005: ',' expected.
+
+84   refillPosY: integer("refill_pos_y").default(10),
+               ~
+
+shared/schema.ts:85:13 - error TS1005: ',' expected.
+
+85   refillPosZ: integer("refill_pos_z").default(20),
+               ~
+
+shared/schema.ts:86:15 - error TS1005: ',' expected.
+
+86   refillLength: integer("refill_length").default(200),
+                 ~
+
+shared/schema.ts:87:9 - error TS1005: ',' expected.
+
+87   refill: boolean("refill").default(false),
+           ~
+
+shared/schema.ts:88:19 - error TS1005: ',' expected.
+
+88   gradientLengthMm: integer("gradient_length_mm").default(8),
+                     ~
+
+shared/schema.ts:91:12 - error TS1005: ',' expected.
+
+91   isDefault: boolean("is_default").default(false),
+              ~
+
+shared/schema.ts:93:12 - error TS1005: ',' expected.
+
+93   createdAt: timestamp("created_at").defaultNow().notNull(),
+              ~
+
+shared/schema.ts:94:12 - error TS1005: ',' expected.
+
+94   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+              ~
+
+shared/schema.ts:95:1 - error TS1135: Argument expression expected.
+
+95 });
+   ~
+
+shared/schema.ts:95:2 - error TS1128: Declaration or statement expected.
+
+95 });
+    ~
+
+
+Found 16 errors in the same file, starting at: shared/schema.ts:78
