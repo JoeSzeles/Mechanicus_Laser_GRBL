@@ -39,10 +39,10 @@ export default function MachineJogControls() {
     sendGcode(`G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`)
     sendGcode(`G90`)
     
-    // Query position after movement (with small delay to allow movement to start)
+    // Query position after movement completes (longer delay for movement to finish)
     setTimeout(() => {
       machinePositionTracker.queryPosition(serialState.port)
-    }, 100)
+    }, 1000)
   }
 
   const handleHome = () => {

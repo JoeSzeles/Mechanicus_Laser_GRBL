@@ -121,11 +121,6 @@ export function SerialProvider({ children }) {
           if (data.serialState.connected) {
             // Initialize position tracker with WebSocket and port
             machinePositionTracker.init(wsRef.current, data.serialState.port)
-            
-            // Send initial M114 to get current position
-            setTimeout(() => {
-              machinePositionTracker.queryPosition(data.serialState.port)
-            }, 500)
           }
         }
         break
@@ -138,14 +133,10 @@ export function SerialProvider({ children }) {
         if (data.connected) {
           addMessage('success', `✅ Machine connected: ${data.port} @ ${data.baud} baud`)
           machinePositionTracker.init(wsRef.current, data.port)
-          setTimeout(() => {
-            machinePositionTracker.queryPosition(data.port)
-          }, 500)
+          // Query position once on connect
+          machinePositionTracker.queryPosition(data.port)
         } else if (data.error) {
           addMessage('error', `❌ Serial error: ${data.error}`)
-          machinePositionTracker.stopPeriodicUpdate()
-        } else {
-          machinePositionTracker.stopPeriodicUpdate()
         }
         break
 

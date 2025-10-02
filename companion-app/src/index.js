@@ -345,6 +345,45 @@ class MechanicusCompanion {
             
             log('info', 'serial', 'Port opened successfully', { com, baud });
             
+            // Setup data listener for machine responses
+            const parser = serialPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+            parser.on('data', (data) => {
+              const response = data.toString().trim();
+              
+              // Log machine response
+              log('info', 'serial', 'Machine response', { response });
+              
+              // Broadcast to all clients
+              this.broadcastToClients({
+                type: 'serial_data',
+                data: { message: response }
+              });
+              
+              // Parse M114 position responses
+              // Format: "X:123.45 Y:67.89 Z:10.00 E:0.00"
+              if (response.includes('X:') && response.includes('Y:')) {
+                const xMatch = response.match(/X:([-\d.]+)/);
+                const yMatch = response.match(/Y:([-\d.]+)/);
+                const zMatch = response.match(/Z:([-\d.]+)/);
+                
+                if (xMatch && yMatch) {
+                  const position = {
+                    x: parseFloat(xMatch[1]),
+                    y: parseFloat(yMatch[1]),
+                    z: zMatch ? parseFloat(zMatch[1]) : 0
+                  };
+                  
+                  log('info', 'position', 'Position update', position);
+                  
+                  // Broadcast position update
+                  this.broadcastToClients({
+                    type: 'position_update',
+                    data: position
+                  });
+                }
+              }
+            });
+            
             this.broadcastSSE({
               type: 'serial_state',
               data: this.serialState

@@ -15,18 +15,12 @@ export class MachinePositionTracker {
   init(wsConnection, portPath) {
     this.wsConnection = wsConnection
     this.portPath = portPath
-    this.startPeriodicUpdate()
+    // Don't start periodic updates - only query when needed
   }
 
   // Start periodic position updates every 500ms
   startPeriodicUpdate() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval)
-    }
-
-    this.updateInterval = setInterval(() => {
-      this.queryPosition(this.portPath)
-    }, 500)
+    // Disabled - query only on demand
   }
 
   // Stop periodic updates
