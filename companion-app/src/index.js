@@ -360,11 +360,18 @@ class MechanicusCompanion {
               });
               
               // Parse M114 position responses
-              // Format: "X:123.45 Y:67.89 Z:10.00 E:0.00"
+              // Format: "X:123.45 Y:67.89 Z:10.00 E:0.00" or "X:123.45 Y:67.89"
               if (response.includes('X:') && response.includes('Y:')) {
                 const xMatch = response.match(/X:([-\d.]+)/);
                 const yMatch = response.match(/Y:([-\d.]+)/);
                 const zMatch = response.match(/Z:([-\d.]+)/);
+                
+                log('debug', 'position', 'Parsing M114 response', { 
+                  response, 
+                  xMatch: xMatch?.[1], 
+                  yMatch: yMatch?.[1],
+                  zMatch: zMatch?.[1]
+                });
                 
                 if (xMatch && yMatch) {
                   const position = {
@@ -373,7 +380,7 @@ class MechanicusCompanion {
                     z: zMatch ? parseFloat(zMatch[1]) : 0
                   };
                   
-                  log('info', 'position', 'Position update', position);
+                  log('info', 'position', 'Position update parsed', position);
                   
                   // Broadcast position update
                   this.broadcastToClients({

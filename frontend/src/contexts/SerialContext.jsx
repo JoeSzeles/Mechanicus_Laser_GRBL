@@ -161,11 +161,17 @@ export function SerialProvider({ children }) {
 
       case 'position_update':
         // Direct position update from companion
-        setMachinePosition({
+        const newPosition = {
           x: data.x || 0,
           y: data.y || 0,
           z: data.z || 0
-        })
+        }
+        console.log('📍 [POSITION UPDATE] Received from companion:', newPosition)
+        setMachinePosition(newPosition)
+        
+        // Also update the position tracker module
+        machinePositionTracker.position = newPosition
+        machinePositionTracker.notifyListeners()
         break
 
       case 'error':
