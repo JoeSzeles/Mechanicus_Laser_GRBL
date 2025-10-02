@@ -8,7 +8,10 @@ class CompanionDashboard {
         this.latestRequest = null;
         this.scanResults = [];
         this.isScanning = false;
-        
+        // Communication logs tracking
+        this.communicationLogs = [];
+        this.MAX_LOGS = 500;
+
         this.init();
     }
 
@@ -17,6 +20,8 @@ class CompanionDashboard {
         this.setupEventListeners();
         this.connectToSSE();
         this.fetchStatus();
+        // Setup console intercept to capture logs
+        this.setupConsoleIntercept();
     }
 
     loadSettings() {
@@ -58,6 +63,14 @@ class CompanionDashboard {
                 this.closeScanModal();
             }
         });
+
+        document.getElementById('clearLogsBtn').addEventListener('click', () => {
+            this.clearLogs();
+        });
+
+        document.getElementById('autoScrollToggle').addEventListener('change', () => {
+            this.displayCommunicationLogs(); // Refresh display to apply auto-scroll setting
+        });
     }
 
     connectToSSE() {
@@ -66,54 +79,64 @@ class CompanionDashboard {
         }
 
         this.eventSource = new EventSource('/events');
-        
+
         this.eventSource.onopen = () => {
             this.updateStatus('running', 'Connected');
+            this.addCommunicationLog('system-info', 'SSE connection opened.');
         };
 
         this.eventSource.onerror = () => {
             this.updateStatus('error', 'Connection Error');
+            this.addCommunicationLog('system-error', 'SSE connection error. Retrying in 5 seconds...');
             setTimeout(() => this.connectToSSE(), 5000);
         };
 
         this.eventSource.addEventListener('connection_request', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('machine-to-companion', `[MACHINE → COMPANION] Received connection request: ${JSON.stringify(data)}`);
             this.handleConnectionRequest(data);
         });
 
         this.eventSource.addEventListener('status_update', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('system-info', `[COMPANION → MAIN APP] Received status update: ${JSON.stringify(data)}`);
             this.handleStatusUpdate(data);
         });
 
         this.eventSource.addEventListener('origin_removed', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('system-info', `[COMPANION → MAIN APP] Origin removed: ${data.origin}`);
             this.showNotification(`Origin removed: ${data.origin}`, 'success');
             this.fetchStatus();
         });
 
         this.eventSource.addEventListener('serial_state', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('system-info', `[COMPANION → MAIN APP] Received serial state: ${JSON.stringify(data)}`);
             this.handleSerialStateUpdate(data);
         });
 
         this.eventSource.addEventListener('session_request', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('machine-to-companion', `[MACHINE → COMPANION] Received session request: ${JSON.stringify(data)}`);
             this.handleSessionRequest(data);
         });
 
         this.eventSource.addEventListener('scan_progress', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('machine-to-companion', `[MACHINE → COMPANION] Scan progress: ${JSON.stringify(data)}`);
             this.handleScanProgress(data);
         });
 
         this.eventSource.addEventListener('scan_started', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('machine-to-companion', `[MACHINE → COMPANION] Scan started: ${JSON.stringify(data)}`);
             this.handleScanStarted(data);
         });
 
         this.eventSource.addEventListener('scan_complete', (e) => {
             const data = JSON.parse(e.data);
+            this.addCommunicationLog('machine-to-companion', `[MACHINE → COMPANION] Scan complete: ${JSON.stringify(data)}`);
             this.handleScanComplete(data);
         });
     }
@@ -122,24 +145,26 @@ class CompanionDashboard {
         try {
             const response = await fetch('/status');
             if (!response.ok) throw new Error('Failed to fetch status');
-            
+
             const data = await response.json();
             this.pairedOrigins = data.pairedOrigins || [];
             this.connectionRequests = data.pendingRequests || [];
             this.serialState = data.serialState || null;
-            
+
             if (data.sessionRequests && data.sessionRequests.length > 0) {
                 this.latestRequest = data.sessionRequests[0];
             }
-            
+
             this.updateStatus('running', 'Running');
             this.updateConnectionCount(data.activeConnections || 0);
             this.renderPairedOrigins();
             this.renderConnectionRequests();
             this.updateSerialUI();
+            this.addCommunicationLog('system-info', `[COMPANION → MAIN APP] Fetched status: ${JSON.stringify(data)}`);
         } catch (error) {
             console.error('Error fetching status:', error);
             this.updateStatus('error', 'Failed to load');
+            this.addCommunicationLog('system-error', `Error fetching status: ${error.message}`);
         }
     }
 
@@ -152,6 +177,7 @@ class CompanionDashboard {
             });
             this.renderConnectionRequests();
             this.showNotification(`New connection request from ${data.origin}`, 'info');
+            this.addCommunicationLog('system-info', `Added new connection request from ${data.origin}`);
         }
     }
 
@@ -159,9 +185,11 @@ class CompanionDashboard {
         if (data.pairedOrigins) {
             this.pairedOrigins = data.pairedOrigins;
             this.renderPairedOrigins();
+            this.addCommunicationLog('system-info', `Updated paired origins: ${JSON.stringify(data.pairedOrigins)}`);
         }
         if (data.activeConnections !== undefined) {
             this.updateConnectionCount(data.activeConnections);
+            this.addCommunicationLog('system-info', `Updated active connections to ${data.activeConnections}`);
         }
     }
 
@@ -170,6 +198,7 @@ class CompanionDashboard {
         if (card) card.classList.add('loading');
 
         try {
+            this.addCommunicationLog('companion-to-main', `[COMPANION → MAIN APP] Accepting connection from ${origin}`);
             const response = await fetch('/pair/accept', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -182,9 +211,11 @@ class CompanionDashboard {
             this.renderConnectionRequests();
             this.showNotification(`Accepted connection from ${origin}`, 'success');
             this.fetchStatus();
+            this.addCommunicationLog('system-info', `Successfully accepted connection from ${origin}`);
         } catch (error) {
             console.error('Error accepting connection:', error);
             this.showNotification(`Failed to accept connection: ${error.message}`, 'error');
+            this.addCommunicationLog('system-error', `Error accepting connection from ${origin}: ${error.message}`);
         } finally {
             if (card) card.classList.remove('loading');
         }
@@ -195,6 +226,7 @@ class CompanionDashboard {
         if (card) card.classList.add('loading');
 
         try {
+            this.addCommunicationLog('companion-to-main', `[COMPANION → MAIN APP] Declining connection from ${origin}`);
             const response = await fetch('/pair/decline', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -206,9 +238,11 @@ class CompanionDashboard {
             this.connectionRequests = this.connectionRequests.filter(r => r.origin !== origin);
             this.renderConnectionRequests();
             this.showNotification(`Declined connection from ${origin}`, 'success');
+            this.addCommunicationLog('system-info', `Successfully declined connection from ${origin}`);
         } catch (error) {
             console.error('Error declining connection:', error);
             this.showNotification(`Failed to decline connection: ${error.message}`, 'error');
+            this.addCommunicationLog('system-error', `Error declining connection from ${origin}: ${error.message}`);
         } finally {
             if (card) card.classList.remove('loading');
         }
@@ -223,6 +257,7 @@ class CompanionDashboard {
         if (row) row.classList.add('loading');
 
         try {
+            this.addCommunicationLog('companion-to-main', `[COMPANION → MAIN APP] Removing origin: ${origin}`);
             const response = await fetch(`/origin/${encodeURIComponent(origin)}`, {
                 method: 'DELETE'
             });
@@ -232,9 +267,11 @@ class CompanionDashboard {
             this.pairedOrigins = this.pairedOrigins.filter(o => o.origin !== origin);
             this.renderPairedOrigins();
             this.showNotification(`Removed origin: ${origin}`, 'success');
+            this.addCommunicationLog('system-info', `Successfully removed origin: ${origin}`);
         } catch (error) {
             console.error('Error removing origin:', error);
             this.showNotification(`Failed to remove origin: ${error.message}`, 'error');
+            this.addCommunicationLog('system-error', `Error removing origin ${origin}: ${error.message}`);
         } finally {
             if (row) row.classList.remove('loading');
         }
@@ -245,6 +282,7 @@ class CompanionDashboard {
         localStorage.setItem('wildcardEnabled', enabled);
 
         try {
+            this.addCommunicationLog('companion-to-main', `[COMPANION → MAIN APP] Toggling wildcard to ${enabled}`);
             const response = await fetch('/settings/wildcard', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -257,9 +295,11 @@ class CompanionDashboard {
                 enabled ? 'Wildcard enabled for *.replit.dev' : 'Wildcard disabled',
                 'success'
             );
+            this.addCommunicationLog('system-info', `Wildcard setting updated to ${enabled}`);
         } catch (error) {
             console.error('Error toggling wildcard:', error);
             this.showNotification(`Failed to update setting: ${error.message}`, 'error');
+            this.addCommunicationLog('system-error', `Error toggling wildcard to ${enabled}: ${error.message}`);
             document.getElementById('wildcardToggle').checked = !enabled;
             this.wildcardEnabled = !enabled;
         }
@@ -268,7 +308,7 @@ class CompanionDashboard {
     renderConnectionRequests() {
         const container = document.getElementById('connectionRequests');
         const badge = document.getElementById('requestsBadge');
-        
+
         badge.textContent = this.connectionRequests.length;
 
         if (this.connectionRequests.length === 0) {
@@ -300,6 +340,7 @@ class CompanionDashboard {
 
     renderPairedOrigins() {
         const tbody = document.getElementById('pairedOriginsBody');
+        const connectedUsersContainer = document.getElementById('connectedUsers');
 
         if (this.pairedOrigins.length === 0) {
             tbody.innerHTML = `
@@ -309,6 +350,7 @@ class CompanionDashboard {
                     </td>
                 </tr>
             `;
+            connectedUsersContainer.innerHTML = '<p class="empty-state">No connected users</p>';
             return;
         }
 
@@ -324,12 +366,24 @@ class CompanionDashboard {
                 </td>
             </tr>
         `).join('');
+
+        connectedUsersContainer.innerHTML = this.pairedOrigins.map(origin => `
+            <div class="user-card">
+                <div class="user-info">
+                    <span class="user-icon">👤</span>
+                    <span class="username">${this.escapeHtml(origin.origin)}</span>
+                </div>
+                <button class="btn btn-secondary btn-sm disconnect-user-btn" onclick="dashboard.removeOrigin('${this.escapeHtml(origin.origin)}')">
+                    Disconnect
+                </button>
+            </div>
+        `).join('');
     }
 
     updateStatus(status, text) {
         const dot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
-        
+
         dot.className = `status-dot ${status}`;
         statusText.textContent = text;
     }
@@ -378,25 +432,22 @@ class CompanionDashboard {
     }
 
     escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, m => map[m]);
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     handleSerialStateUpdate(state) {
         this.serialState = state;
         this.updateSerialUI();
+        this.addCommunicationLog('system-info', `Serial state updated: ${JSON.stringify(state)}`);
     }
 
     handleSessionRequest(data) {
         this.latestRequest = data;
         this.updateSerialUI();
         this.showNotification(`New session request: ${data.com} @ ${data.baud}`, 'info');
+        this.addCommunicationLog('machine-to-companion', `Session request received: ${JSON.stringify(data)}`);
     }
 
     updateSerialUI() {
@@ -443,6 +494,7 @@ class CompanionDashboard {
     async connectSerial() {
         if (!this.latestRequest || !this.latestRequest.com || !this.latestRequest.baud) {
             this.showNotification('No connection request available', 'error');
+            this.addCommunicationLog('system-error', 'Attempted to connect serial without a valid request.');
             return;
         }
 
@@ -451,6 +503,7 @@ class CompanionDashboard {
         connectBtn.disabled = true;
 
         try {
+            this.addCommunicationLog('companion-to-main', `[COMPANION → MAIN APP] Connecting to serial: ${JSON.stringify(this.latestRequest)}`);
             const response = await fetch('/serial/connect', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -470,9 +523,11 @@ class CompanionDashboard {
             this.showNotification(`Connected to ${result.state.port} @ ${result.state.baud}`, 'success');
             this.serialState = result.state;
             this.updateSerialUI();
+            this.addCommunicationLog('system-info', `Serial connection established: ${JSON.stringify(result.state)}`);
         } catch (error) {
             console.error('Error connecting:', error);
             this.showNotification(`Failed to connect: ${error.message}`, 'error');
+            this.addCommunicationLog('system-error', `Error connecting to serial: ${error.message}`);
         } finally {
             connectBtn.classList.remove('loading');
         }
@@ -484,6 +539,7 @@ class CompanionDashboard {
         disconnectBtn.disabled = true;
 
         try {
+            this.addCommunicationLog('companion-to-main', '[COMPANION → MAIN APP] Disconnecting serial port.');
             const response = await fetch('/serial/disconnect', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -498,9 +554,11 @@ class CompanionDashboard {
             this.showNotification('Disconnected from serial port', 'success');
             this.serialState = { connected: false };
             this.updateSerialUI();
+            this.addCommunicationLog('system-info', 'Serial port disconnected successfully.');
         } catch (error) {
             console.error('Error disconnecting:', error);
             this.showNotification(`Failed to disconnect: ${error.message}`, 'error');
+            this.addCommunicationLog('system-error', `Error disconnecting serial port: ${error.message}`);
         } finally {
             disconnectBtn.classList.remove('loading');
         }
@@ -516,6 +574,7 @@ class CompanionDashboard {
         this.openScanModal();
 
         try {
+            this.addCommunicationLog('companion-to-main', '[COMPANION → MAIN APP] Starting serial port scan.');
             const response = await fetch('/serial/scan', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -529,9 +588,11 @@ class CompanionDashboard {
 
             const result = await response.json();
             this.scanResults = result.results || [];
+            this.addCommunicationLog('system-info', `Serial port scan initiated. Response: ${JSON.stringify(result)}`);
         } catch (error) {
             console.error('Error scanning ports:', error);
             this.showNotification(`Scan failed: ${error.message}`, 'error');
+            this.addCommunicationLog('system-error', `Serial port scan failed: ${error.message}`);
             this.closeScanModal();
         } finally {
             scanBtn.classList.remove('loading');
@@ -566,7 +627,7 @@ class CompanionDashboard {
 
     handleScanComplete(data) {
         const scanResults = document.getElementById('scanResults');
-        
+
         if (data.results && data.results.length > 0) {
             this.scanResults = data.results;
             scanResults.innerHTML = `
@@ -613,6 +674,7 @@ class CompanionDashboard {
         this.updateSerialUI();
         this.closeScanModal();
         this.showNotification(`Selected ${result.port} @ ${result.baud}`, 'success');
+        this.addCommunicationLog('system-info', `Selected scan result: ${JSON.stringify(result)}`);
     }
 
     openScanModal() {
@@ -623,6 +685,85 @@ class CompanionDashboard {
     closeScanModal() {
         const modal = document.getElementById('scanModal');
         modal.style.display = 'none';
+    }
+
+    // Communication logs tracking
+    setupConsoleIntercept() {
+        const originalLog = console.log;
+        console.log = (...args) => {
+            originalLog.apply(console, args);
+
+            const message = args.join(' ');
+
+            // Parse log messages and categorize them
+            if (message.includes('[MAIN APP → COMPANION]')) {
+                this.addCommunicationLog('main-to-companion', message);
+            } else if (message.includes('[COMPANION → MAIN APP]')) {
+                this.addCommunicationLog('companion-to-main', message);
+            } else if (message.includes('[MACHINE → COMPANION]')) {
+                this.addCommunicationLog('machine-to-companion', message);
+            } else if (message.includes('[COMPANION → MACHINE]')) {
+                this.addCommunicationLog('companion-to-machine', message);
+            } else if (message.startsWith('error:') || message.includes('error')) {
+                this.addCommunicationLog('system-error', message);
+            } else {
+                this.addCommunicationLog('system-info', message);
+            }
+        };
+
+        const originalError = console.error;
+        console.error = (...args) => {
+            originalError.apply(console, args);
+            this.addCommunicationLog('system-error', `ERROR: ${args.join(' ')}`);
+        };
+    }
+
+    addCommunicationLog(type, message) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = {
+            type,
+            message,
+            timestamp
+        };
+
+        this.communicationLogs.push(logEntry);
+
+        // Keep only last MAX_LOGS entries
+        if (this.communicationLogs.length > this.MAX_LOGS) {
+            this.communicationLogs.shift();
+        }
+
+        // Update UI
+        this.displayCommunicationLogs();
+    }
+
+    displayCommunicationLogs() {
+        const container = document.getElementById('communication-logs');
+        if (!container) return;
+
+        if (this.communicationLogs.length === 0) {
+            container.innerHTML = '<p class="empty-state">Waiting for communication...</p>';
+            return;
+        }
+
+        container.innerHTML = this.communicationLogs.map(log => `
+            <div class="log-entry log-${log.type}">
+                <span class="log-timestamp">[${log.timestamp}]</span>
+                ${this.escapeHtml(log.message)}
+            </div>
+        `).join('');
+
+        // Auto-scroll if enabled
+        const autoScrollToggle = document.getElementById('autoScrollToggle');
+        if (autoScrollToggle && autoScrollToggle.checked) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    clearLogs() {
+        this.communicationLogs.length = 0;
+        this.displayCommunicationLogs();
+        this.addCommunicationLog('system-info', 'Communication logs cleared.');
     }
 }
 

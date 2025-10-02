@@ -142,27 +142,35 @@ export function SerialProvider({ children }) {
         break
 
       case 'serial_data':
+        console.log('═══════════════════════════════════════════════════════')
+        console.log('📥 [MAIN APP] Received serial_data from companion')
+        console.log('📥 [MAIN APP] Message:', data.message)
         addMessage('receive', `📨 ${data.message}`)
         
         // Parse position from M114 response (case-insensitive)
         const lowerMsg = data.message.toLowerCase()
         if (lowerMsg.includes('x:') && lowerMsg.includes('y:')) {
-          console.log('📍 [SERIAL_DATA] Potential M114 response detected:', data.message)
+          console.log('🔍 [MAIN APP] Detected x: y: in response, attempting parse...')
           if (machinePositionTracker.parsePositionResponse(data.message)) {
             const pos = machinePositionTracker.getPosition()
-            console.log('📍 [SERIAL_DATA] Position parsed and updated:', pos)
+            console.log('✅ [MAIN APP] Position parsed successfully:', pos)
             setMachinePosition(pos)
+          } else {
+            console.warn('⚠️ [MAIN APP] Position parse failed for:', data.message)
           }
         }
         
         // Detect laser state changes
         if (data.message.includes('M3 ')) {
+          console.log('🔴 [MAIN APP] Laser ON detected')
           machinePositionTracker.setLaserState(true)
           setLaserActive(true)
         } else if (data.message.includes('M5')) {
+          console.log('⚫ [MAIN APP] Laser OFF detected')
           machinePositionTracker.setLaserState(false)
           setLaserActive(false)
         }
+        console.log('═══════════════════════════════════════════════════════\n')
         break
 
       case 'position_update':
@@ -221,14 +229,16 @@ export function SerialProvider({ children }) {
         }
       }
 
-      console.log('📤 [GCODE SEND] Sending to companion app:', {
-        destination: 'ws://localhost:8080',
-        port: serialState.port,
-        gcodePreview: gcode.substring(0, 100) + (gcode.length > 100 ? '...' : ''),
-        gcodeLength: gcode.length
-      })
+      console.log('═══════════════════════════════════════════════════════')
+      console.log('📤 [MAIN APP → COMPANION] Sending G-code')
+      console.log('📤 [MAIN APP → COMPANION] Port:', serialState.port)
+      console.log('📤 [MAIN APP → COMPANION] G-code length:', gcode.length)
+      console.log('📤 [MAIN APP → COMPANION] Preview:', gcode.substring(0, 100) + (gcode.length > 100 ? '...' : ''))
 
       wsRef.current.send(JSON.stringify(payload))
+      console.log('✅ [MAIN APP → COMPANION] Sent successfully')
+      console.log('═══════════════════════════════════════════════════════\n')
+      
       addMessage('info', `📤 Sending G-code to ${serialState.port}`)
     } else {
       console.error('❌ [GCODE SEND] Cannot send - not connected:', {
