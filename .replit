@@ -9,9 +9,10 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 channel = "stable-24_11"
 
 [deployment]
-run = ["node", "index.js"]
+run = ["sh", "-c", "node dist/server/index.js"]
 deploymentTarget = "autoscale"
 ignorePorts = false
+build = ["sh", "-c", "npm run build"]
 
 [agent]
 expertMode = true
@@ -93,7 +94,11 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd frontend && npm run build"
+args = "npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node dist/server/index.js &"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
