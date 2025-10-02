@@ -98,7 +98,11 @@ args = "npm run build"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "node dist/server/index.js &"
+args = "npm run start:prod &"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "sleep 3"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
