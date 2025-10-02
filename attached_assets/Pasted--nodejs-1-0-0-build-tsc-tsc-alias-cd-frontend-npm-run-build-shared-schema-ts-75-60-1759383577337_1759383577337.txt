@@ -1,0 +1,86 @@
+
+> nodejs@1.0.0 build
+> tsc && tsc-alias && cd frontend && npm run build
+
+shared/schema.ts:75:60 - error TS1136: Property assignment expected.
+
+75   originPoint: text("origin_point").default('bottom-left'),</old_str>
+                                                              ~
+
+shared/schema.ts:75:61 - error TS1161: Unterminated regular expression literal.
+
+75   originPoint: text("origin_point").default('bottom-left'),</old_str>
+                                                               ~~~~~~~~~
+
+shared/schema.ts:78:3 - error TS1005: ',' expected.
+
+78   smoothness: real("smoothness").default(0.34),
+     ~~~~~~~~~~
+
+shared/schema.ts:78:13 - error TS1005: ',' expected.
+
+78   smoothness: real("smoothness").default(0.34),
+               ~
+
+shared/schema.ts:79:19 - error TS1005: ',' expected.
+
+79   connectTolerance: real("connect_tolerance").default(0.001),
+                     ~
+
+shared/schema.ts:80:13 - error TS1005: ',' expected.
+
+80   refillPosX: integer("refill_pos_x").default(150),
+               ~
+
+shared/schema.ts:81:13 - error TS1005: ',' expected.
+
+81   refillPosY: integer("refill_pos_y").default(10),
+               ~
+
+shared/schema.ts:82:13 - error TS1005: ',' expected.
+
+82   refillPosZ: integer("refill_pos_z").default(20),
+               ~
+
+shared/schema.ts:83:15 - error TS1005: ',' expected.
+
+83   refillLength: integer("refill_length").default(200),
+                 ~
+
+shared/schema.ts:84:9 - error TS1005: ',' expected.
+
+84   refill: boolean("refill").default(false),
+           ~
+
+shared/schema.ts:85:19 - error TS1005: ',' expected.
+
+85   gradientLengthMm: integer("gradient_length_mm").default(8),
+                     ~
+
+shared/schema.ts:88:12 - error TS1005: ',' expected.
+
+88   isDefault: boolean("is_default").default(false),
+              ~
+
+shared/schema.ts:90:12 - error TS1005: ',' expected.
+
+90   createdAt: timestamp("created_at").defaultNow().notNull(),
+              ~
+
+shared/schema.ts:91:12 - error TS1005: ',' expected.
+
+91   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+              ~
+
+shared/schema.ts:92:1 - error TS1135: Argument expression expected.
+
+92 });
+   ~
+
+shared/schema.ts:92:2 - error TS1128: Declaration or statement expected.
+
+92 });
+    ~
+
+
+Found 16 errors in the same file, starting at: shared/schema.ts:75
