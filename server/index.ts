@@ -19,7 +19,8 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from frontend build in production
-const frontendDistPath = path.join(__dirname, '../frontend/dist');
+// In production, __dirname will be dist/server, so we need to go up two levels
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
 app.use(express.static(frontendDistPath));
 
 // Auth middleware
