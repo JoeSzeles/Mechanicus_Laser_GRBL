@@ -29,7 +29,7 @@ import './CADInterface.css'
 
 function CADInterface() {
   const { user, logout } = useContext(AuthContext)
-  const { companionStatus, serialState, isConnected, connectToCompanion, machinePosition } = useSerial()
+  const { companionStatus, serialState, isConnected, connectToCompanion, machinePosition, laserActive } = useSerial()
   const machineProfile = useCadStore((state) => state.machineProfile)
   const viewport = useCadStore((state) => state.viewport)
   const updateViewport = useCadStore((state) => state.updateViewport)
@@ -1190,11 +1190,35 @@ function CADInterface() {
   const drawMachinePosition = () => {
     if (!isConnected || !machinePosition) return null
     
-    // Convert machine coordinates to canvas coordinates
-    const canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
-    const canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+    // Convert machine coordinates to canvas coordinates based on origin point
+    let canvasX, canvasY
     
-    const markerSize = 15 / viewport.zoom
+    switch (machineProfile.originPoint) {
+      case 'bottom-left':
+        canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
+        canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+        break
+      case 'bottom-right':
+        canvasX = canvasWidth - ((machinePosition.x * canvasWidth) / machineProfile.bedSizeX)
+        canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+        break
+      case 'top-left':
+        canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
+        canvasY = (machinePosition.y * canvasHeight) / machineProfile.bedSizeY
+        break
+      case 'top-right':
+        canvasX = canvasWidth - ((machinePosition.x * canvasWidth) / machineProfile.bedSizeX)
+        canvasY = (machinePosition.y * canvasHeight) / machineProfile.bedSizeY
+        break
+      default:
+        canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
+        canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+    }
+    
+    const rectWidth = 20 / viewport.zoom
+    const rectHeight = 30 / viewport.zoom
+    const cornerRadius = 5 / viewport.zoom
+    const dotRadius = 4 / viewport.zoom
     
     return (
       <React.Fragment key="machine-position">
@@ -1213,22 +1237,37 @@ function CADInterface() {
           dash={[8 / viewport.zoom, 4 / viewport.zoom]}
           listening={false}
         />
-        {/* Machine head indicator */}
+        
+        {/* Blue rounded rectangle for laser head */}
+        <Rect
+          x={canvasX - rectWidth / 2}
+          y={canvasY - rectHeight / 2}
+          width={rectWidth}
+          height={rectHeight}
+          fill="rgba(0, 191, 255, 0.3)"
+          stroke="#00BFFF"
+          strokeWidth={2 / viewport.zoom}
+          cornerRadius={cornerRadius}
+          listening={false}
+        />
+        
+        {/* Laser indicator dot - green if inactive, red if active */}
         <Circle
           x={canvasX}
           y={canvasY}
-          radius={6 / viewport.zoom}
-          fill="#00BFFF"
+          radius={dotRadius}
+          fill={laserActive ? '#FF0000' : '#00FF00'}
           stroke="#FFFFFF"
-          strokeWidth={2 / viewport.zoom}
+          strokeWidth={1 / viewport.zoom}
           listening={false}
         />
+        
         {/* Position label */}
         <Text
-          x={canvasX + 12 / viewport.zoom}
-          y={canvasY - 20 / viewport.zoom}
+          x={canvasX + rectWidth / 2 + 5 / viewport.zoom}
+          y={canvasY - rectHeight / 2}
           text={`X:${machinePosition.x.toFixed(2)} Y:${machinePosition.y.toFixed(2)}`}
-          fontSize={12 / viewport.zoom}
+          fontSize={11 / viewport.zoom}
           fill="#00BFFF"
           fontStyle="bold"
           listening={false}

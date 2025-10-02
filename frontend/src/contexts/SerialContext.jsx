@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react'
+import { machinePositionTracker } from '../utils/machinePositionTracker'
 
 const SerialContext = createContext()
 
@@ -23,8 +24,8 @@ export function SerialProvider({ children }) {
 
   // Machine position tracking
   const [machinePosition, setMachinePosition] = useState({ x: 0, y: 0, z: 0 })
+  const [laserActive, setLaserActive] = useState(false)
   const [isHomed, setIsHomed] = useState(false)
-  const positionUpdateInterval = useRef(null)
 
   const wsRef = useRef(null)
   const reconnectTimeoutRef = useRef(null)
@@ -40,7 +41,7 @@ export function SerialProvider({ children }) {
       if (wsRef.current) {
         wsRef.current.close()
       }
-      stopPositionTracking() // Ensure interval is cleared on unmount
+      machinePositionTracker.destroy()
     }
   }, [])
 
@@ -118,7 +119,13 @@ export function SerialProvider({ children }) {
           setSerialState(data.serialState)
           setIsConnected(data.serialState.connected)
           if (data.serialState.connected) {
-            startPositionTracking() // Start tracking if already connected
+            // Initialize position tracker with WebSocket
+            machinePositionTracker.init(wsRef.current)
+            
+            // Send initial M114 to get current position
+            setTimeout(() => {
+              machinePositionTracker.queryPosition()
+            }, 500)
           }
         }
         break
@@ -130,19 +137,35 @@ export function SerialProvider({ children }) {
 
         if (data.connected) {
           addMessage('success', `✅ Machine connected: ${data.port} @ ${data.baud} baud`)
-          startPositionTracking() // Start position tracking on connection
+          machinePositionTracker.init(wsRef.current)
+          setTimeout(() => {
+            machinePositionTracker.queryPosition()
+          }, 500)
         } else if (data.error) {
           addMessage('error', `❌ Serial error: ${data.error}`)
-          stopPositionTracking() // Stop position tracking on disconnection/error
+          machinePositionTracker.stopPeriodicUpdate()
         } else {
-          stopPositionTracking() // Stop position tracking on disconnection
+          machinePositionTracker.stopPeriodicUpdate()
         }
         break
 
       case 'serial_data':
         addMessage('receive', `📨 ${data.message}`)
+        
         // Parse position from M114 response
-        parsePositionResponse(data.message)
+        if (machinePositionTracker.parsePositionResponse(data.message)) {
+          const pos = machinePositionTracker.getPosition()
+          setMachinePosition(pos)
+        }
+        
+        // Detect laser state changes
+        if (data.message.includes('M3 ')) {
+          machinePositionTracker.setLaserState(true)
+          setLaserActive(true)
+        } else if (data.message.includes('M5')) {
+          machinePositionTracker.setLaserState(false)
+          setLaserActive(false)
+        }
         break
 
       case 'position_update':
@@ -220,52 +243,7 @@ export function SerialProvider({ children }) {
     setMessages([])
   }
 
-  // --- Position Tracking Functions ---
-
-  const parsePositionResponse = (response) => {
-    // Parse M114 response: "X:123.45 Y:67.89 Z:10.00 E:0.00"
-    const match = response.match(/X:([-\d.]+)\s+Y:([-\d.]+)\s+Z:([-\d.]+)/)
-    if (match) {
-      setMachinePosition({
-        x: parseFloat(match[1]),
-        y: parseFloat(match[2]),
-        z: parseFloat(match[3])
-      })
-    }
-  }
-
-  const startPositionTracking = () => {
-    // Query position every 500ms when connected
-    if (positionUpdateInterval.current) {
-      clearInterval(positionUpdateInterval.current)
-    }
-
-    positionUpdateInterval.current = setInterval(() => {
-      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        // Send G-code command to get current position
-        wsRef.current.send(JSON.stringify({
-          type: 'gcode',
-          command: 'M114'
-        }))
-      }
-    }, 500)
-  }
-
-  const stopPositionTracking = () => {
-    if (positionUpdateInterval.current) {
-      clearInterval(positionUpdateInterval.current)
-      positionUpdateInterval.current = null
-    }
-  }
-
-  // Effect to ensure position tracking is stopped on unmount
-  useEffect(() => {
-    return () => {
-      stopPositionTracking()
-    }
-  }, [])
-
-  // --- End Position Tracking Functions ---
+  // Position tracking is now handled by machinePositionTracker module
 
   // Placeholder functions for now, will be implemented later
   const homeAxes = () => {
@@ -285,6 +263,7 @@ export function SerialProvider({ children }) {
     serialState,
     messages,
     machinePosition, // Expose machine position
+    laserActive, // Expose laser active state
     isHomed, // Expose homed status
     connectToCompanion,
     sendGcode,
