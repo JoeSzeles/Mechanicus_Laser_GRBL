@@ -12,8 +12,9 @@ export class MachinePositionTracker {
   }
 
   // Initialize with WebSocket connection
-  init(wsConnection) {
+  init(wsConnection, portPath) {
     this.wsConnection = wsConnection
+    this.portPath = portPath
     this.startPeriodicUpdate()
   }
 
@@ -24,7 +25,7 @@ export class MachinePositionTracker {
     }
 
     this.updateInterval = setInterval(() => {
-      this.queryPosition()
+      this.queryPosition(this.portPath)
     }, 500)
   }
 
@@ -37,7 +38,7 @@ export class MachinePositionTracker {
   }
 
   // Send M114 command to get current position
-  queryPosition() {
+  queryPosition(portPath) {
     if (!this.wsConnection || this.wsConnection.readyState !== WebSocket.OPEN) {
       return
     }
@@ -45,6 +46,7 @@ export class MachinePositionTracker {
     this.wsConnection.send(JSON.stringify({
       type: 'send_gcode',
       payload: {
+        portPath: portPath,
         gcode: 'M114'
       }
     }))

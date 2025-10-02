@@ -41,7 +41,7 @@ export default function MachineJogControls() {
     
     // Query position after movement (with small delay to allow movement to start)
     setTimeout(() => {
-      machinePositionTracker.queryPosition()
+      machinePositionTracker.queryPosition(serialState.port)
     }, 100)
   }
 
