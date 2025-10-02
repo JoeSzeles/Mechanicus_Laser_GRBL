@@ -1,0 +1,80 @@
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "M114" }
+index-C-fLrMMn.js:60:24699
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
