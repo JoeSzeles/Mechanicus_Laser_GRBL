@@ -37,21 +37,11 @@ export default function MachineJogControls() {
     sendGcode(`G91`)
     sendGcode(`G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`)
     sendGcode(`G90`)
-    
-    // Query position after jog movement
-    setTimeout(() => {
-      sendGcode('M114')
-    }, 200)
   }
 
   const handleHome = () => {
     if (!isReady) return
     sendGcode(`G28`)
-    
-    // Query position after homing
-    setTimeout(() => {
-      sendGcode('M114')
-    }, 1000)
   }
 
   const handleFeedRateChange = (e) => {
