@@ -1,0 +1,78 @@
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CSGEE1L1.js:60:24602
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-CSGEE1L1.js:60:24602
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CSGEE1L1.js:60:24602
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CSGEE1L1.js:60:24602
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CSGEE1L1.js:60:24602
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
+❌ [GCODE] G-code error: 
+Object { message: 'Port undefined is not connected. Current state: {"connected":true,"port":"COM7","baud":115200,"error":null,"openedAt":1759385808634,"byRequestId":"scan_1759385790785"}' }
+index-CSGEE1L1.js:60:24501
