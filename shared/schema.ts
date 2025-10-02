@@ -72,7 +72,10 @@ export const machineConfigs = pgTable("machine_configs", {
   scaleF: real("scale_f").default(0.72),
   
   // Origin Point: 'bottom-left', 'bottom-right', 'top-left', 'top-right'
-  originPoint: text("origin_point").default('bottom-left'),</old_str>
+  originPoint: text("origin_point").default('bottom-left'),
+  
+  // Advanced Settings
+  smoothness: real("smoothness").default(0.34),</old_str>
   
   // Advanced Settings
   smoothness: real("smoothness").default(0.34),
