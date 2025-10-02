@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import path from 'path';
 import { storage } from './storage';
 import { InsertUser, InsertProject, InsertMachineConfig, InsertUserPreferences } from '@shared/schema';
 
@@ -11,9 +12,15 @@ const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'mechanicus-secret-key-change-in-production';
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Allow inline scripts for Vite in production
+}));
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from frontend build in production
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(frontendDistPath));
 
 // Auth middleware
 const authenticateToken = (req: any, res: any, next: any) => {
@@ -329,6 +336,11 @@ app.put('/api/user/preferences', authenticateToken, async (req: any, res) => {
     console.error('Update preferences error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+});
+
+// SPA fallback - serve index.html for all non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
