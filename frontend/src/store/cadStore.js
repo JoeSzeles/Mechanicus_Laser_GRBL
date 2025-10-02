@@ -374,7 +374,13 @@ const useCadStore = create((set) => ({
       const profile = await response.json()
       if (profile) {
         set((state) => ({
-          machineConnection: { ...state.machineConnection, currentProfile: profile }
+          machineConnection: { ...state.machineConnection, currentProfile: profile },
+          machineProfile: {
+            bedSizeX: profile.bedMaxX || 300,
+            bedSizeY: profile.bedMaxY || 200,
+            mmToPx: 3.7795275591,
+            originPoint: profile.originPoint || 'bottom-left'
+          }
         }))
       }
       return profile

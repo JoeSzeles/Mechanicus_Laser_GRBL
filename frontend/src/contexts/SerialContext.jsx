@@ -20,7 +20,12 @@ export function SerialProvider({ children }) {
     error: null
   })
   const [messages, setMessages] = useState([])
-  
+
+  // Machine position tracking
+  const [machinePosition, setMachinePosition] = useState({ x: 0, y: 0, z: 0 })
+  const [isHomed, setIsHomed] = useState(false)
+  const positionUpdateInterval = useRef(null)
+
   const wsRef = useRef(null)
   const reconnectTimeoutRef = useRef(null)
   const reconnectAttemptRef = useRef(0)
@@ -35,6 +40,7 @@ export function SerialProvider({ children }) {
       if (wsRef.current) {
         wsRef.current.close()
       }
+      stopPositionTracking() // Ensure interval is cleared on unmount
     }
   }, [])
 
@@ -48,7 +54,7 @@ export function SerialProvider({ children }) {
 
     // Always connect to localhost:8080 (local companion app)
     const wsUrl = 'ws://localhost:8080'
-    
+
     console.log('🔗 Connecting to LOCAL companion:', wsUrl)
     const ws = new WebSocket(wsUrl)
     wsRef.current = ws
@@ -72,11 +78,12 @@ export function SerialProvider({ children }) {
       setCompanionStatus('disconnected')
       setIsConnected(false)
       setSerialState({ connected: false, port: null, baud: null, error: null })
-      
+      stopPositionTracking() // Stop tracking on disconnect
+
       if (reconnectAttemptRef.current < maxReconnectAttempts) {
         reconnectAttemptRef.current++
         const delay = Math.min(3000 * reconnectAttemptRef.current, 30000)
-        
+
         reconnectTimeoutRef.current = setTimeout(() => {
           addMessage('system', `🔄 Reconnecting... (${reconnectAttemptRef.current}/${maxReconnectAttempts})`)
           connectToCompanion()
@@ -90,6 +97,7 @@ export function SerialProvider({ children }) {
     ws.onerror = (error) => {
       console.error('❌ WebSocket error:', error)
       setCompanionStatus('error')
+      stopPositionTracking() // Stop tracking on error
     }
   }
 
@@ -104,11 +112,14 @@ export function SerialProvider({ children }) {
         reconnectAttemptRef.current = 0
         addMessage('success', '✅ Connected to companion app')
         console.log('✅ Received status from companion, now truly connected')
-        
+
         // Check serial state
         if (data?.serialState) {
           setSerialState(data.serialState)
           setIsConnected(data.serialState.connected)
+          if (data.serialState.connected) {
+            startPositionTracking() // Start tracking if already connected
+          }
         }
         break
 
@@ -116,23 +127,38 @@ export function SerialProvider({ children }) {
         // Serial connection state update from companion
         setSerialState(data)
         setIsConnected(data.connected)
-        
+
         if (data.connected) {
           addMessage('success', `✅ Machine connected: ${data.port} @ ${data.baud} baud`)
+          startPositionTracking() // Start position tracking on connection
         } else if (data.error) {
           addMessage('error', `❌ Serial error: ${data.error}`)
+          stopPositionTracking() // Stop position tracking on disconnection/error
+        } else {
+          stopPositionTracking() // Stop position tracking on disconnection
         }
         break
 
       case 'serial_data':
         addMessage('receive', `📨 ${data.message}`)
+        // Parse position from M114 response
+        parsePositionResponse(data.message)
+        break
+
+      case 'position_update':
+        // Direct position update from companion
+        setMachinePosition({
+          x: data.x || 0,
+          y: data.y || 0,
+          z: data.z || 0
+        })
         break
 
       case 'error':
         console.error('❌ [WS] Error from companion:', data)
         addMessage('error', `❌ ${data.message}`)
         break
-      
+
       case 'gcode_error':
         console.error('❌ [GCODE] G-code error:', data)
         addMessage('error', `❌ G-code error: ${data.message}`)
@@ -157,19 +183,19 @@ export function SerialProvider({ children }) {
     if (wsRef.current?.readyState === WebSocket.OPEN && isConnected && serialState.port) {
       const payload = {
         type: 'send_gcode',
-        payload: { 
+        payload: {
           portPath: serialState.port,
-          gcode 
+          gcode
         }
       }
-      
+
       console.log('📤 [GCODE SEND] Sending to companion app:', {
         destination: 'ws://localhost:8080',
         port: serialState.port,
         gcodePreview: gcode.substring(0, 100) + (gcode.length > 100 ? '...' : ''),
         gcodeLength: gcode.length
       })
-      
+
       wsRef.current.send(JSON.stringify(payload))
       addMessage('info', `📤 Sending G-code to ${serialState.port}`)
     } else {
@@ -194,15 +220,78 @@ export function SerialProvider({ children }) {
     setMessages([])
   }
 
+  // --- Position Tracking Functions ---
+
+  const parsePositionResponse = (response) => {
+    // Parse M114 response: "X:123.45 Y:67.89 Z:10.00 E:0.00"
+    const match = response.match(/X:([-\d.]+)\s+Y:([-\d.]+)\s+Z:([-\d.]+)/)
+    if (match) {
+      setMachinePosition({
+        x: parseFloat(match[1]),
+        y: parseFloat(match[2]),
+        z: parseFloat(match[3])
+      })
+    }
+  }
+
+  const startPositionTracking = () => {
+    // Query position every 500ms when connected
+    if (positionUpdateInterval.current) {
+      clearInterval(positionUpdateInterval.current)
+    }
+
+    positionUpdateInterval.current = setInterval(() => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        // Send G-code command to get current position
+        wsRef.current.send(JSON.stringify({
+          type: 'gcode',
+          command: 'M114'
+        }))
+      }
+    }, 500)
+  }
+
+  const stopPositionTracking = () => {
+    if (positionUpdateInterval.current) {
+      clearInterval(positionUpdateInterval.current)
+      positionUpdateInterval.current = null
+    }
+  }
+
+  // Effect to ensure position tracking is stopped on unmount
+  useEffect(() => {
+    return () => {
+      stopPositionTracking()
+    }
+  }, [])
+
+  // --- End Position Tracking Functions ---
+
+  // Placeholder functions for now, will be implemented later
+  const homeAxes = () => {
+    console.log('Homing axes...')
+    sendGcode('G28') // Assuming G28 is the homing command
+  }
+
+  const jogAxis = (axis, value) => {
+    console.log(`Jogging ${axis} by ${value}...`)
+    // Example: G1 X10 Y5 F1000
+    sendGcode(`G1 ${axis.toUpperCase()}${value} F6000`) // Assuming F6000 for jog speed
+  }
+
   const value = {
     isConnected,
     companionStatus,
     serialState,
     messages,
+    machinePosition, // Expose machine position
+    isHomed, // Expose homed status
     connectToCompanion,
     sendGcode,
     emergencyStop,
-    clearMessages
+    clearMessages,
+    homeAxes, // Expose homeAxes function
+    jogAxis // Expose jogAxis function
   }
 
   return (
@@ -211,5 +300,3 @@ export function SerialProvider({ children }) {
     </SerialContext.Provider>
   )
 }
-
-export default SerialContext

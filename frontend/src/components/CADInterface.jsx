@@ -29,7 +29,7 @@ import './CADInterface.css'
 
 function CADInterface() {
   const { user, logout } = useContext(AuthContext)
-  const { companionStatus, serialState, isConnected, connectToCompanion } = useSerial()
+  const { companionStatus, serialState, isConnected, connectToCompanion, machinePosition } = useSerial()
   const machineProfile = useCadStore((state) => state.machineProfile)
   const viewport = useCadStore((state) => state.viewport)
   const updateViewport = useCadStore((state) => state.updateViewport)
@@ -1121,6 +1121,122 @@ function CADInterface() {
     )
   }
 
+  const drawOriginMarker = () => {
+    let originX = 0, originY = 0
+    const markerSize = 20 / viewport.zoom
+    
+    // Calculate origin position based on originPoint setting
+    switch (machineProfile.originPoint) {
+      case 'bottom-left':
+        originX = 0
+        originY = canvasHeight
+        break
+      case 'bottom-right':
+        originX = canvasWidth
+        originY = canvasHeight
+        break
+      case 'top-left':
+        originX = 0
+        originY = 0
+        break
+      case 'top-right':
+        originX = canvasWidth
+        originY = 0
+        break
+      default:
+        originX = 0
+        originY = canvasHeight
+    }
+    
+    return (
+      <React.Fragment key="origin-marker">
+        {/* Red crosshair at origin */}
+        <Line
+          points={[originX - markerSize, originY, originX + markerSize, originY]}
+          stroke="#FF0000"
+          strokeWidth={3 / viewport.zoom}
+          listening={false}
+        />
+        <Line
+          points={[originX, originY - markerSize, originX, originY + markerSize]}
+          stroke="#FF0000"
+          strokeWidth={3 / viewport.zoom}
+          listening={false}
+        />
+        {/* Circle at origin point */}
+        <Circle
+          x={originX}
+          y={originY}
+          radius={8 / viewport.zoom}
+          stroke="#FF0000"
+          strokeWidth={2 / viewport.zoom}
+          fill="rgba(255, 0, 0, 0.2)"
+          listening={false}
+        />
+        {/* Label */}
+        <Text
+          x={originX + 15 / viewport.zoom}
+          y={originY - 15 / viewport.zoom}
+          text="(0,0)"
+          fontSize={14 / viewport.zoom}
+          fill="#FF0000"
+          fontStyle="bold"
+          listening={false}
+        />
+      </React.Fragment>
+    )
+  }
+
+  const drawMachinePosition = () => {
+    if (!isConnected || !machinePosition) return null
+    
+    // Convert machine coordinates to canvas coordinates
+    const canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
+    const canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+    
+    const markerSize = 15 / viewport.zoom
+    
+    return (
+      <React.Fragment key="machine-position">
+        {/* Blue crosshair for machine position */}
+        <Line
+          points={[0, canvasY, canvasWidth, canvasY]}
+          stroke="#00BFFF"
+          strokeWidth={1 / viewport.zoom}
+          dash={[8 / viewport.zoom, 4 / viewport.zoom]}
+          listening={false}
+        />
+        <Line
+          points={[canvasX, 0, canvasX, canvasHeight]}
+          stroke="#00BFFF"
+          strokeWidth={1 / viewport.zoom}
+          dash={[8 / viewport.zoom, 4 / viewport.zoom]}
+          listening={false}
+        />
+        {/* Machine head indicator */}
+        <Circle
+          x={canvasX}
+          y={canvasY}
+          radius={6 / viewport.zoom}
+          fill="#00BFFF"
+          stroke="#FFFFFF"
+          strokeWidth={2 / viewport.zoom}
+          listening={false}
+        />
+        {/* Position label */}
+        <Text
+          x={canvasX + 12 / viewport.zoom}
+          y={canvasY - 20 / viewport.zoom}
+          text={`X:${machinePosition.x.toFixed(2)} Y:${machinePosition.y.toFixed(2)}`}
+          fontSize={12 / viewport.zoom}
+          fill="#00BFFF"
+          fontStyle="bold"
+          listening={false}
+        />
+      </React.Fragment>
+    )
+  }
+
   const updateRulers = () => {
     if (!hRulerRef.current || !vRulerRef.current) return
 
@@ -2035,6 +2151,8 @@ function CADInterface() {
                   />
                   {drawGrid()}
                   {drawCrosshairs()}
+                  {drawOriginMarker()}
+                  {drawMachinePosition()}
                   
                   {shapes.filter(shape => {
                     const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]

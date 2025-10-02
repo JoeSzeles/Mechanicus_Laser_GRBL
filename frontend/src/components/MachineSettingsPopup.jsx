@@ -773,32 +773,41 @@ function MachineSettingsPopup({ isOpen, onClose }) {
 
                     {/* Origin Point Selector */}
                     <div className="form-group">
-                      <label>Origin Point</label>
-                      <div className="origin-point-selector">
-                        <button 
-                          className={`origin-point-btn ${formData.originPoint === 'bottom-left' ? 'active' : ''}`}
-                          onClick={() => handleInputChange('originPoint', 'bottom-left')}
-                        >
-                          Bottom Left
-                        </button>
-                        <button 
-                          className={`origin-point-btn ${formData.originPoint === 'bottom-right' ? 'active' : ''}`}
-                          onClick={() => handleInputChange('originPoint', 'bottom-right')}
-                        >
-                          Bottom Right
-                        </button>
-                        <button 
-                          className={`origin-point-btn ${formData.originPoint === 'top-left' ? 'active' : ''}`}
-                          onClick={() => handleInputChange('originPoint', 'top-left')}
-                        >
-                          Top Left
-                        </button>
-                        <button 
-                          className={`origin-point-btn ${formData.originPoint === 'top-right' ? 'active' : ''}`}
-                          onClick={() => handleInputChange('originPoint', 'top-right')}
-                        >
-                          Top Right
-                        </button>
+                      <label>Origin Point (0,0 Position)</label>
+                      <div className="origin-selector">
+                        <div className="origin-grid">
+                          <button 
+                            className={`origin-corner top-left ${formData.originPoint === 'top-left' ? 'active' : ''}`}
+                            onClick={() => handleInputChange('originPoint', 'top-left')}
+                            title="Top Left (0,0)"
+                          >
+                            <div className="origin-dot"></div>
+                          </button>
+                          <button 
+                            className={`origin-corner top-right ${formData.originPoint === 'top-right' ? 'active' : ''}`}
+                            onClick={() => handleInputChange('originPoint', 'top-right')}
+                            title="Top Right (0,0)"
+                          >
+                            <div className="origin-dot"></div>
+                          </button>
+                          <button 
+                            className={`origin-corner bottom-left ${formData.originPoint === 'bottom-left' ? 'active' : ''}`}
+                            onClick={() => handleInputChange('originPoint', 'bottom-left')}
+                            title="Bottom Left (0,0)"
+                          >
+                            <div className="origin-dot"></div>
+                          </button>
+                          <button 
+                            className={`origin-corner bottom-right ${formData.originPoint === 'bottom-right' ? 'active' : ''}`}
+                            onClick={() => handleInputChange('originPoint', 'bottom-right')}
+                            title="Bottom Right (0,0)"
+                          >
+                            <div className="origin-dot"></div>
+                          </button>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
+                          Selected: {formData.originPoint.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                        </div>
                       </div>
                     </div>
                   </div>
