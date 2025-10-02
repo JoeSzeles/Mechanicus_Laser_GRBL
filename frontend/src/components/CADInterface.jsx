@@ -93,16 +93,6 @@ function CADInterface() {
     loadDefaultProfile().then(profile => {
       if (profile) {
         console.log('✅ Loaded default profile:', profile.name)
-        // Update machine profile in store to use bed dimensions
-        const mmToPx = 3.7795275591
-        useCadStore.setState({
-          machineProfile: {
-            bedSizeX: profile.bedMaxX || 300,
-            bedSizeY: profile.bedMaxY || 200,
-            mmToPx: mmToPx,
-            originPoint: profile.originPoint || 'bottom-left'
-          }
-        })
       }
     })
     
@@ -137,7 +127,7 @@ function CADInterface() {
     return () => {
       window.removeEventListener('machinePositionUpdate', handlePositionUpdate)
     }
-  }, [machineProfile])
+  }, [])
   
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
