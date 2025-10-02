@@ -130,6 +130,20 @@ export function SerialProvider({ children }) {
 
         if (data.connected) {
           addMessage('success', `✅ Machine connected: ${data.port} @ ${data.baud} baud`)
+          
+          // Query initial position immediately after connection
+          setTimeout(() => {
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+              wsRef.current.send(JSON.stringify({
+                type: 'send_gcode',
+                payload: {
+                  portPath: data.port,
+                  gcode: 'M114'
+                }
+              }))
+            }
+          }, 500)
+          
           startPositionTracking() // Start position tracking on connection
         } else if (data.error) {
           addMessage('error', `❌ Serial error: ${data.error}`)
@@ -224,13 +238,22 @@ export function SerialProvider({ children }) {
 
   const parsePositionResponse = (response) => {
     // Parse M114 response: "X:123.45 Y:67.89 Z:10.00 E:0.00"
-    const match = response.match(/X:([-\d.]+)\s+Y:([-\d.]+)\s+Z:([-\d.]+)/)
-    if (match) {
-      setMachinePosition({
-        x: parseFloat(match[1]),
-        y: parseFloat(match[2]),
-        z: parseFloat(match[3])
-      })
+    const xMatch = response.match(/X:([-\d.]+)/)
+    const yMatch = response.match(/Y:([-\d.]+)/)
+    const zMatch = response.match(/Z:([-\d.]+)/)
+    
+    if (xMatch && yMatch && zMatch) {
+      const newPosition = {
+        x: parseFloat(xMatch[1]),
+        y: parseFloat(yMatch[1]),
+        z: parseFloat(zMatch[1])
+      }
+      setMachinePosition(newPosition)
+      
+      // Broadcast position update to all listeners
+      window.dispatchEvent(new CustomEvent('machinePositionUpdate', {
+        detail: newPosition
+      }))
     }
   }
 

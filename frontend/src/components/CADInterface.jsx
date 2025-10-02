@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useContext } from 'react'
-import { Stage, Layer, Line, Rect, Circle, Text, RegularPolygon, Arc, Wedge } from 'react-konva'
+import { Stage, Layer, Line, Rect, Circle, Text, RegularPolygon, Arc, Wedge, Group } from 'react-konva'
 import AuthContext from '../contexts/AuthContext'
 import { useSerial } from '../contexts/SerialContext'
 import useCadStore from '../store/cadStore'
+import { MachinePositionTracker } from '../utils/machinePositionTracker'
 import DrawingToolsWindow from './DrawingToolsWindow'
 import SnapToolsWindow from './SnapToolsWindow'
 import MarkersWindow from './MarkersWindow'
@@ -104,7 +105,39 @@ function CADInterface() {
         })
       }
     })
-  }, [])
+    
+    // Setup machine position update listener
+    const handlePositionUpdate = (event) => {
+      const { x, y, z } = event.detail
+      
+      // Convert to canvas coordinates
+      const { bedSizeX, bedSizeY, mmToPx, originPoint } = machineProfile
+      let canvasX = x * mmToPx
+      let canvasY = y * mmToPx
+      
+      // Adjust for origin point
+      switch (originPoint) {
+        case 'bottom-left':
+          canvasY = (bedSizeY * mmToPx) - canvasY
+          break
+        case 'bottom-right':
+          canvasX = (bedSizeX * mmToPx) - canvasX
+          canvasY = (bedSizeY * mmToPx) - canvasY
+          break
+        case 'top-right':
+          canvasX = (bedSizeX * mmToPx) - canvasX
+          break
+      }
+      
+      setMachineHeadPosition({ x: canvasX, y: canvasY, z, machineX: x, machineY: y })
+    }
+    
+    window.addEventListener('machinePositionUpdate', handlePositionUpdate)
+    
+    return () => {
+      window.removeEventListener('machinePositionUpdate', handlePositionUpdate)
+    }
+  }, [machineProfile])
   
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -175,6 +208,9 @@ function CADInterface() {
   const [showMachineSettings, setShowMachineSettings] = useState(false)
   const [wsConnection, setWsConnection] = useState(null)
   const [mousePosition, setMousePosition] = useState(null)
+  const positionTrackerRef = useRef(null)
+  const [machineHeadPosition, setMachineHeadPosition] = useState(null)
+  const [isLaserOn, setIsLaserOn] = useState(false)
   
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -396,6 +432,11 @@ function CADInterface() {
       setIsPanning(true)
       setPanStart({ x: e.evt.clientX - viewport.pan.x, y: e.evt.clientY - viewport.pan.y })
       return
+    }
+    
+    // Track laser activation when drawing starts
+    if (activeTool && laser_active_var.get()) {
+      setIsLaserOn(true)
     }
     
     const clickedOnEmpty = e.target === e.target.getStage()
@@ -840,6 +881,11 @@ function CADInterface() {
     setIsPanning(false)
     setDraggedGuide(null)
     
+    // Track laser deactivation when drawing ends
+    if (activeTool) {
+      setIsLaserOn(false)
+    }
+    
     if (selectionRect && selectionRect.width > 5 && selectionRect.height > 5) {
       const selectedIds = []
       shapes.forEach(shape => {
@@ -1188,48 +1234,43 @@ function CADInterface() {
   }
 
   const drawMachinePosition = () => {
-    if (!isConnected || !machinePosition) return null
+    if (!isConnected || !machineHeadPosition) return null
     
-    // Convert machine coordinates to canvas coordinates
-    const canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
-    const canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
-    
-    const markerSize = 15 / viewport.zoom
+    const { x: canvasX, y: canvasY, machineX, machineY } = machineHeadPosition
+    const headSize = 20 / viewport.zoom
+    const dotSize = 6 / viewport.zoom
     
     return (
       <React.Fragment key="machine-position">
-        {/* Blue crosshair for machine position */}
-        <Line
-          points={[0, canvasY, canvasWidth, canvasY]}
-          stroke="#00BFFF"
-          strokeWidth={1 / viewport.zoom}
-          dash={[8 / viewport.zoom, 4 / viewport.zoom]}
+        {/* Blue rounded rectangle for machine head */}
+        <Rect
+          x={canvasX - headSize / 2}
+          y={canvasY - headSize / 2}
+          width={headSize}
+          height={headSize}
+          fill="#0088FF"
+          stroke="#FFFFFF"
+          strokeWidth={2 / viewport.zoom}
+          cornerRadius={4 / viewport.zoom}
           listening={false}
         />
-        <Line
-          points={[canvasX, 0, canvasX, canvasHeight]}
-          stroke="#00BFFF"
-          strokeWidth={1 / viewport.zoom}
-          dash={[8 / viewport.zoom, 4 / viewport.zoom]}
-          listening={false}
-        />
-        {/* Machine head indicator */}
+        
+        {/* Center dot - green if laser inactive, red if active */}
         <Circle
           x={canvasX}
           y={canvasY}
-          radius={6 / viewport.zoom}
-          fill="#00BFFF"
-          stroke="#FFFFFF"
-          strokeWidth={2 / viewport.zoom}
+          radius={dotSize / 2}
+          fill={isLaserOn ? '#FF0000' : '#00FF00'}
           listening={false}
         />
+        
         {/* Position label */}
         <Text
-          x={canvasX + 12 / viewport.zoom}
-          y={canvasY - 20 / viewport.zoom}
-          text={`X:${machinePosition.x.toFixed(2)} Y:${machinePosition.y.toFixed(2)}`}
+          x={canvasX + headSize / 2 + 5 / viewport.zoom}
+          y={canvasY - headSize / 2}
+          text={`X:${machineX.toFixed(2)} Y:${machineY.toFixed(2)}`}
           fontSize={12 / viewport.zoom}
-          fill="#00BFFF"
+          fill="#0088FF"
           fontStyle="bold"
           listening={false}
         />
