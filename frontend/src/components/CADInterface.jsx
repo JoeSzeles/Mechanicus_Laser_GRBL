@@ -103,7 +103,7 @@ function CADInterface() {
           }
         })
       }
-    })</old_str>
+    })
   }, [])
   
   useEffect(() => {

@@ -1,0 +1,36 @@
+> nodejs@1.0.0 start:prod
+> node dist/server/index.js
+
+Get machine profiles error: DrizzleQueryError: Failed query: select "id", "user_id", "name", "machine_type", "serial_connection", "baud", "preamble", "postamble", "shape_preamble", "shape_postamble", "coordinates", "units", "auto_scale", "optimise", "line_speed", "curve_speed", "draw_speed", "travel_speed", "feed_rate", "draw_height", "travel_height", "z_travel", "z_draw", "z_lift", "z_refill", "z_color", "z_start", "z_center", "z_end", "laser_power", "layer_height", "print_accel", "travel_accel", "max_jerk", "layers", "bed_max_x", "bed_max_y", "x_offset", "y_offset", "scale_f", "origin_point", "smoothness", "connect_tolerance", "refill_pos_x", "refill_pos_y", "refill_pos_z", "refill_length", "refill", "gradient_length_mm", "is_default", "created_at", "updated_at" from "machine_configs" where "machine_configs"."user_id" = $1
+params: 1
+    at NeonPreparedQuery.queryWithCache (/home/runner/workspace/node_modules/drizzle-orm/pg-core/session.cjs:66:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async NeonPreparedQuery.execute (/home/runner/workspace/node_modules/drizzle-orm/neon-serverless/session.cjs:131:20)
+    at async DatabaseStorage.getUserMachineConfigs (/home/runner/workspace/dist/server/storage.js:59:16)
+    at async /home/runner/workspace/dist/server/index.js:173:26 {
+  query: 'select "id", "user_id", "name", "machine_type", "serial_connection", "baud", "preamble", "postamble", "shape_preamble", "shape_postamble", "coordinates", "units", "auto_scale", "optimise", "line_speed", "curve_speed", "draw_speed", "travel_speed", "feed_rate", "draw_height", "travel_height", "z_travel", "z_draw", "z_lift", "z_refill", "z_color", "z_start", "z_center", "z_end", "laser_power", "layer_height", "print_accel", "travel_accel", "max_jerk", "layers", "bed_max_x", "bed_max_y", "x_offset", "y_offset", "scale_f", "origin_point", "smoothness", "connect_tolerance", "refill_pos_x", "refill_pos_y", "refill_pos_z", "refill_length", "refill", "gradient_length_mm", "is_default", "created_at", "updated_at" from "machine_configs" where "machine_configs"."user_id" = $1',
+  params: [ 1 ],
+  cause: error: column "origin_point" does not exist
+      at /home/runner/workspace/node_modules/@neondatabase/serverless/index.js:1086:33
+      at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at async /home/runner/workspace/node_modules/drizzle-orm/neon-serverless/session.cjs:132:14
+      at async NeonPreparedQuery.queryWithCache (/home/runner/workspace/node_modules/drizzle-orm/pg-core/session.cjs:64:16)
+      at async NeonPreparedQuery.execute (/home/runner/workspace/node_modules/drizzle-orm/neon-serverless/session.cjs:131:20)
+      at async DatabaseStorage.getUserMachineConfigs (/home/runner/workspace/dist/server/storage.js:59:16)
+      at async /home/runner/workspace/dist/server/index.js:173:26 {
+    length: 113,
+    severity: 'ERROR',
+    code: '42703',
+    detail: undefined,
+    hint: undefined,
+    position: '526',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '3722',
