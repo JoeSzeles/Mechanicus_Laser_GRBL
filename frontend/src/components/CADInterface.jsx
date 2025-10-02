@@ -87,7 +87,6 @@ function CADInterface() {
   useEffect(() => {
     console.log('🔄 Loading workspace on mount...')
     loadWorkspaceState()
-    loadDefaultProfile()
   }, [])
   
   useEffect(() => {
@@ -1952,6 +1951,23 @@ function CADInterface() {
               <span style={{ fontWeight: 'bold', color: '#fff', flex: 1 }}>
                 {isConnected && serialState.port ? 'Machine Connected' : companionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}
               </span>
+              {(companionStatus === 'disconnected' || companionStatus === 'error') && (
+                <button
+                  onClick={connectToCompanion}
+                  style={{
+                    padding: '4px 12px',
+                    fontSize: '11px',
+                    backgroundColor: '#3b82f6',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Connect
+                </button>
+              )}
             </div>
             {isConnected && serialState.port && (
               <div style={{ paddingLeft: '18px', color: '#4ade80', fontSize: '11px', fontWeight: 'bold' }}>

@@ -59,8 +59,8 @@ function MachineSettingsPopup({ isOpen, onClose }) {
     maxJerk: 200,
     layers: 1,
     // Workspace
-    bedSizeX: 300,
-    bedSizeY: 300,
+    bedMaxX: 300,
+    bedMaxY: 300,
     xOffset: 0,
     yOffset: 0,
     scaleF: 0.72,
@@ -152,8 +152,8 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       travelAccel: 2000,
       maxJerk: 200,
       layers: 1,
-      bedSizeX: 300,
-      bedSizeY: 300,
+      bedMaxX: 300,
+      bedMaxY: 300,
       xOffset: 0,
       yOffset: 0,
       scaleF: 0.72,
@@ -749,16 +749,16 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                         <label>Bed Max X (mm)</label>
                         <input 
                           type="number"
-                          value={formData.bedSizeX}
-                          onChange={(e) => handleInputChange('bedSizeX', parseInt(e.target.value))}
+                          value={formData.bedMaxX}
+                          onChange={(e) => handleInputChange('bedMaxX', parseInt(e.target.value))}
                         />
                       </div>
                       <div className="form-group">
                         <label>Bed Max Y (mm)</label>
                         <input 
                           type="number"
-                          value={formData.bedSizeY}
-                          onChange={(e) => handleInputChange('bedSizeY', parseInt(e.target.value))}
+                          value={formData.bedMaxY}
+                          onChange={(e) => handleInputChange('bedMaxY', parseInt(e.target.value))}
                         />
                       </div>
                     </div>

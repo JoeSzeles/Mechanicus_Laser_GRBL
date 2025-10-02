@@ -128,32 +128,6 @@ export function SerialProvider({ children }) {
         addMessage('receive', `📨 ${data.message}`)
         break
 
-      case 'port_connected':
-        // Serial port successfully opened
-        setSerialState({ connected: true, port: data.portPath, baud: null, error: null })
-        setIsConnected(true)
-        addMessage('success', `✅ Serial port opened: ${data.portPath}`)
-        break
-
-      case 'port_disconnected':
-        // Serial port closed
-        setSerialState({ connected: false, port: null, baud: null, error: null })
-        setIsConnected(false)
-        addMessage('info', `📴 Serial port closed: ${data.portPath}`)
-        break
-
-      case 'port_error':
-      case 'connection_error':
-        // Serial port error
-        addMessage('error', `❌ Serial error: ${data.error || data.message}`)
-        setSerialState(prev => ({ ...prev, error: data.error || data.message }))
-        break
-
-      case 'gcode_error':
-        // G-code send error
-        addMessage('error', `❌ G-code error: ${data.message}`)
-        break
-
       case 'error':
         addMessage('error', `❌ ${data.message}`)
         break
