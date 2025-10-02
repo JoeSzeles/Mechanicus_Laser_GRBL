@@ -7,7 +7,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
-  
+
   const machineConnection = useCadStore((state) => state.machineConnection)
   const loadMachineProfiles = useCadStore((state) => state.loadMachineProfiles)
   const saveMachineProfile = useCadStore((state) => state.saveMachineProfile)
@@ -15,7 +15,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
   const deleteMachineProfile = useCadStore((state) => state.deleteMachineProfile)
   const setDefaultProfile = useCadStore((state) => state.setDefaultProfile)
   const setCurrentProfile = useCadStore((state) => state.setCurrentProfile)
-  
+
   // Form state for current profile
   const [formData, setFormData] = useState({
     name: '',
@@ -74,7 +74,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
     refill: false,
     gradientLengthMm: 8
   })
-  
+
   const [isNewProfile, setIsNewProfile] = useState(true)
   const [expandedSections, setExpandedSections] = useState({
     gcode: true,
@@ -86,14 +86,14 @@ function MachineSettingsPopup({ isOpen, onClose }) {
     workspace: false,
     advanced: false
   })
-  
+
   // Load profiles on mount
   useEffect(() => {
     if (isOpen) {
       loadMachineProfiles()
     }
   }, [isOpen])
-  
+
   // Update form when current profile changes
   useEffect(() => {
     if (machineConnection.currentProfile) {
@@ -101,20 +101,20 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       setIsNewProfile(false)
     }
   }, [machineConnection.currentProfile])
-  
+
   if (!isOpen) return null
-  
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
-  
+
   const handleProfileSelect = (profileId) => {
     const profile = machineConnection.availableProfiles.find(p => p.id === profileId)
     if (profile) {
       setFormData({ ...profile })
       setCurrentProfile(profile)
       setIsNewProfile(false)
-      
+
       // Update canvas dimensions immediately
       const mmToPx = 3.7795275591
       useCadStore.setState({
@@ -126,7 +126,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       })
     }
   }
-  
+
   const handleNewProfile = () => {
     setFormData({
       name: 'New Profile',
@@ -179,18 +179,18 @@ function MachineSettingsPopup({ isOpen, onClose }) {
     setIsNewProfile(true)
     setCurrentProfile(null)
   }
-  
+
   const handleSave = async () => {
     // Validate profile name
     if (!formData.name || formData.name.trim() === '') {
       setError('Profile name is required')
       return
     }
-    
+
     setIsLoading(true)
     setError(null)
     setSuccess(null)
-    
+
     try {
       if (isNewProfile) {
         await saveMachineProfile(formData)
@@ -199,7 +199,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
         await updateMachineProfile(machineConnection.currentProfile.id, formData)
         setSuccess('Profile updated successfully!')
       }
-      
+
       // Update canvas dimensions immediately
       const mmToPx = 3.7795275591
       useCadStore.setState({
@@ -209,7 +209,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
           mmToPx: mmToPx
         }
       })
-      
+
       setTimeout(() => setSuccess(null), 3000)
     } catch (err) {
       setError('Failed to save profile: ' + err.message)
@@ -217,15 +217,15 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       setIsLoading(false)
     }
   }
-  
+
   const handleDelete = async () => {
     if (!machineConnection.currentProfile || isNewProfile) return
-    
+
     if (!confirm('Are you sure you want to delete this profile?')) return
-    
+
     setIsLoading(true)
     setError(null)
-    
+
     try {
       await deleteMachineProfile(machineConnection.currentProfile.id)
       handleNewProfile()
@@ -237,13 +237,13 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       setIsLoading(false)
     }
   }
-  
+
   const handleSetDefault = async () => {
     if (!machineConnection.currentProfile || isNewProfile) return
-    
+
     setIsLoading(true)
     setError(null)
-    
+
     try {
       await setDefaultProfile(machineConnection.currentProfile.id)
       setSuccess('Default profile set!')
@@ -254,19 +254,19 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       setIsLoading(false)
     }
   }
-  
+
   const handleAutoDetect = () => {
     // TODO: Implement auto-detect via companion app
     alert('Auto-detect feature will scan COM ports when companion app is running')
   }
-  
+
   const toggleSection = (section) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))
   }
-  
+
   const isLaserMode = formData.machineType === 'laser_engraver'
   const isCNCMode = formData.machineType === 'cnc_printer'
-  
+
   return (
     <div className="machine-settings-overlay" onClick={onClose}>
       <div className="machine-settings-popup" onClick={(e) => e.stopPropagation()}>
@@ -274,7 +274,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
           <h2>Machine Settings</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
-        
+
         <div className="machine-settings-tabs">
           <button 
             className={`tab-button ${activeTab === 'connection' ? 'active' : ''}`}
@@ -289,16 +289,16 @@ function MachineSettingsPopup({ isOpen, onClose }) {
             Configuration
           </button>
         </div>
-        
+
         {error && <div className="settings-error">{error}</div>}
         {success && <div className="settings-success">{success}</div>}
-        
+
         <div className="machine-settings-content">
           {activeTab === 'connection' && (
             <div className="connection-tab">
               <div className="settings-section">
                 <h3>Profile Management</h3>
-                
+
                 <div className="form-group">
                   <label>Select Profile</label>
                   <div className="profile-selector">
@@ -318,7 +318,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="form-group">
                   <label>Profile Name</label>
                   <input 
@@ -328,7 +328,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                     placeholder="My Machine Profile"
                   />
                 </div>
-                
+
                 <div className="form-group">
                   <label>Machine Type</label>
                   <div className="machine-type-toggle">
@@ -349,60 +349,11 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   </div>
                 </div>
               </div>
-              
-              <div className="settings-section">
-                <h3>Connection Settings</h3>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Serial Port</label>
-                    <input 
-                      type="text"
-                      value={formData.serialConnection}
-                      onChange={(e) => handleInputChange('serialConnection', e.target.value)}
-                      placeholder="COM4"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Baud Rate</label>
-                    <select 
-                      value={formData.baud}
-                      onChange={(e) => handleInputChange('baud', parseInt(e.target.value))}
-                    >
-                      <option value={9600}>9600</option>
-                      <option value={19200}>19200</option>
-                      <option value={38400}>38400</option>
-                      <option value={57600}>57600</option>
-                      <option value={115200}>115200</option>
-                      <option value={250000}>250000</option>
-                    </select>
-                  </div>
-                </div>
-                
-                <button className="auto-detect-btn" onClick={handleAutoDetect}>
-                  🔍 Auto-Detect Machine
-                </button>
-              </div>
-              
-              <div className="settings-actions">
-                <button className="save-btn" onClick={handleSave} disabled={isLoading}>
-                  {isLoading ? 'Saving...' : 'Save Profile'}
-                </button>
-                {!isNewProfile && (
-                  <>
-                    <button className="default-btn" onClick={handleSetDefault} disabled={isLoading}>
-                      Set as Default
-                    </button>
-                    <button className="delete-btn" onClick={handleDelete} disabled={isLoading}>
-                      Delete Profile
-                    </button>
-                  </>
-                )}
-              </div>
+
+              <div className="settings-actions"></div>
             </div>
           )}
-          
+
           {activeTab === 'config' && (
             <div className="config-tab">
               {/* G-code Structure Section */}
@@ -450,7 +401,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   </div>
                 )}
               </div>
-              
+
               {/* Machine Behavior Section */}
               <div className="config-section">
                 <div 
@@ -506,7 +457,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   </div>
                 )}
               </div>
-              
+
               {/* Speed Settings Section */}
               <div className="config-section">
                 <div 
@@ -564,7 +515,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   </div>
                 )}
               </div>
-              
+
               {/* Laser Settings (only for Laser mode) */}
               {isLaserMode && (
                 <div className="config-section">
@@ -590,7 +541,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   )}
                 </div>
               )}
-              
+
               {/* Z-Axis Settings (only for CNC mode) */}
               {isCNCMode && (
                 <div className="config-section">
@@ -699,7 +650,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   )}
                 </div>
               )}
-              
+
               {/* 3D Printing Settings (only for CNC mode) */}
               {isCNCMode && (
                 <div className="config-section">
@@ -760,7 +711,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   )}
                 </div>
               )}
-              
+
               {/* Workspace Settings Section */}
               <div className="config-section">
                 <div 
@@ -819,7 +770,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   </div>
                 )}
               </div>
-              
+
               {/* Advanced Settings Section */}
               <div className="config-section">
                 <div 
@@ -904,7 +855,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                   </div>
                 )}
               </div>
-              
+
               <div className="settings-actions">
                 <button className="save-btn" onClick={handleSave} disabled={isLoading}>
                   {isLoading ? 'Saving...' : 'Save Configuration'}
