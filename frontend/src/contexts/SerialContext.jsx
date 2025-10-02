@@ -146,7 +146,7 @@ export function SerialProvider({ children }) {
         console.log('📥 [MAIN APP] Received serial_data from companion')
         console.log('📥 [MAIN APP] Message:', data.message)
         addMessage('receive', `📨 ${data.message}`)
-        
+
         // Parse position from M114 response (case-insensitive)
         const lowerMsg = data.message.toLowerCase()
         if (lowerMsg.includes('x:') && lowerMsg.includes('y:')) {
@@ -159,7 +159,7 @@ export function SerialProvider({ children }) {
             console.warn('⚠️ [MAIN APP] Position parse failed for:', data.message)
           }
         }
-        
+
         // Detect laser state changes
         if (data.message.includes('M3 ')) {
           console.log('🔴 [MAIN APP] Laser ON detected')
@@ -174,23 +174,28 @@ export function SerialProvider({ children }) {
         break
 
       case 'position_update':
-        // Direct position update from companion
+        console.log('📥 [SERIAL CONTEXT] ========================================')
+        console.log('📥 [SERIAL CONTEXT] Received position_update from companion app')
+        console.log('📥 [SERIAL CONTEXT] Message data:', data)
+        console.log('📥 [SERIAL CONTEXT] Timestamp:', new Date().toISOString())
+
         const newPosition = {
           x: data.x || 0,
           y: data.y || 0,
           z: data.z || 0
         }
-        console.log('🎯 [POSITION UPDATE] ========================================')
-        console.log('🎯 [POSITION UPDATE] Received:', newPosition)
-        console.log('🎯 [POSITION UPDATE] Previous:', machinePosition)
-        console.log('🎯 [POSITION UPDATE] ========================================')
-        
+        console.log('📥 [SERIAL CONTEXT] Parsed position:', newPosition)
+
         setMachinePosition(newPosition)
-        
-        // Also update the position tracker module
+        console.log('📥 [SERIAL CONTEXT] Updated React state with position')
+
         machinePositionTracker.position = newPosition
+        console.log('📥 [SERIAL CONTEXT] Updated tracker position')
+
         machinePositionTracker.notifyListeners()
-        
+        console.log('📥 [SERIAL CONTEXT] Notified tracker listeners')
+        console.log('📥 [SERIAL CONTEXT] ========================================')
+
         addMessage('info', `📍 Position: X:${newPosition.x.toFixed(2)} Y:${newPosition.y.toFixed(2)} Z:${newPosition.z.toFixed(2)}`)
         break
 
@@ -238,7 +243,7 @@ export function SerialProvider({ children }) {
       wsRef.current.send(JSON.stringify(payload))
       console.log('✅ [MAIN APP → COMPANION] Sent successfully')
       console.log('═══════════════════════════════════════════════════════\n')
-      
+
       addMessage('info', `📤 Sending G-code to ${serialState.port}`)
     } else {
       console.error('❌ [GCODE SEND] Cannot send - not connected:', {
@@ -273,7 +278,17 @@ export function SerialProvider({ children }) {
   const jogAxis = (axis, value) => {
     console.log(`Jogging ${axis} by ${value}...`)
     // Example: G1 X10 Y5 F1000
+    const portPath = serialState.port; // Get portPath here
     sendGcode(`G1 ${axis.toUpperCase()}${value} F6000`) // Assuming F6000 for jog speed
+
+    // Query position after jog
+    console.log('⏰ [JOG] Setting timeout to query position in 300ms')
+    setTimeout(() => {
+      console.log('⏰ [JOG] Timeout fired - calling queryPosition()')
+      console.log('⏰ [JOG] Port path:', portPath)
+      console.log('⏰ [JOG] Tracker instance:', machinePositionTracker)
+      machinePositionTracker.queryPosition(portPath)
+    }, 300)
   }
 
   const value = {
