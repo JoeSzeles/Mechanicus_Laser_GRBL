@@ -14,6 +14,7 @@ const { log, getLogs, setBroadcastCallback } = require('./logger');
 class MechanicusCompanion {
   constructor() {
     this.port = null;
+    this.parser = null; // Store parser to ensure data listener persists
     this.clients = new Set();
     this.machineProfiles = new Map();
     this.currentProfile = null;
@@ -345,9 +346,18 @@ class MechanicusCompanion {
             
             log('info', 'serial', 'Port opened successfully', { com, baud });
             
-            // Setup data listener for machine responses
-            const parser = serialPort.pipe(new ReadlineParser({ delimiter: '\n' }));
-            parser.on('data', (data) => {
+            // Setup data listener for machine responses - STORE PARSER
+            this.parser = serialPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+            
+            console.log('📡 [SERIAL SETUP] Parser created and data listener attached');
+            
+            // Also listen directly on port for raw debugging
+            serialPort.on('data', (rawData) => {
+              console.log('📥 [SERIAL PORT RAW] Direct port data:', rawData.toString());
+            });
+            
+            this.parser.on('data', (data) => {
+              console.log('📥 [PARSER DATA] Received from parser:', typeof data, data);
               const response = data.toString().trim();
               
               // Log machine response with full details
@@ -400,6 +410,14 @@ class MechanicusCompanion {
                 }
               }
             });
+            
+            // Add error handler for parser
+            this.parser.on('error', (err) => {
+              console.error('❌ [PARSER ERROR]:', err);
+              log('error', 'serial', 'Parser error', { error: err.message });
+            });
+            
+            console.log('✅ [SERIAL SETUP] Parser and listeners fully configured');
             
             this.broadcastSSE({
               type: 'serial_state',
@@ -777,8 +795,16 @@ class MechanicusCompanion {
         if (!this.isTransmitting) break; // Allow stopping transmission
         
         const command = line.trim() + lineEnding;
+        console.log(`📤 [SERIAL WRITE] Port: ${portPath}, Command: "${line.trim()}", Bytes: ${command.length}`);
         log('debug', 'gcode', `✅ Writing to ${portPath}`, { line: line.trim(), lineNumber: lineNumber + 1 });
-        serialPort.write(command);
+        
+        serialPort.write(command, (err) => {
+          if (err) {
+            console.error(`❌ [SERIAL WRITE ERROR]:`, err);
+          } else {
+            console.log(`✅ [SERIAL WRITE] Successfully wrote to serial: "${line.trim()}"`);
+          }
+        });
         lineNumber++;
         
         // Send progress update
