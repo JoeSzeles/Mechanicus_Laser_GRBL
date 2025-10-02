@@ -128,26 +128,23 @@
             </section>
         </main>
 
-        <div id="notification" class="notification"></div>
+    </div>
 
-        <div id="scanModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>🔍 Port Scan Results</h2>
-                    <button class="modal-close" id="modalClose">&times;</button>
-                </div>
-                <div class="modal-body" id="scanResults">
-                    <div class="scan-progress">
-                        <p>Scanning ports...</p>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="scanProgress"></div>
-                        </div>
-                        <p id="scanStatus">Initializing...</p>
-                    </div>
-                </div>
+    <!-- Scan Modal -->
+    <div id="scanModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔍 Scanning Serial Ports</h2>
+                <span class="modal-close" id="modalClose">&times;</span>
+            </div>
+            <div id="scanResults" class="modal-body">
+                <p>Initializing scan...</p>
             </div>
         </div>
     </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
 
     <script src="app.js"></script>
 </body>
