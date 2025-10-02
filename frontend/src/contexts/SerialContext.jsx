@@ -104,6 +104,7 @@ export function SerialProvider({ children }) {
 
   const handleMessage = (message) => {
     const { type, data } = message
+    console.log('🔔 [WS MESSAGE RECEIVED]:', { type, data })
 
     switch (type) {
       case 'status':
@@ -171,8 +172,11 @@ export function SerialProvider({ children }) {
           y: data.y || 0,
           z: data.z || 0
         }
-        console.log('📍 [POSITION UPDATE] Received from companion:', newPosition)
-        console.log('📍 [POSITION UPDATE] Previous position:', machinePosition)
+        console.log('🎯 [POSITION UPDATE] ========================================')
+        console.log('🎯 [POSITION UPDATE] Received:', newPosition)
+        console.log('🎯 [POSITION UPDATE] Previous:', machinePosition)
+        console.log('🎯 [POSITION UPDATE] ========================================')
+        
         setMachinePosition(newPosition)
         
         // Also update the position tracker module

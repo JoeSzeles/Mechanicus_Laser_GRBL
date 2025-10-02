@@ -38,7 +38,11 @@ export class MachinePositionTracker {
       return
     }
 
-    console.log('📍 [POSITION] Sending M114 query to:', portPath)
+    console.log('📤 [M114 QUERY] ========================================')
+    console.log('📤 [M114 QUERY] Sending to port:', portPath)
+    console.log('📤 [M114 QUERY] WebSocket state:', this.wsConnection.readyState)
+    console.log('📤 [M114 QUERY] ========================================')
+    
     this.wsConnection.send(JSON.stringify({
       type: 'send_gcode',
       payload: {

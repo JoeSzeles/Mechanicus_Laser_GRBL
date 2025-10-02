@@ -350,8 +350,9 @@ class MechanicusCompanion {
             parser.on('data', (data) => {
               const response = data.toString().trim();
               
-              // Log machine response
-              log('info', 'serial', 'Machine response', { response });
+              // Log machine response with full details
+              console.log('🔍 [RAW SERIAL]:', JSON.stringify(response));
+              log('info', 'serial', '📨 Machine response', { response });
               
               // Broadcast to all clients
               this.broadcastToClients({
@@ -359,19 +360,24 @@ class MechanicusCompanion {
                 data: { message: response }
               });
               
-              // Parse M114 position responses
-              // Format: "X:123.45 Y:67.89 Z:10.00" or "x:123.45 y:67.89" (case-insensitive)
+              // Parse M114 position responses - Python uses lowercase x: y: z:
+              // Format: "x:123.45 y:67.89 z:10.00" or "X:123.45 Y:67.89 Z:10.00"
               const lowerResponse = response.toLowerCase();
               if (lowerResponse.includes('x:') && lowerResponse.includes('y:')) {
+                console.log('🔍 [M114 DETECTED] Attempting to parse:', response);
+                
+                // Try case-insensitive match
                 const xMatch = response.match(/[xX]:([-\d.]+)/);
                 const yMatch = response.match(/[yY]:([-\d.]+)/);
                 const zMatch = response.match(/[zZ]:([-\d.]+)/);
                 
-                log('debug', 'position', 'Parsing M114 response', { 
-                  response, 
-                  xMatch: xMatch?.[1], 
-                  yMatch: yMatch?.[1],
-                  zMatch: zMatch?.[1]
+                console.log('🔍 [REGEX MATCHES]:', {
+                  xMatch: xMatch?.[0],
+                  yMatch: yMatch?.[0],
+                  zMatch: zMatch?.[0],
+                  xValue: xMatch?.[1],
+                  yValue: yMatch?.[1],
+                  zValue: zMatch?.[1]
                 });
                 
                 if (xMatch && yMatch) {
@@ -381,13 +387,16 @@ class MechanicusCompanion {
                     z: zMatch ? parseFloat(zMatch[1]) : 0
                   };
                   
-                  log('info', 'position', '📍 Position update parsed', position);
+                  console.log('✅ [POSITION PARSED]:', position);
+                  log('info', 'position', '📍 Position update', position);
                   
                   // Broadcast position update
                   this.broadcastToClients({
                     type: 'position_update',
                     data: position
                   });
+                } else {
+                  console.warn('⚠️ [PARSE FAILED] Could not extract X/Y from:', response);
                 }
               }
             });
