@@ -14,12 +14,9 @@ const { log, getLogs, setBroadcastCallback } = require('./logger');
 class MechanicusCompanion {
   constructor() {
     this.port = null;
-    this.connectedPorts = new Map();
     this.clients = new Set();
     this.machineProfiles = new Map();
     this.currentProfile = null;
-    this.status = 'disconnected';
-    this.jobQueue = [];
     this.isTransmitting = false;
     this.authToken = process.env.COMPANION_AUTH_TOKEN || 'mechanicus-' + Math.random().toString(36).substr(2, 9);
     this.sseClients = [];
@@ -251,7 +248,7 @@ class MechanicusCompanion {
       res.json({
         status: 'running',
         version: '1.0.0',
-        connectedPorts: Array.from(this.connectedPorts.keys()),
+        serialPort: this.serialState.connected ? this.serialState.port : null,
         clientsConnected: this.clients.size
       });
     });
@@ -606,14 +603,6 @@ class MechanicusCompanion {
         await this.listSerialPorts(ws);
         break;
         
-      case 'connect':
-        await this.connectToPort(ws, payload);
-        break;
-        
-      case 'disconnect':
-        await this.disconnectFromPort(ws, payload);
-        break;
-        
       case 'send_command':
         await this.sendCommand(ws, payload);
         break;
@@ -663,116 +652,17 @@ class MechanicusCompanion {
     }
   }
 
-  async connectToPort(ws, { portPath, profileName }) {
-    try {
-      if (this.connectedPorts.has(portPath)) {
-        throw new Error(`Port ${portPath} is already connected`);
-      }
-
-      const profile = this.machineProfiles.get(profileName || 'grbl');
-      if (!profile) {
-        throw new Error(`Machine profile '${profileName}' not found`);
-      }
-
-      console.log(`🔌 Connecting to ${portPath} with ${profile.name} profile`);
-
-      const serialPort = new SerialPort({
-        path: portPath,
-        baudRate: profile.baudRate,
-        dataBits: profile.dataBits,
-        stopBits: profile.stopBits,
-        parity: profile.parity
-      });
-
-      const parser = serialPort.pipe(new ReadlineParser({ delimiter: profile.lineEnding }));
-
-      // Setup port event handlers
-      serialPort.on('open', () => {
-        console.log(`✅ Connected to ${portPath}`);
-        this.connectedPorts.set(portPath, { port: serialPort, parser, profile });
-        this.currentProfile = profile;
-        this.status = 'connected';
-        
-        this.broadcastToClients({
-          type: 'port_connected',
-          data: { portPath, profile: profile.name }
-        });
-
-        // Show system notification
-        notifier.notify({
-          title: 'Mechanicus Companion',
-          message: `Connected to ${portPath}`,
-          timeout: 3000
-        });
-      });
-
-      parser.on('data', (data) => {
-        console.log(`📨 Received: ${data}`);
-        this.broadcastToClients({
-          type: 'serial_data',
-          data: { portPath, message: data.toString().trim() }
-        });
-      });
-
-      serialPort.on('error', (error) => {
-        console.error(`❌ Serial error on ${portPath}:`, error);
-        this.connectedPorts.delete(portPath);
-        this.broadcastToClients({
-          type: 'port_error',
-          data: { portPath, error: error.message }
-        });
-      });
-
-      serialPort.on('close', () => {
-        console.log(`🔌 Disconnected from ${portPath}`);
-        this.connectedPorts.delete(portPath);
-        if (this.connectedPorts.size === 0) {
-          this.status = 'disconnected';
-        }
-        this.broadcastToClients({
-          type: 'port_disconnected',
-          data: { portPath }
-        });
-      });
-
-    } catch (error) {
-      console.error('❌ Connection failed:', error);
-      this.sendToClient(ws, {
-        type: 'connection_error',
-        data: { portPath, error: error.message }
-      });
-    }
-  }
-
-  async disconnectFromPort(ws, { portPath }) {
-    try {
-      const connection = this.connectedPorts.get(portPath);
-      if (!connection) {
-        throw new Error(`Port ${portPath} is not connected`);
-      }
-
-      console.log(`🔌 Disconnecting from ${portPath}`);
-      connection.port.close();
-      
-    } catch (error) {
-      console.error('❌ Disconnection failed:', error);
-      this.sendToClient(ws, {
-        type: 'error',
-        data: { message: error.message }
-      });
-    }
-  }
+  
 
   async sendCommand(ws, { portPath, command }) {
     try {
-      const connection = this.connectedPorts.get(portPath);
-      if (!connection) {
+      if (!this.port || !this.serialState.connected || this.serialState.port !== portPath) {
         throw new Error(`Port ${portPath} is not connected`);
       }
 
-      console.log(`📤 Sending command: ${command}`);
-      const fullCommand = command + connection.profile.lineEnding;
-      connection.port.write(fullCommand);
+      log('info', 'command', `📤 Sending command: ${command}`, { portPath });
+      const fullCommand = command + '\n';
+      this.port.write(fullCommand);
       
       this.sendToClient(ws, {
         type: 'command_sent',
@@ -780,7 +670,7 @@ class MechanicusCompanion {
       });
       
     } catch (error) {
-      console.error('❌ Command send failed:', error);
+      log('error', 'command', '❌ Command send failed', { error: error.message });
       this.sendToClient(ws, {
         type: 'error',
         data: { message: error.message }
@@ -796,29 +686,20 @@ class MechanicusCompanion {
         gcodeLength: gcode?.length || 0 
       });
       
-      // Check both connection methods: WebSocket (connectedPorts) and HTTP (this.port)
-      let connection = this.connectedPorts.get(portPath);
-      let serialPort = null;
-      let lineEnding = '\n';
-      
-      if (connection) {
-        log('debug', 'gcode', 'Using WebSocket connection', { portPath });
-        serialPort = connection.port;
-        lineEnding = connection.profile.lineEnding;
-      } else if (this.port && this.serialState.connected && this.serialState.port === portPath) {
-        log('debug', 'gcode', 'Using HTTP connection (fallback)', { portPath });
-        serialPort = this.port;
-        lineEnding = '\n';
-      } else {
+      // Use HTTP connection only
+      if (!this.port || !this.serialState.connected || this.serialState.port !== portPath) {
         const errorMsg = `Port ${portPath} is not connected. Current state: ${JSON.stringify(this.serialState)}`;
         log('error', 'gcode', errorMsg, { 
           portPath, 
-          connectedPorts: Array.from(this.connectedPorts.keys()),
           httpPort: this.serialState.port,
           httpConnected: this.serialState.connected
         });
         throw new Error(errorMsg);
       }
+
+      log('info', 'gcode', '✅ Using HTTP connection for G-code', { portPath, baud: this.serialState.baud });
+      const serialPort = this.port;
+      const lineEnding = '\n';
 
       log('info', 'gcode', `📤 Starting G-code transmission to ${portPath}`, { filename: filename || 'manual' });
       this.isTransmitting = true;
@@ -904,13 +785,13 @@ class MechanicusCompanion {
 
   async emergencyStop(ws) {
     try {
-      console.log('🚨 EMERGENCY STOP TRIGGERED');
+      log('warn', 'emergency', '🚨 EMERGENCY STOP TRIGGERED');
       this.isTransmitting = false;
       
-      for (const [portPath, connection] of this.connectedPorts) {
-        const stopCommand = connection.profile.commands.feedHold || '!';
-        connection.port.write(stopCommand + connection.profile.lineEnding);
-        console.log(`🛑 Emergency stop sent to ${portPath}`);
+      if (this.port && this.serialState.connected) {
+        const stopCommand = '!\n'; // Feed hold command
+        this.port.write(stopCommand);
+        log('warn', 'emergency', `🛑 Emergency stop sent to ${this.serialState.port}`);
       }
       
       this.broadcastToClients({
@@ -921,12 +802,12 @@ class MechanicusCompanion {
       // Show system notification
       notifier.notify({
         title: 'Mechanicus Companion - EMERGENCY STOP',
-        message: 'All machines have been stopped',
+        message: 'Machine has been stopped',
         timeout: 5000
       });
       
     } catch (error) {
-      console.error('❌ Emergency stop failed:', error);
+      log('error', 'emergency', '❌ Emergency stop failed', { error: error.message });
       this.sendToClient(ws, {
         type: 'error',
         data: { message: error.message }
@@ -1049,11 +930,11 @@ class MechanicusCompanion {
   shutdown() {
     console.log('🔄 Shutting down Mechanicus Companion...');
     
-    // Close all serial connections
-    this.connectedPorts.forEach((connection, portPath) => {
-      console.log(`🔌 Closing ${portPath}`);
-      connection.port.close();
-    });
+    // Close serial connection if active
+    if (this.port && this.serialState.connected) {
+      console.log(`🔌 Closing ${this.serialState.port}`);
+      this.port.close();
+    }
     
     // Close WebSocket server
     this.wss.close();
