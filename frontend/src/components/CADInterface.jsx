@@ -63,19 +63,19 @@ function CADInterface() {
   const redoStack = useCadStore((state) => state.redoStack)
   const undo = useCadStore((state) => state.undo)
   const redo = useCadStore((state) => state.redo)
-
+  
   const workspace = useCadStore((state) => state.workspace)
   const setPanelState = useCadStore((state) => state.setPanelState)
   const setPanelPosition = useCadStore((state) => state.setPanelPosition)
   const saveWorkspaceState = useCadStore((state) => state.saveWorkspaceState)
   const loadWorkspaceState = useCadStore((state) => state.loadWorkspaceState)
   const resetWorkspaceState = useCadStore((state) => state.resetWorkspaceState)
-
+  
   const machineConnection = useCadStore((state) => state.machineConnection)
   const setQuickConnect = useCadStore((state) => state.setQuickConnect)
   const setConnectionStatus = useCadStore((state) => state.setConnectionStatus)
   const loadDefaultProfile = useCadStore((state) => state.loadDefaultProfile)
-
+  
   useEffect(() => {
     if (typeof updateLineEditorState !== 'function') {
       console.error('🚨 CRITICAL: updateLineEditorState is NOT a function!', typeof updateLineEditorState)
@@ -83,11 +83,11 @@ function CADInterface() {
       console.log('✅ updateLineEditorState is available')
     }
   }, [])
-
+  
   useEffect(() => {
     console.log('🔄 Loading workspace on mount...')
     loadWorkspaceState()
-
+    
     // Load default machine profile
     loadDefaultProfile().then(profile => {
       if (profile) {
@@ -105,16 +105,16 @@ function CADInterface() {
       }
     })
   }, [])
-
+  
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       console.log('💾 Auto-saving workspace...')
       saveWorkspaceState()
     }, 1000)
-
+    
     return () => clearTimeout(debounceTimeout)
   }, [workspace])
-
+  
   const showDrawingTools = workspace.panelStates.drawingTools
   const showSnapTools = workspace.panelStates.snapTools
   const showMarkersWindow = workspace.panelStates.markersGuides
@@ -123,7 +123,7 @@ function CADInterface() {
   const showShapeProperties = workspace.panelStates.shapeProperties
   const showTextTools = workspace.panelStates.textTools
   const showLayers = workspace.panelStates.layers
-
+  
   const setShowDrawingTools = (isOpen) => setPanelState('drawingTools', isOpen)
   const setShowSnapTools = (isOpen) => setPanelState('snapTools', isOpen)
   const setShowMarkersWindow = (isOpen) => setPanelState('markersGuides', isOpen)
@@ -135,11 +135,11 @@ function CADInterface() {
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
-
+  
   const gridSize = workspace.gridSize
   const showGrid = workspace.gridVisible
   const gridSnap = workspace.gridSnap
-
+  
   const setGridSize = (size) => {
     const updates = { gridSize: size }
     useCadStore.setState((state) => ({
@@ -175,16 +175,16 @@ function CADInterface() {
   const [showMachineSettings, setShowMachineSettings] = useState(false)
   const [wsConnection, setWsConnection] = useState(null)
   const [mousePosition, setMousePosition] = useState(null)
-
+  
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
     const defaultPositions = {}
-
+    
     const PANEL_WIDTH = 320
     const START_Y = 80
     const SPACING = 150
     const viewportWidth = window.innerWidth
-
+    
     // Default panels on RIGHT (lower z-index, behind other panels)
     const rightPanels = ['drawingTools', 'layers', 'shapeProperties']
     rightPanels.forEach((panelId, index) => {
@@ -194,7 +194,7 @@ function CADInterface() {
         zIndex: 10 + index
       }
     })
-
+    
     // Other panels on LEFT (higher z-index to appear above defaults, but below menu bar which is 100)
     const leftPanels = ['snapTools', 'markersGuides', 'transformTools', 'lineEditorTools', 'textTools']
     leftPanels.forEach((panelId, index) => {
@@ -204,11 +204,11 @@ function CADInterface() {
         zIndex: 20 + index
       }
     })
-
+    
     return defaultPositions
   })
   const [topZIndex, setTopZIndex] = useState(50)
-
+  
   useEffect(() => {
     if (workspace.panelPositions && Object.keys(workspace.panelPositions).length > 0) {
       setPanelPositions(prevPositions => ({
@@ -217,7 +217,7 @@ function CADInterface() {
       }))
     }
   }, [workspace.panelPositions])
-
+  
   const containerRef = useRef(null)
   const stageRef = useRef(null)
   const hRulerRef = useRef(null)
@@ -243,7 +243,7 @@ function CADInterface() {
     const handleResize = () => {
       const PANEL_WIDTH = 320
       const MIN_VISIBLE = 100
-
+      
       setPanelPositions(prev => {
         const updated = {}
         Object.keys(prev).forEach(panelId => {
@@ -257,7 +257,7 @@ function CADInterface() {
         return updated
       })
     }
-
+    
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
@@ -279,7 +279,7 @@ function CADInterface() {
         setMirrorAxisSelectionCallback(null)
         setMirrorAxisLineId(null)
         setTrimPreviewLines([])
-
+        
         if (lineEditorState) {
           const selectedLines = lineEditorState.selectedLines || []
           selectedLines.forEach(id => {
@@ -295,7 +295,7 @@ function CADInterface() {
           })
           setLineEditorState({ selectedLines: [], currentTool: null })
         }
-
+        
         const shapePropertiesState = useCadStore.getState().shapePropertiesState
         if (shapePropertiesState?.selectedShapeId) {
           const shape = shapes.find(s => s.id === shapePropertiesState.selectedShapeId)
@@ -310,7 +310,7 @@ function CADInterface() {
           const setShapePropertiesState = useCadStore.getState().setShapePropertiesState
           setShapePropertiesState(null)
         }
-
+        
         const textToolState = useCadStore.getState().textToolState
         if (textToolState?.selectedTextId) {
           const text = shapes.find(s => s.id === textToolState.selectedTextId)
@@ -340,7 +340,7 @@ function CADInterface() {
         redo()
       }
     }
-
+    
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [lineEditorState, shapes, selectedShapeIds, setActiveTool, updateShape, setLineEditorState, removeShape])
@@ -352,7 +352,7 @@ function CADInterface() {
 
     const oldScale = viewport.zoom
     const pointer = stage.getPointerPosition()
-
+    
     const mousePointTo = {
       x: (pointer.x - viewport.pan.x) / oldScale,
       y: (pointer.y - viewport.pan.y) / oldScale
@@ -372,21 +372,21 @@ function CADInterface() {
   const getWorldPoint = (e, enableSnap = true) => {
     const stage = stageRef.current
     if (!stage) return { x: 0, y: 0 }
-
+    
     const point = stage.getPointerPosition()
     let worldX = (point.x - viewport.pan.x) / viewport.zoom
     let worldY = (point.y - viewport.pan.y) / viewport.zoom
-
+    
     if (enableSnap) {
       const gridSpacing = gridSize * machineProfile.mmToPx
       const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
-
+      
       if (snapResult) {
         worldX = snapResult.x
         worldY = snapResult.y
       }
     }
-
+    
     return { x: worldX, y: worldY }
   }
 
@@ -397,7 +397,7 @@ function CADInterface() {
       setPanStart({ x: e.evt.clientX - viewport.pan.x, y: e.evt.clientY - viewport.pan.y })
       return
     }
-
+    
     const clickedOnEmpty = e.target === e.target.getStage()
     if (clickedOnEmpty && e.evt.button === 0) {
       setSelectedShapeId(null)
@@ -422,22 +422,22 @@ function CADInterface() {
         })
       }
       setTrimPreviewLines([])
-
+      
       if (!activeTool && !showLineEditorTools) {
         const point = getWorldPoint(e, false)
         setSelectionRect({ x: point.x, y: point.y, width: 0, height: 0 })
       }
     }
-
+    
     if (lineEditorState?.currentTool === 'adjustLine' && e.evt.button === 0) {
       const point = getWorldPoint(e)
       const tolerance = 15 / viewport.zoom
-
+      
       for (const shape of shapes) {
         if (shape.type === 'line') {
           const distToStart = Math.sqrt((point.x - shape.x1)**2 + (point.y - shape.y1)**2)
           const distToEnd = Math.sqrt((point.x - shape.x2)**2 + (point.y - shape.y2)**2)
-
+          
           if (distToStart < tolerance) {
             setAdjustLineState({
               shapeId: shape.id,
@@ -467,11 +467,11 @@ function CADInterface() {
       }
       return
     }
-
+    
     if (guidesVisible && !guidesLocked && e.evt.button === 0) {
       const point = getWorldPoint(e)
       const threshold = 10 / viewport.zoom
-
+      
       for (const guide of guides) {
         if (guide.type === 'horizontal' && Math.abs(point.y - guide.position) < threshold) {
           setDraggedGuide(guide.id)
@@ -482,10 +482,10 @@ function CADInterface() {
         }
       }
     }
-
+    
     if (activeTool && e.evt.button === 0) {
       const point = getWorldPoint(e)
-
+      
       if (activeTool === 'line') {
         setDrawingState({ tool: 'line', startX: point.x, startY: point.y })
       } else if (activeTool === 'circle') {
@@ -527,7 +527,7 @@ function CADInterface() {
         setMousePosition({ x: worldX, y: worldY })
       }
     }
-
+    
     if (isPanning) {
       const newPan = {
         x: e.evt.clientX - panStart.x,
@@ -536,7 +536,7 @@ function CADInterface() {
       updateViewport({ pan: newPan })
       return
     }
-
+    
     if (selectionRect) {
       const point = getWorldPoint(e, false)
       const x = Math.min(selectionRect.x, point.x)
@@ -546,7 +546,7 @@ function CADInterface() {
       setSelectionRect({ x, y, width, height })
       return
     }
-
+    
     if (adjustLineState) {
       const point = getWorldPoint(e)
       const shape = shapes.find(s => s.id === adjustLineState.shapeId)
@@ -565,7 +565,7 @@ function CADInterface() {
       }
       return
     }
-
+    
     if (draggedGuide) {
       const point = getWorldPoint(e)
       const guide = guides.find(g => g.id === draggedGuide)
@@ -576,21 +576,21 @@ function CADInterface() {
       }
       return
     }
-
+    
     if (!stage) return
-
+    
     const pointForSnap = stage.getPointerPosition()
     const worldXSnap = (pointForSnap.x - viewport.pan.x) / viewport.zoom
     const worldYSnap = (pointForSnap.y - viewport.pan.y) / viewport.zoom
-
+    
     const gridSpacing = gridSize * machineProfile.mmToPx
     const snapResult = findSnapPoint(worldXSnap, worldYSnap, viewport.zoom, snap, gridSpacing, showGrid)
-
+    
     setSnapIndicator(snapResult)
-
+    
     if (drawingState) {
       const currentPoint = getWorldPoint(e)
-
+      
       if (drawingState.tool === 'line') {
         setPreviewShape({
           type: 'line',
@@ -651,11 +651,11 @@ function CADInterface() {
         })
       }
     }
-
+    
     if (showLineEditorTools && lineEditorState) {
       const currentPoint = getWorldPoint(e)
       const previewLines = []
-
+      
       const pointToLineDistance = (px, py, x1, y1, x2, y2) => {
         const A = px - x1
         const B = py - y1
@@ -679,12 +679,12 @@ function CADInterface() {
         const dy = py - yy
         return Math.sqrt(dx * dx + dy * dy)
       }
-
+      
       if (lineEditorState.trimState === 'select_segment' && lineEditorState.selectedLines && lineEditorState.selectedLines.length === 2 && lineEditorState.intersection) {
         const tolerance = 15 / viewport.zoom
         let hoveredLine = null
         let minDist = Infinity
-
+        
         for (const lineId of lineEditorState.selectedLines) {
           const line = shapes.find(s => s.id === lineId)
           if (line && line.type === 'line') {
@@ -695,13 +695,13 @@ function CADInterface() {
             }
           }
         }
-
+        
         if (hoveredLine) {
           const distToStart = Math.sqrt((currentPoint.x - hoveredLine.x1)**2 + (currentPoint.y - hoveredLine.y1)**2)
           const distToEnd = Math.sqrt((currentPoint.x - hoveredLine.x2)**2 + (currentPoint.y - hoveredLine.y2)**2)
-
+          
           const keepEndSegment = distToStart < distToEnd
-
+          
           if (keepEndSegment) {
             previewLines.push({
               x1: lineEditorState.intersection.x,
@@ -722,7 +722,7 @@ function CADInterface() {
         const tolerance = 15 / viewport.zoom
         let hoveredLine = null
         let minDist = Infinity
-
+        
         for (const shape of shapes) {
           if (shape.type === 'line' && !lineEditorState.boundaryLines.includes(shape.id)) {
             const dist = pointToLineDistance(currentPoint.x, currentPoint.y, shape.x1, shape.y1, shape.x2, shape.y2)
@@ -732,28 +732,28 @@ function CADInterface() {
             }
           }
         }
-
+        
         if (hoveredLine) {
           const boundary1 = shapes.find(s => s.id === lineEditorState.boundaryLines[0])
           const boundary2 = shapes.find(s => s.id === lineEditorState.boundaryLines[1])
-
+          
           const int1 = findLineIntersection(boundary1, hoveredLine)
           const int2 = findLineIntersection(boundary2, hoveredLine)
-
+          
           if (int1 && int2) {
             const dist1ToStart = Math.sqrt((int1.x - hoveredLine.x1)**2 + (int1.y - hoveredLine.y1)**2)
             const dist2ToStart = Math.sqrt((int2.x - hoveredLine.x1)**2 + (int2.y - hoveredLine.y1)**2)
-
+            
             const startInt = dist1ToStart < dist2ToStart ? int1 : int2
             const endInt = dist1ToStart < dist2ToStart ? int2 : int1
-
+            
             previewLines.push({
               x1: hoveredLine.x1,
               y1: hoveredLine.y1,
               x2: startInt.x,
               y2: startInt.y
             })
-
+            
             previewLines.push({
               x1: endInt.x,
               y1: endInt.y,
@@ -766,12 +766,12 @@ function CADInterface() {
         const tolerance = 15 / viewport.zoom
         let hoveredLine = null
         let nearEndpoint = null
-
+        
         for (const shape of shapes) {
           if (shape.type === 'line' && !lineEditorState.boundaryLines.includes(shape.id)) {
             const distToStart = Math.sqrt((currentPoint.x - shape.x1)**2 + (currentPoint.y - shape.y1)**2)
             const distToEnd = Math.sqrt((currentPoint.x - shape.x2)**2 + (currentPoint.y - shape.y2)**2)
-
+            
             if (distToStart < tolerance) {
               hoveredLine = shape
               nearEndpoint = 'start'
@@ -783,7 +783,7 @@ function CADInterface() {
             }
           }
         }
-
+        
         if (hoveredLine && nearEndpoint) {
           const extendFromStart = nearEndpoint === 'start'
           const px = extendFromStart ? hoveredLine.x1 : hoveredLine.x2
@@ -793,22 +793,22 @@ function CADInterface() {
           const len = Math.sqrt(vx*vx + vy*vy)
           const dirX = vx / len
           const dirY = vy / len
-
+          
           const extendedX = px + dirX * 10000
           const extendedY = py + dirY * 10000
-
+          
           let bestIntersection = null
           let minDist = Infinity
-
+          
           lineEditorState.boundaryLines.forEach(boundaryId => {
             const boundary = shapes.find(s => s.id === boundaryId)
             if (!boundary) return
-
+            
             const inters = findLineIntersection(
               { x1: px, y1: py, x2: extendedX, y2: extendedY },
               boundary
             )
-
+            
             if (inters) {
               const dist = Math.sqrt((inters.x - px)**2 + (inters.y - py)**2)
               const dot = (inters.x - px) * dirX + (inters.y - py) * dirY
@@ -818,7 +818,7 @@ function CADInterface() {
               }
             }
           })
-
+          
           if (bestIntersection) {
             previewLines.push({
               x1: px,
@@ -829,7 +829,7 @@ function CADInterface() {
           }
         }
       }
-
+      
       setTrimPreviewLines(previewLines)
     } else {
       setTrimPreviewLines([])
@@ -839,13 +839,13 @@ function CADInterface() {
   const handleMouseUp = (e) => {
     setIsPanning(false)
     setDraggedGuide(null)
-
+    
     if (selectionRect && selectionRect.width > 5 && selectionRect.height > 5) {
       const selectedIds = []
       shapes.forEach(shape => {
         const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
         if (!shapeLayer || !shapeLayer.visible || shapeLayer.locked) return
-
+        
         let intersects = false
         if (shape.type === 'line') {
           const x1 = shape.x1, y1 = shape.y1, x2 = shape.x2, y2 = shape.y2
@@ -886,19 +886,19 @@ function CADInterface() {
           intersects = !(cx + r < selectionRect.x || cx - r > selectionRect.x + selectionRect.width ||
                         cy + r < selectionRect.y || cy - r > selectionRect.y + selectionRect.height)
         }
-
+        
         if (intersects) {
           selectedIds.push(shape.id)
         }
       })
-
+      
       setSelectedShapeIds(selectedIds)
       setSelectionRect(null)
       return
     }
-
+    
     setSelectionRect(null)
-
+    
     if (adjustLineState) {
       const shape = shapes.find(s => s.id === adjustLineState.shapeId)
       if (shape && shape.originalStroke) {
@@ -910,7 +910,7 @@ function CADInterface() {
       setAdjustLineState(null)
       return
     }
-
+    
     if (drawingState && previewShape) {
       const currentPoint = getWorldPoint(e)
       const newShape = {
@@ -919,7 +919,7 @@ function CADInterface() {
         strokeWidth: 2,
         ...previewShape
       }
-
+      
       if (drawingState.tool === 'polygon') {
         const sides = 6
         const points = []
@@ -942,19 +942,19 @@ function CADInterface() {
         newShape.outerRadius = previewShape.radius
         newShape.rotation = 0
       }
-
+      
       addShapeWithUndo(newShape)
       setDrawingState(null)
       setPreviewShape(null)
     }
-
+    
     if (markerState && markerState.tool === 'lineMarker') {
       const currentPoint = getWorldPoint(e, markerSnapEnabled)
       const dx = currentPoint.x - markerState.startX
       const dy = currentPoint.y - markerState.startY
       const distance = Math.sqrt(dx * dx + dy * dy)
       const angle = Math.atan2(dy, dx) * 180 / Math.PI
-
+      
       addMarker({
         id: `marker-${Date.now()}`,
         type: 'lineMarker',
@@ -968,7 +968,7 @@ function CADInterface() {
       setMarkerState(null)
       setActiveTool(null)
     }
-
+    
     const textToolState = useCadStore.getState().textToolState
     if (textToolState?.placeMode && textToolState.pendingText) {
       const clickedOnEmpty = e.target === e.target.getStage()
@@ -989,9 +989,9 @@ function CADInterface() {
           base_x: clickPoint.x / machineProfile.mmToPx,
           base_y: clickPoint.y / machineProfile.mmToPx
         }
-
+        
         addShape(newText)
-
+        
         const setTextToolState = useCadStore.getState().setTextToolState
         setTextToolState({
           placeMode: false,
@@ -1030,12 +1030,12 @@ function CADInterface() {
   const updatePanelPosition = (panelId, x, y) => {
     const PANEL_WIDTH = 320
     const MIN_VISIBLE = 100
-
+    
     const newPosition = {
       x: Math.max(MIN_VISIBLE - PANEL_WIDTH, Math.min(x, window.innerWidth - MIN_VISIBLE)),
       y: Math.max(0, y)
     }
-
+    
     setPanelPositions(prev => {
       const updated = {
         ...prev,
@@ -1065,10 +1065,10 @@ function CADInterface() {
 
   const drawGrid = () => {
     if (!showGrid) return []
-
+    
     const lines = []
     const gridSpacing = gridSize * machineProfile.mmToPx
-
+    
     for (let x = 0; x <= canvasWidth; x += gridSpacing) {
       lines.push(
         <Line
@@ -1080,7 +1080,7 @@ function CADInterface() {
         />
       )
     }
-
+    
     for (let y = 0; y <= canvasHeight; y += gridSpacing) {
       lines.push(
         <Line
@@ -1092,13 +1092,13 @@ function CADInterface() {
         />
       )
     }
-
+    
     return lines
   }
 
   const drawCrosshairs = () => {
     if (!mousePosition) return null
-
+    
     return (
       <>
         <Line
@@ -1124,7 +1124,7 @@ function CADInterface() {
   const drawOriginMarker = () => {
     let originX = 0, originY = 0
     const markerSize = 20 / viewport.zoom
-
+    
     // Calculate origin position based on originPoint setting
     switch (machineProfile.originPoint) {
       case 'bottom-left':
@@ -1147,7 +1147,7 @@ function CADInterface() {
         originX = 0
         originY = canvasHeight
     }
-
+    
     return (
       <React.Fragment key="origin-marker">
         {/* Red crosshair at origin */}
@@ -1187,52 +1187,15 @@ function CADInterface() {
     )
   }
 
-  // New module for visualizing machine position and laser status
-  const MachineHeadVisualizer = () => {
-    if (!isConnected || !machinePosition) return null
-
-    // Convert machine coordinates to canvas coordinates
-    const canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
-    const canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
-
-    const laserActive = machinePosition.state === 'active' // Assuming 'state' property indicates laser status
-
-    return (
-      <React.Fragment key="machine-head-visualizer">
-        {/* Blue rounded rectangle for laser head visualization */}
-        <Rect
-          x={canvasX - 15} // Center the rectangle around the position
-          y={canvasY - 15}
-          width={30}
-          height={30}
-          cornerRadius={8}
-          fill="#00BFFF" // Blue color
-          opacity={0.8}
-          listening={false}
-        />
-        {/* Green dot for inactive laser, Red dot for active laser */}
-        <Circle
-          x={canvasX}
-          y={canvasY}
-          radius={8 / viewport.zoom}
-          fill={laserActive ? '#FF0000' : '#00FF00'} // Red if active, Green if inactive
-          stroke="#FFFFFF"
-          strokeWidth={2 / viewport.zoom}
-          listening={false}
-        />
-      </React.Fragment>
-    )
-  }
-
   const drawMachinePosition = () => {
     if (!isConnected || !machinePosition) return null
-
+    
     // Convert machine coordinates to canvas coordinates
     const canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
     const canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
-
+    
     const markerSize = 15 / viewport.zoom
-
+    
     return (
       <React.Fragment key="machine-position">
         {/* Blue crosshair for machine position */}
@@ -1284,7 +1247,7 @@ function CADInterface() {
     hRulerCanvas.width = canvasWidth
     hRulerCanvas.height = rulerHeight
     const hCtx = hRulerCanvas.getContext('2d')
-
+    
     hCtx.fillStyle = '#f0f0f0'
     hCtx.fillRect(0, 0, hRulerCanvas.width, rulerHeight)
     hCtx.strokeStyle = '#666'
@@ -1294,11 +1257,11 @@ function CADInterface() {
     // Draw marks every 1mm with varying heights: small (1mm), medium (5mm), long (10mm)
     const startMM = Math.max(0, Math.floor((-viewport.pan.x / viewport.zoom / machineProfile.mmToPx)))
     const endMM = Math.min(machineProfile.bedSizeX, startMM + (hRulerCanvas.width / viewport.zoom / machineProfile.mmToPx))
-
+    
     for (let mmPos = startMM; mmPos <= endMM; mmPos += 1) {
       const x = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.x
       if (x < 0 || x > hRulerCanvas.width) continue
-
+      
       let tickHeight
       if (mmPos % 10 === 0) {
         tickHeight = 12 // Long for 10mm
@@ -1307,12 +1270,12 @@ function CADInterface() {
       } else {
         tickHeight = 4 // Small for 1mm
       }
-
+      
       hCtx.beginPath()
       hCtx.moveTo(x, rulerHeight - tickHeight)
       hCtx.lineTo(x, rulerHeight)
       hCtx.stroke()
-
+      
       if (mmPos % 10 === 0) {
         hCtx.fillText(mmPos.toFixed(0) + 'mm', x + 2, rulerHeight - 12)
       }
@@ -1322,7 +1285,7 @@ function CADInterface() {
     vRulerCanvas.width = rulerWidth
     vRulerCanvas.height = canvasHeight
     const vCtx = vRulerCanvas.getContext('2d')
-
+    
     vCtx.fillStyle = '#f0f0f0'
     vCtx.fillRect(0, 0, rulerWidth, vRulerCanvas.height)
     vCtx.strokeStyle = '#666'
@@ -1332,11 +1295,11 @@ function CADInterface() {
     // Draw marks every 1mm with varying widths: small (1mm), medium (5mm), long (10mm)
     const startMMY = Math.max(0, Math.floor((-viewport.pan.y / viewport.zoom / machineProfile.mmToPx)))
     const endMMY = Math.min(machineProfile.bedSizeY, startMMY + (vRulerCanvas.height / viewport.zoom / machineProfile.mmToPx))
-
+    
     for (let mmPos = startMMY; mmPos <= endMMY; mmPos += 1) {
       const y = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
       if (y < 0 || y > vRulerCanvas.height) continue
-
+      
       let tickWidth
       if (mmPos % 10 === 0) {
         tickWidth = 12 // Long for 10mm
@@ -1345,12 +1308,12 @@ function CADInterface() {
       } else {
         tickWidth = 4 // Small for 1mm
       }
-
+      
       vCtx.beginPath()
       vCtx.moveTo(rulerWidth - tickWidth, y)
       vCtx.lineTo(rulerWidth, y)
       vCtx.stroke()
-
+      
       if (mmPos % 10 === 0) {
         vCtx.save()
         vCtx.translate(rulerWidth - 15, y + 2)
@@ -1362,7 +1325,7 @@ function CADInterface() {
 
     hRulerRef.current.innerHTML = ''
     hRulerRef.current.appendChild(hRulerCanvas)
-
+    
     vRulerRef.current.innerHTML = ''
     vRulerRef.current.appendChild(vRulerCanvas)
   }
@@ -1380,39 +1343,39 @@ function CADInterface() {
   const handleZoomReset = () => {
     updateViewport({ zoom: 1, pan: { x: 0, y: 0 } })
   }
-
+  
   const handleExportSVG = () => {
     const svgContent = exportToSVG(shapes, machineProfile, layers)
     downloadSVG(svgContent, 'design.svg')
   }
-
+  
   const handleImportSVG = async (event) => {
     const file = event.target.files[0]
     if (!file) return
-
+    
     try {
       const { shapes: importedShapes, layers: importedLayers } = await importFromSVG(file, machineProfile)
-
+      
       if (importedLayers && importedLayers.length > 0) {
         setLayers(importedLayers)
       }
-
+      
       if (importedShapes && importedShapes.length > 0) {
         setShapes(importedShapes)
       }
-
+      
       alert(`Imported ${importedShapes.length} shapes and ${importedLayers.length} layers`)
     } catch (error) {
       console.error('SVG import error:', error)
       alert('Failed to import SVG: ' + error.message)
     }
-
+    
     event.target.value = ''
   }
-
+  
   const handleDeleteSelected = () => {
     if (selectedShapeIds.length === 0) return
-
+    
     selectedShapeIds.forEach(id => {
       removeShapeWithUndo(id)
     })
@@ -1421,7 +1384,7 @@ function CADInterface() {
 
   const handleLineEditorToolClick = (shape, clickX, clickY) => {
     const tool = lineEditorState?.currentTool
-
+    
     if (tool === 'trim') {
       handleTrimClick(shape, clickX, clickY)
     } else if (tool === 'trimMid') {
@@ -1438,10 +1401,10 @@ function CADInterface() {
       console.log('❌ TRIM: Shape is not a line, ignoring')
       return
     }
-
+    
     const { trimState, selectedLines = [], intersection } = lineEditorState
     console.log('✂️ TRIM CLICK - Current state:', { trimState, selectedLines, intersection })
-
+    
     if (trimState === 'first_line') {
       console.log('  → Selecting FIRST line:', shape.id)
       const updates = {
@@ -1463,18 +1426,18 @@ function CADInterface() {
         console.log('  ⚠️ Already selected, ignoring')
         return
       }
-
+      
       console.log('  → Selecting SECOND line:', shape.id)
       const line1 = shapes.find(s => s.id === selectedLines[0])
       console.log('  → Finding intersection between line1:', selectedLines[0], 'and line2:', shape.id)
       const inters = findLineIntersection(line1, shape)
-
+      
       if (!inters) {
         console.log('  ❌ Lines do not intersect!')
         alert('Lines do not intersect')
         return
       }
-
+      
       console.log('  ✓ Intersection found:', inters)
       const updates = {
         selectedLines: [...selectedLines, shape.id],
@@ -1492,9 +1455,9 @@ function CADInterface() {
     } else if (trimState === 'select_segment' && selectedLines.includes(shape.id)) {
       const distToStart = Math.sqrt((clickX - shape.x1)**2 + (clickY - shape.y1)**2)
       const distToEnd = Math.sqrt((clickX - shape.x2)**2 + (clickY - shape.y2)**2)
-
+      
       const keepEndSegment = distToStart < distToEnd
-
+      
       if (keepEndSegment) {
         updateShape(shape.id, {
           x1: intersection.x,
@@ -1510,7 +1473,7 @@ function CADInterface() {
           strokeWidth: shape.originalStrokeWidth
         })
       }
-
+      
       selectedLines.forEach(id => {
         const s = shapes.find(sh => sh.id === id)
         if (s && s.originalStroke) {
@@ -1520,7 +1483,7 @@ function CADInterface() {
           })
         }
       })
-
+      
       updateLineEditorState({
         selectedLines: [],
         trimState: 'first_line',
@@ -1534,10 +1497,10 @@ function CADInterface() {
       console.log('❌ TRIM MID: Shape is not a line, ignoring')
       return
     }
-
+    
     const { trimState, selectedLines = [], boundaryLines = [] } = lineEditorState
     console.log('✂️ TRIM MID CLICK - Current state:', { trimState, selectedLines, boundaryLines })
-
+    
     if (trimState === 'first_line') {
       console.log('  → Selecting FIRST BOUNDARY line:', shape.id)
       const updates = {
@@ -1558,7 +1521,7 @@ function CADInterface() {
         console.log('  ⚠️ Already selected, ignoring')
         return
       }
-
+      
       console.log('  → Selecting SECOND BOUNDARY line:', shape.id)
       const updates = {
         selectedLines: [...selectedLines, shape.id],
@@ -1576,16 +1539,16 @@ function CADInterface() {
     } else if (trimState === 'trim_crossing' && !boundaryLines.includes(shape.id)) {
       const boundary1 = shapes.find(s => s.id === boundaryLines[0])
       const boundary2 = shapes.find(s => s.id === boundaryLines[1])
-
+      
       const int1 = findLineIntersection(boundary1, shape)
       const int2 = findLineIntersection(boundary2, shape)
-
+      
       if (int1 && int2) {
         const dist1Start = Math.sqrt((int1.x - shape.x1)**2 + (int1.y - shape.y1)**2)
         const dist1End = Math.sqrt((int1.x - shape.x2)**2 + (int1.y - shape.y2)**2)
         const dist2Start = Math.sqrt((int2.x - shape.x1)**2 + (int2.y - shape.y1)**2)
         const dist2End = Math.sqrt((int2.x - shape.x2)**2 + (int2.y - shape.y2)**2)
-
+        
         const newLine1 = {
           id: `line-${Date.now()}-1`,
           type: 'line',
@@ -1596,7 +1559,7 @@ function CADInterface() {
           stroke: shape.stroke,
           strokeWidth: shape.strokeWidth
         }
-
+        
         const newLine2 = {
           id: `line-${Date.now()}-2`,
           type: 'line',
@@ -1607,11 +1570,11 @@ function CADInterface() {
           stroke: shape.stroke,
           strokeWidth: shape.strokeWidth
         }
-
+        
         removeShape(shape.id)
         addShape(newLine1)
         addShape(newLine2)
-
+        
         boundaryLines.forEach(id => {
           const s = shapes.find(sh => sh.id === id)
           if (s && s.originalStroke) {
@@ -1621,7 +1584,7 @@ function CADInterface() {
             })
           }
         })
-
+        
         setLineEditorState({
           currentTool: 'trimMid',
           trimState: 'first_line',
@@ -1637,10 +1600,10 @@ function CADInterface() {
       console.log('❌ EXTEND: Shape is not a line, ignoring')
       return
     }
-
+    
     const { extendState, boundaryLines = [] } = lineEditorState
     console.log('↗️ EXTEND CLICK - Current state:', { extendState, boundaryLines })
-
+    
     if (extendState === 'select_boundary') {
       console.log('  → Selecting BOUNDARY line:', shape.id)
       const updates = {
@@ -1658,7 +1621,7 @@ function CADInterface() {
     } else if (extendState === 'extend_lines' && !boundaryLines.includes(shape.id)) {
       const distToStart = Math.sqrt((clickX - shape.x1)**2 + (clickY - shape.y1)**2)
       const distToEnd = Math.sqrt((clickX - shape.x2)**2 + (clickY - shape.y2)**2)
-
+      
       const extendFromStart = distToStart < distToEnd
       const px = extendFromStart ? shape.x1 : shape.x2
       const py = extendFromStart ? shape.y1 : shape.y2
@@ -1667,22 +1630,22 @@ function CADInterface() {
       const len = Math.sqrt(vx*vx + vy*vy)
       const dirX = vx / len
       const dirY = vy / len
-
+      
       const extendedX = px + dirX * 10000
       const extendedY = py + dirY * 10000
-
+      
       let bestIntersection = null
       let minDist = Infinity
-
+      
       boundaryLines.forEach(boundaryId => {
         const boundary = shapes.find(s => s.id === boundaryId)
         if (!boundary) return
-
+        
         const inters = findLineIntersection(
           { x1: px, y1: py, x2: extendedX, y2: extendedY },
           boundary
         )
-
+        
         if (inters) {
           const dist = Math.sqrt((inters.x - px)**2 + (inters.y - py)**2)
           const dot = (inters.x - px) * dirX + (inters.y - py) * dirY
@@ -1692,7 +1655,7 @@ function CADInterface() {
           }
         }
       })
-
+      
       if (bestIntersection) {
         if (extendFromStart) {
           updateShape(shape.id, {
@@ -1705,7 +1668,7 @@ function CADInterface() {
             y2: bestIntersection.y
           })
         }
-
+        
         boundaryLines.forEach(id => {
           const s = shapes.find(sh => sh.id === id)
           if (s && s.originalStroke) {
@@ -1715,7 +1678,7 @@ function CADInterface() {
             })
           }
         })
-
+        
         setLineEditorState({
           currentTool: 'extend',
           extendState: 'select_boundary',
@@ -1723,7 +1686,7 @@ function CADInterface() {
         })
       } else {
         alert('Could not find valid extension point')
-
+        
         boundaryLines.forEach(id => {
           const s = shapes.find(sh => sh.id === id)
           if (s && s.originalStroke) {
@@ -1733,7 +1696,7 @@ function CADInterface() {
             })
           }
         })
-
+        
         setLineEditorState({
           currentTool: 'extend',
           extendState: 'select_boundary',
@@ -1746,11 +1709,11 @@ function CADInterface() {
   const handleConnect = () => {
     try {
       const ws = new WebSocket('ws://localhost:8080')
-
+      
       ws.onopen = () => {
         console.log('WebSocket connected')
         setConnectionStatus('connecting')
-
+        
         // Send connect command with port and baud rate
         ws.send(JSON.stringify({
           type: 'connect',
@@ -1758,7 +1721,7 @@ function CADInterface() {
           baud: machineConnection.quickConnect.baudRate
         }))
       }
-
+      
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data)
         if (data.type === 'connected') {
@@ -1769,24 +1732,24 @@ function CADInterface() {
           console.error('Connection error:', data.message)
         }
       }
-
+      
       ws.onerror = (error) => {
         setConnectionStatus('disconnected', 'WebSocket error')
         console.error('WebSocket error:', error)
       }
-
+      
       ws.onclose = () => {
         setConnectionStatus('disconnected')
         console.log('WebSocket disconnected')
       }
-
+      
       setWsConnection(ws)
     } catch (error) {
       setConnectionStatus('disconnected', error.message)
       console.error('Failed to connect:', error)
     }
   }
-
+  
   const handleDisconnect = () => {
     if (wsConnection) {
       wsConnection.send(JSON.stringify({ type: 'disconnect' }))
@@ -1831,21 +1794,21 @@ function CADInterface() {
     console.log('👆 SHAPE CLICKED:', shape.id, 'type:', shape.type)
     console.log('   showLineEditorTools:', showLineEditorTools)
     console.log('   lineEditorState:', lineEditorState)
-
+    
     if (event && event.evt) {
       event.evt.cancelBubble = true
       event.evt.stopPropagation()
     }
-
+    
     const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
     if (shapeLayer && shapeLayer.locked) {
       console.log('   → Shape on locked layer, ignoring click')
       return
     }
-
+    
     const textToolState = useCadStore.getState().textToolState
     const shapePropertiesState = useCadStore.getState().shapePropertiesState
-
+    
     if (textToolState?.selectMode && shape.type === 'text') {
       console.log('   → Text selection')
       const setTextToolState = useCadStore.getState().setTextToolState
@@ -1899,7 +1862,7 @@ function CADInterface() {
   const getShapeStroke = (shape) => {
     const isSelected = lineEditorState?.selectedLines?.includes(shape.id) || selectedShapeIds.includes(shape.id)
     const isHovered = hoveredShapeId === shape.id
-
+    
     if (isSelected) {
       return '#FF0000'
     } else if (isHovered && showLineEditorTools && lineEditorState?.currentTool) {
@@ -1911,7 +1874,7 @@ function CADInterface() {
   const getShapeStrokeWidth = (shape) => {
     const isSelected = lineEditorState?.selectedLines?.includes(shape.id) || selectedShapeIds.includes(shape.id)
     const isHovered = hoveredShapeId === shape.id
-
+    
     if (isSelected) {
       return 3
     } else if (isHovered && showLineEditorTools && lineEditorState?.currentTool) {
@@ -1926,7 +1889,7 @@ function CADInterface() {
 
   return (
     <div className="cad-interface">
-      <MenuBar
+      <MenuBar 
         onImportSVG={() => document.getElementById('svg-import-input').click()}
         onExportSVG={handleExportSVG}
         onZoomIn={handleZoomIn}
@@ -1950,8 +1913,8 @@ function CADInterface() {
       />
       <div className="top-toolbar">
         <div className="toolbar-left">
-          <button
-            onClick={handleDeleteSelected}
+          <button 
+            onClick={handleDeleteSelected} 
             className="delete-button"
             disabled={selectedShapeIds.length === 0}
           >
@@ -1983,8 +1946,8 @@ function CADInterface() {
             </svg>
           </button>
           <label className="toolbar-checkbox">
-            <input
-              type="checkbox"
+            <input 
+              type="checkbox" 
               checked={showGrid}
               onChange={(e) => setShowGrid(e.target.checked)}
             />
@@ -1992,8 +1955,8 @@ function CADInterface() {
           </label>
           <label className="toolbar-input-label">
             Grid Size:
-            <input
-              type="number"
+            <input 
+              type="number" 
               value={gridSize}
               onChange={(e) => setGridSize(Number(e.target.value))}
               className="toolbar-number-input"
@@ -2002,8 +1965,8 @@ function CADInterface() {
             />
           </label>
           <label className="toolbar-checkbox">
-            <input
-              type="checkbox"
+            <input 
+              type="checkbox" 
               checked={gridSnap}
               onChange={(e) => setGridSnap(e.target.checked)}
             />
@@ -2018,82 +1981,82 @@ function CADInterface() {
       <div className="main-workspace">
         <div className="toolbar-panel">
           <div className="tool-button-grid">
-            <ToolButton
-              icon={<ImportIcon />}
-              label="Import SVG"
-              onClick={() => document.getElementById('svg-import-input').click()}
+            <ToolButton 
+              icon={<ImportIcon />} 
+              label="Import SVG" 
+              onClick={() => document.getElementById('svg-import-input').click()} 
             />
-            <input
-              id="svg-import-input"
-              type="file"
-              accept=".svg"
-              onChange={handleImportSVG}
-              style={{ display: 'none' }}
+            <input 
+              id="svg-import-input" 
+              type="file" 
+              accept=".svg" 
+              onChange={handleImportSVG} 
+              style={{ display: 'none' }} 
             />
-            <ToolButton
-              icon={<ExportIcon />}
-              label="Export SVG"
-              onClick={handleExportSVG}
+            <ToolButton 
+              icon={<ExportIcon />} 
+              label="Export SVG" 
+              onClick={handleExportSVG} 
             />
-            <ToolButton
-              icon={<UndoIcon />}
-              label="Undo (Ctrl+Z)"
-              onClick={undo}
+            <ToolButton 
+              icon={<UndoIcon />} 
+              label="Undo (Ctrl+Z)" 
+              onClick={undo} 
               disabled={undoStack.length === 0}
             />
-            <ToolButton
-              icon={<RedoIcon />}
-              label="Redo (Ctrl+Y)"
-              onClick={redo}
+            <ToolButton 
+              icon={<RedoIcon />} 
+              label="Redo (Ctrl+Y)" 
+              onClick={redo} 
               disabled={redoStack.length === 0}
             />
 
-            <ToolButton
-              icon={<DrawingToolsIcon />}
-              label="Drawing Tools"
+            <ToolButton 
+              icon={<DrawingToolsIcon />} 
+              label="Drawing Tools" 
               onClick={() => setShowDrawingTools(!showDrawingTools)}
               active={showDrawingTools}
             />
-            <ToolButton
-              icon={<SnapToolsIcon />}
-              label="Snap Tools"
+            <ToolButton 
+              icon={<SnapToolsIcon />} 
+              label="Snap Tools" 
               onClick={() => setShowSnapTools(!showSnapTools)}
               active={showSnapTools}
             />
-            <ToolButton
-              icon={<MarkersIcon />}
-              label="Markers"
+            <ToolButton 
+              icon={<MarkersIcon />} 
+              label="Markers" 
               onClick={() => setShowMarkersWindow(!showMarkersWindow)}
               active={showMarkersWindow}
             />
-            <ToolButton
-              icon={<TransformIcon />}
-              label="Transform Tools"
+            <ToolButton 
+              icon={<TransformIcon />} 
+              label="Transform Tools" 
               onClick={() => setShowTransformTools(!showTransformTools)}
               active={showTransformTools}
             />
 
-            <ToolButton
-              icon={<LineEditorIcon />}
-              label="Line Editor"
+            <ToolButton 
+              icon={<LineEditorIcon />} 
+              label="Line Editor" 
               onClick={() => setShowLineEditorTools(!showLineEditorTools)}
               active={showLineEditorTools}
             />
-            <ToolButton
-              icon={<ShapePropertiesIcon />}
-              label="Shape Properties"
+            <ToolButton 
+              icon={<ShapePropertiesIcon />} 
+              label="Shape Properties" 
               onClick={() => setShowShapeProperties(!showShapeProperties)}
               active={showShapeProperties}
             />
-            <ToolButton
-              icon={<TextToolsIcon />}
-              label="Text Tools"
+            <ToolButton 
+              icon={<TextToolsIcon />} 
+              label="Text Tools" 
               onClick={() => setShowTextTools(!showTextTools)}
               active={showTextTools}
             />
-            <ToolButton
-              icon={<LayersIcon />}
-              label="Layers"
+            <ToolButton 
+              icon={<LayersIcon />} 
+              label="Layers" 
               onClick={() => setShowLayers(!showLayers)}
               active={showLayers}
             />
@@ -2190,8 +2153,7 @@ function CADInterface() {
                   {drawCrosshairs()}
                   {drawOriginMarker()}
                   {drawMachinePosition()}
-                  <MachineHeadVisualizer /> {/* Render the new visualizer */}
-
+                  
                   {shapes.filter(shape => {
                     const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
                     return shapeLayer && shapeLayer.visible
@@ -2337,7 +2299,7 @@ function CADInterface() {
                     }
                     return null
                   })}
-
+                  
                   {drawingState && drawingState.tool === 'line' && (
                     <Circle
                       x={drawingState.startX}
@@ -2347,7 +2309,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {drawingState && (drawingState.tool === 'circle' || drawingState.tool === 'polygon' || drawingState.tool === 'arc') && (
                     <Circle
                       x={drawingState.centerX}
@@ -2357,7 +2319,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {drawingState && drawingState.tool === 'rectangle' && (
                     <Circle
                       x={drawingState.startX}
@@ -2367,7 +2329,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {previewShape && previewShape.type === 'line' && (
                     <Line
                       points={[previewShape.x1, previewShape.y1, previewShape.x2, previewShape.y2]}
@@ -2377,7 +2339,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {previewShape && previewShape.type === 'circle' && (
                     <Circle
                       x={previewShape.x}
@@ -2389,7 +2351,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {previewShape && previewShape.type === 'rectangle' && (
                     <Rect
                       x={previewShape.x}
@@ -2402,7 +2364,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {previewShape && previewShape.type === 'polygon' && (() => {
                     const sides = 6
                     const points = []
@@ -2424,7 +2386,7 @@ function CADInterface() {
                       />
                     )
                   })()}
-
+                  
                   {previewShape && previewShape.type === 'arc' && (
                     <Wedge
                       x={previewShape.x}
@@ -2437,7 +2399,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {previewShape && previewShape.type === 'freehand' && (
                     <Line
                       points={previewShape.points}
@@ -2448,7 +2410,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {trimPreviewLines.map((line, index) => (
                     <Line
                       key={`trim-preview-${index}`}
@@ -2459,7 +2421,7 @@ function CADInterface() {
                       listening={false}
                     />
                   ))}
-
+                  
                   {selectionRect && selectionRect.width > 0 && selectionRect.height > 0 && (
                     <Rect
                       x={selectionRect.x}
@@ -2472,7 +2434,7 @@ function CADInterface() {
                       listening={false}
                     />
                   )}
-
+                  
                   {guidesVisible && guides.map(guide => {
                     if (guide.type === 'horizontal') {
                       return (
@@ -2498,7 +2460,7 @@ function CADInterface() {
                       )
                     }
                   })}
-
+                  
                   {markersVisible && markers.map(marker => {
                     if (marker.type === 'centerPoint') {
                       return (
@@ -2552,11 +2514,11 @@ function CADInterface() {
                     }
                     return null
                   })}
-
+                  
                   {mirrorAxisLineId && (() => {
                     const axisLine = shapes.find(s => s.id === mirrorAxisLineId && s.type === 'line')
                     if (!axisLine) return null
-
+                    
                     return (
                       <Line
                         key={`mirror-axis-${mirrorAxisLineId}`}
@@ -2567,11 +2529,11 @@ function CADInterface() {
                       />
                     )
                   })()}
-
+                  
                   {selectedShapeId && (() => {
                     const shape = shapes.find(s => s.id === selectedShapeId)
                     if (!shape) return null
-
+                    
                     if (shape.type === 'line') {
                       const endpointSize = 10 / viewport.zoom
                       return (
@@ -2594,14 +2556,14 @@ function CADInterface() {
                               const pos = e.target.position()
                               const stage = stageRef.current
                               if (!stage) return
-
+                              
                               const point = stage.getPointerPosition()
                               let worldX = (point.x - viewport.pan.x) / viewport.zoom
                               let worldY = (point.y - viewport.pan.y) / viewport.zoom
-
+                              
                               const gridSpacing = gridSize * machineProfile.mmToPx
                               const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
-
+                              
                               if (snapResult) {
                                 worldX = snapResult.x
                                 worldY = snapResult.y
@@ -2609,7 +2571,7 @@ function CADInterface() {
                               } else {
                                 setSnapIndicator(null)
                               }
-
+                              
                               updateShape(selectedShapeId, { x1: worldX, y1: worldY })
                               e.target.position({ x: worldX, y: worldY })
                             }}
@@ -2627,14 +2589,14 @@ function CADInterface() {
                               const pos = e.target.position()
                               const stage = stageRef.current
                               if (!stage) return
-
+                              
                               const point = stage.getPointerPosition()
                               let worldX = (point.x - viewport.pan.x) / viewport.zoom
                               let worldY = (point.y - viewport.pan.y) / viewport.zoom
-
+                              
                               const gridSpacing = gridSize * machineProfile.mmToPx
                               const snapResult = findSnapPoint(worldX, worldY, viewport.zoom, snap, gridSpacing, showGrid)
-
+                              
                               if (snapResult) {
                                 worldX = snapResult.x
                                 worldY = snapResult.y
@@ -2642,7 +2604,7 @@ function CADInterface() {
                               } else {
                                 setSnapIndicator(null)
                               }
-
+                              
                               updateShape(selectedShapeId, { x2: worldX, y2: worldY })
                               e.target.position({ x: worldX, y: worldY })
                             }}
@@ -2651,9 +2613,9 @@ function CADInterface() {
                         </React.Fragment>
                       )
                     }
-
+                    
                     let bbox = { x: 0, y: 0, width: 0, height: 0 }
-
+                    
                     if (shape.type === 'circle') {
                       bbox = {
                         x: shape.x - shape.radius,
@@ -2679,7 +2641,7 @@ function CADInterface() {
                         height: shape.outerRadius * 2
                       }
                     }
-
+                    
                     const handleSize = 8 / viewport.zoom
                     const handles = [
                       { x: bbox.x, y: bbox.y, cursor: 'nw-resize' },
@@ -2691,7 +2653,7 @@ function CADInterface() {
                       { x: bbox.x, y: bbox.y + bbox.height, cursor: 'sw-resize' },
                       { x: bbox.x, y: bbox.y + bbox.height / 2, cursor: 'w-resize' }
                     ]
-
+                    
                     return (
                       <React.Fragment key={`selection-${selectedShapeId}`}>
                         <Rect
@@ -2721,15 +2683,15 @@ function CADInterface() {
                             }}
                             onDragMove={(e) => {
                               if (draggedHandle === null || !initialBbox) return
-
+                              
                               const pos = e.target.position()
                               const worldX = pos.x
                               const worldY = pos.y
-
+                              
                               const newShape = { ...shape }
                               const scaleX = Math.abs((worldX - bbox.x) / bbox.width)
                               const scaleY = Math.abs((worldY - bbox.y) / bbox.height)
-
+                              
                               if (shape.type === 'circle') {
                                 const centerX = shape.x
                                 const centerY = shape.y
@@ -2746,7 +2708,7 @@ function CADInterface() {
                                   newShape.y2 = worldY
                                 }
                               }
-
+                              
                               updateShape(selectedShapeId, newShape)
                             }}
                             onDragEnd={() => {
@@ -2758,7 +2720,7 @@ function CADInterface() {
                       </React.Fragment>
                     )
                   })()}
-
+                  
                   {snapIndicator && (
                     <>
                       <Circle
@@ -2786,8 +2748,8 @@ function CADInterface() {
           </div>
         </div>
 
-        <FloatingPanel
-          title="Drawing Tools"
+        <FloatingPanel 
+          title="Drawing Tools" 
           isOpen={showDrawingTools}
           onClose={() => setShowDrawingTools(false)}
           position={panelPositions.drawingTools}
@@ -2798,8 +2760,8 @@ function CADInterface() {
           <DrawingToolsWindow />
         </FloatingPanel>
 
-        <FloatingPanel
-          title="Layers"
+        <FloatingPanel 
+          title="Layers" 
           isOpen={showLayers}
           onClose={() => setShowLayers(false)}
           position={panelPositions.layers}
@@ -2810,8 +2772,8 @@ function CADInterface() {
           <LayersWindow />
         </FloatingPanel>
 
-        <FloatingPanel
-          title="Shape Properties"
+        <FloatingPanel 
+          title="Shape Properties" 
           isOpen={showShapeProperties}
           onClose={() => setShowShapeProperties(false)}
           position={panelPositions.shapeProperties}
@@ -2822,8 +2784,8 @@ function CADInterface() {
           <ShapePropertiesWindow />
         </FloatingPanel>
 
-        <FloatingPanel
-          title="Snap Tools"
+        <FloatingPanel 
+          title="Snap Tools" 
           isOpen={showSnapTools}
           onClose={() => setShowSnapTools(false)}
           position={panelPositions.snapTools}
@@ -2834,8 +2796,8 @@ function CADInterface() {
           <SnapToolsWindow />
         </FloatingPanel>
 
-        <FloatingPanel
-          title="Markers & Guides"
+        <FloatingPanel 
+          title="Markers & Guides" 
           isOpen={showMarkersWindow}
           onClose={() => setShowMarkersWindow(false)}
           position={panelPositions.markersGuides}
@@ -2846,8 +2808,8 @@ function CADInterface() {
           <MarkersWindow onActivateTool={setActiveTool} />
         </FloatingPanel>
 
-        <FloatingPanel
-          title="Transform Tools"
+        <FloatingPanel 
+          title="Transform Tools" 
           isOpen={showTransformTools}
           onClose={() => setShowTransformTools(false)}
           position={panelPositions.transformTools}
@@ -2855,15 +2817,15 @@ function CADInterface() {
           onPositionChange={(x, y) => updatePanelPosition('transformTools', x, y)}
           onBringToFront={() => bringPanelToFront('transformTools')}
         >
-          <TransformToolsWindow
+          <TransformToolsWindow 
             onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
             mirrorAxisLineId={mirrorAxisLineId}
             onClearMirrorAxis={() => setMirrorAxisLineId(null)}
           />
         </FloatingPanel>
 
-        <FloatingPanel
-          title="Line Editor Tools"
+        <FloatingPanel 
+          title="Line Editor Tools" 
           isOpen={showLineEditorTools}
           onClose={() => setShowLineEditorTools(false)}
           position={panelPositions.lineEditorTools}
@@ -2874,8 +2836,8 @@ function CADInterface() {
           <LineEditorToolsWindow />
         </FloatingPanel>
 
-        <FloatingPanel
-          title="Text & Font Tools"
+        <FloatingPanel 
+          title="Text & Font Tools" 
           isOpen={showTextTools}
           onClose={() => setShowTextTools(false)}
           position={panelPositions.textTools}
@@ -2885,8 +2847,8 @@ function CADInterface() {
         >
           <TextFontToolsWindow />
         </FloatingPanel>
-
-        <MachineSettingsPopup
+        
+        <MachineSettingsPopup 
           isOpen={showMachineSettings}
           onClose={() => setShowMachineSettings(false)}
         />

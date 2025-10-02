@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useSerial } from '../contexts/SerialContext'
-import { requestPositionUpdate } from '../utils/machinePositionTracker'
 
 export default function MachineJogControls() {
   const { sendGcode, isConnected, serialState } = useSerial()
@@ -38,11 +37,6 @@ export default function MachineJogControls() {
     sendGcode(`G91`)
     sendGcode(`G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`)
     sendGcode(`G90`)
-    
-    // Request position update after movement
-    setTimeout(() => {
-      requestPositionUpdate(sendGcode)
-    }, 100)
   }
 
   const handleHome = () => {

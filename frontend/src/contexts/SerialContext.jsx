@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react'
-import { parseM114Response, updatePosition, startPositionTracking, stopPositionTracking } from '../utils/machinePositionTracker'
 
 const SerialContext = createContext()
 
@@ -15,6 +14,7 @@ export function SerialProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false)
   const [companionStatus, setCompanionStatus] = useState('disconnected')
   const [serialState, setSerialState] = useState({
+    connected: false,
     port: null,
     baud: null,
     error: null
@@ -24,7 +24,7 @@ export function SerialProvider({ children }) {
   // Machine position tracking
   const [machinePosition, setMachinePosition] = useState({ x: 0, y: 0, z: 0 })
   const [isHomed, setIsHomed] = useState(false)
-  // Removed positionUpdateInterval as it's now handled in machinePositionTracker.js
+  const positionUpdateInterval = useRef(null)
 
   const wsRef = useRef(null)
   const reconnectTimeoutRef = useRef(null)
@@ -118,8 +118,7 @@ export function SerialProvider({ children }) {
           setSerialState(data.serialState)
           setIsConnected(data.serialState.connected)
           if (data.serialState.connected) {
-            // Start position tracking if already connected
-            startPositionTracking(sendGcode, 500)
+            startPositionTracking() // Start tracking if already connected
           }
         }
         break
@@ -131,8 +130,7 @@ export function SerialProvider({ children }) {
 
         if (data.connected) {
           addMessage('success', `✅ Machine connected: ${data.port} @ ${data.baud} baud`)
-          // Start position tracking on connection
-          startPositionTracking(sendGcode, 500)
+          startPositionTracking() // Start position tracking on connection
         } else if (data.error) {
           addMessage('error', `❌ Serial error: ${data.error}`)
           stopPositionTracking() // Stop position tracking on disconnection/error
@@ -154,19 +152,6 @@ export function SerialProvider({ children }) {
           y: data.y || 0,
           z: data.z || 0
         })
-        break
-
-      case 'gcode_response':
-        console.log('📥 G-code response:', data.response)
-
-        // Parse M114 position response
-        if (data.response && typeof data.response === 'string') {
-          const position = parseM114Response(data.response)
-          if (position) {
-            updatePosition(position)
-            setMachinePosition(position)
-          }
-        }
         break
 
       case 'error':
@@ -249,7 +234,36 @@ export function SerialProvider({ children }) {
     }
   }
 
-  // Removed startPositionTracking and stopPositionTracking as they are in machinePositionTracker.js
+  const startPositionTracking = () => {
+    // Query position every 500ms when connected
+    if (positionUpdateInterval.current) {
+      clearInterval(positionUpdateInterval.current)
+    }
+
+    positionUpdateInterval.current = setInterval(() => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        // Send G-code command to get current position
+        wsRef.current.send(JSON.stringify({
+          type: 'gcode',
+          command: 'M114'
+        }))
+      }
+    }, 500)
+  }
+
+  const stopPositionTracking = () => {
+    if (positionUpdateInterval.current) {
+      clearInterval(positionUpdateInterval.current)
+      positionUpdateInterval.current = null
+    }
+  }
+
+  // Effect to ensure position tracking is stopped on unmount
+  useEffect(() => {
+    return () => {
+      stopPositionTracking()
+    }
+  }, [])
 
   // --- End Position Tracking Functions ---
 
@@ -265,19 +279,6 @@ export function SerialProvider({ children }) {
     sendGcode(`G1 ${axis.toUpperCase()}${value} F6000`) // Assuming F6000 for jog speed
   }
 
-  const disconnectFromCompanion = () => {
-    if (wsRef.current) {
-      wsRef.current.close()
-      addMessage('system', '👋 Disconnected from companion app.')
-    }
-    // Explicitly stop tracking on disconnect, though ws.onclose should handle it
-    stopPositionTracking()
-    setMachinePosition({ x: 0, y: 0, z: 0 })
-    setIsConnected(false)
-    setCompanionStatus('disconnected')
-    setSerialState({ port: null, baud: null, error: null })
-  }
-
   const value = {
     isConnected,
     companionStatus,
@@ -290,8 +291,7 @@ export function SerialProvider({ children }) {
     emergencyStop,
     clearMessages,
     homeAxes, // Expose homeAxes function
-    jogAxis, // Expose jogAxis function
-    disconnectFromCompanion // Expose disconnect function
+    jogAxis // Expose jogAxis function
   }
 
   return (
