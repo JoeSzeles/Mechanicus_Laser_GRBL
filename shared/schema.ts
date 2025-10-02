@@ -76,7 +76,19 @@ export const machineConfigs = pgTable("machine_configs", {
   
   // Advanced Settings
   smoothness: real("smoothness").default(0.34),
-  connectTolerance: real("connect_tolerance").default(0.001),</old_str>
+  connectTolerance: real("connect_tolerance").default(0.001),
+  refillPosX: integer("refill_pos_x").default(150),
+  refillPosY: integer("refill_pos_y").default(10),
+  refillPosZ: integer("refill_pos_z").default(20),
+  refillLength: integer("refill_length").default(200),
+  refill: boolean("refill").default(false),
+  gradientLengthMm: integer("gradient_length_mm").default(8),
+  
+  // Default profile flag
+  isDefault: boolean("is_default").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),</old_str>
   
   // Advanced Settings
   smoothness: real("smoothness").default(0.34),
