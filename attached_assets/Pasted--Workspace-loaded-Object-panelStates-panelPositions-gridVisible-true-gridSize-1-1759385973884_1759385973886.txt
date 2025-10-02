@@ -1,0 +1,53 @@
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+✅ Loaded default profile: Joe index-CpxBewHB.js:119:14991
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+✅ Loaded default profile: Joe index-CpxBewHB.js:119:14991
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+✅ Loaded default profile: Joe index-CpxBewHB.js:119:14991
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+✅ Loaded default profile: Joe index-CpxBewHB.js:119:14991
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
+✅ Workspace loaded successfully index-CpxBewHB.js:108:13859
+✅ Loaded default profile: Joe index-CpxBewHB.js:119:14991
+🔄 Loading workspace on mount... index-CpxBewHB.js:119:14920
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759385918539 }
+index-CpxBewHB.js:108:8606
