@@ -75,7 +75,8 @@ export const machineConfigs = pgTable("machine_configs", {
   originPoint: text("origin_point").default('bottom-left'),
   
   // Advanced Settings
-  smoothness: real("smoothness").default(0.34),</old_str>
+  smoothness: real("smoothness").default(0.34),
+  connectTolerance: real("connect_tolerance").default(0.001),</old_str>
   
   // Advanced Settings
   smoothness: real("smoothness").default(0.34),
