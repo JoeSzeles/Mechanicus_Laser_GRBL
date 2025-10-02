@@ -1,0 +1,228 @@
+SES Removing unpermitted intrinsics lockdown-install.js:1:203117
+  Removing intrinsics.%DatePrototype%.toTemporalInstant lockdown-install.js:1:202962
+[vite] connecting... client:733:9
+Firefox can’t establish a connection to the server at wss://0.0.0.0:5000/?token=yW6L3imI-dRW. client:745:27
+[vite] failed to connect to websocket (Error: WebSocket closed without opened.). client:772:13
+Uncaught (in promise) Error: WebSocket closed without opened.
+    connect https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev/@vite/client:423
+client:423:30
+✅ User authenticated, default profile loaded App.jsx:37:17
+✅ updateLineEditorState is available CADInterface.jsx:92:15
+🔄 Loading workspace on mount... CADInterface.jsx:96:13
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759369233328 }
+workspaceManager.js:35:13
+✅ Workspace loaded successfully cadStore.js:292:15
+✅ updateLineEditorState is available CADInterface.jsx:92:15
+🔄 Loading workspace on mount... CADInterface.jsx:96:13
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759369233328 }
+workspaceManager.js:35:13
+✅ Workspace loaded successfully cadStore.js:292:15
+✅ User authenticated, default profile loaded App.jsx:37:17
+💾 Auto-saving workspace... CADInterface.jsx:101:15
+💾 Workspace saved: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759369303485 }
+workspaceManager.js:18:13
+✅ Workspace saved successfully cadStore.js:283:15
+🔗 Connecting to LOCAL companion: ws://localhost:8080 SerialContext.jsx:46:13
+✅ WebSocket onopen fired SerialContext.jsx:50:15
+✅ Received status from companion, now truly connected SerialContext.jsx:89:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X0.000 Y5.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X0.000 Y5.000 F1000", gcodeLength: 22 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X5.000 Y0.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X5.000 Y0.000 F1000", gcodeLength: 22 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G28", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X0.000 Y-5.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X0.000 Y-5.000 F1000", gcodeLength: 23 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X5.000 Y-5.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X5.000 Y-5.000 F1000", gcodeLength: 23 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X-5.000 Y-5.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X-5.000 Y-5.000 F1000", gcodeLength: 24 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X-5.000 Y0.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X-5.000 Y0.000 F1000", gcodeLength: 23 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X-5.000 Y5.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X-5.000 Y5.000 F1000", gcodeLength: 23 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+MachineJogControls.jsx:19:13
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G0 X5.000 Y5.000 F1000", "G90" ]
+MachineJogControls.jsx:30:13
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G91", gcodeLength: 3 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G0 X5.000 Y5.000 F1000", gcodeLength: 22 }
+SerialContext.jsx:137:15
+📤 [GCODE SEND] Sending to companion app: 
+Object { destination: "ws://localhost:8080", port: "COM7", gcodePreview: "G90", gcodeLength: 3 }
+SerialContext.jsx:137:15
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
+❌ [GCODE] G-code error: 
+Object { message: "Port COM7 is not connected" }
+SerialContext.jsx:112:17
