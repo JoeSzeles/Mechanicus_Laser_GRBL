@@ -47,8 +47,9 @@ const useCadStore = create((set) => ({
   machineProfile: {
     bedSizeX: 300,  // Default, will be updated from profile
     bedSizeY: 200,  // Default, will be updated from profile
-    mmToPx: 3.7795275591
-  },
+    mmToPx: 3.7795275591,
+    originPoint: 'bottom-left'  // Default origin point
+  },</old_str>
   viewport: {
     zoom: 1,
     pan: { x: 0, y: 0 }

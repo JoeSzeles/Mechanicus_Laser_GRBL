@@ -71,6 +71,9 @@ export const machineConfigs = pgTable("machine_configs", {
   yOffset: integer("y_offset").default(0),
   scaleF: real("scale_f").default(0.72),
   
+  // Origin Point: 'bottom-left', 'bottom-right', 'top-left', 'top-right'
+  originPoint: text("origin_point").default('bottom-left'),</old_str>
+  
   // Advanced Settings
   smoothness: real("smoothness").default(0.34),
   connectTolerance: real("connect_tolerance").default(0.001),

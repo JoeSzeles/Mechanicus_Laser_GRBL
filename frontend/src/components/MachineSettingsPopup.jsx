@@ -64,6 +64,8 @@ function MachineSettingsPopup({ isOpen, onClose }) {
     xOffset: 0,
     yOffset: 0,
     scaleF: 0.72,
+    // Origin Point
+    originPoint: 'bottom-left',
     // Advanced
     smoothness: 0.34,
     connectTolerance: 0.001,
@@ -167,6 +169,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
       xOffset: 0,
       yOffset: 0,
       scaleF: 0.72,
+      originPoint: 'bottom-left', // Default origin point
       smoothness: 0.34,
       connectTolerance: 0.001,
       refillPosX: 150,
@@ -766,6 +769,37 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                         value={formData.scaleF}
                         onChange={(e) => handleInputChange('scaleF', parseFloat(e.target.value))}
                       />
+                    </div>
+
+                    {/* Origin Point Selector */}
+                    <div className="form-group">
+                      <label>Origin Point</label>
+                      <div className="origin-point-selector">
+                        <button 
+                          className={`origin-point-btn ${formData.originPoint === 'bottom-left' ? 'active' : ''}`}
+                          onClick={() => handleInputChange('originPoint', 'bottom-left')}
+                        >
+                          Bottom Left
+                        </button>
+                        <button 
+                          className={`origin-point-btn ${formData.originPoint === 'bottom-right' ? 'active' : ''}`}
+                          onClick={() => handleInputChange('originPoint', 'bottom-right')}
+                        >
+                          Bottom Right
+                        </button>
+                        <button 
+                          className={`origin-point-btn ${formData.originPoint === 'top-left' ? 'active' : ''}`}
+                          onClick={() => handleInputChange('originPoint', 'top-left')}
+                        >
+                          Top Left
+                        </button>
+                        <button 
+                          className={`origin-point-btn ${formData.originPoint === 'top-right' ? 'active' : ''}`}
+                          onClick={() => handleInputChange('originPoint', 'top-right')}
+                        >
+                          Top Right
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

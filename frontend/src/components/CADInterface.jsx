@@ -98,11 +98,12 @@ function CADInterface() {
           machineProfile: {
             bedSizeX: profile.bedMaxX || 300,
             bedSizeY: profile.bedMaxY || 200,
-            mmToPx: mmToPx
+            mmToPx: mmToPx,
+            originPoint: profile.originPoint || 'bottom-left'
           }
         })
       }
-    })
+    })</old_str>
   }, [])
   
   useEffect(() => {
