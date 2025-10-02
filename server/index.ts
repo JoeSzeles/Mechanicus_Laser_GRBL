@@ -340,7 +340,7 @@ app.put('/api/user/preferences', authenticateToken, async (req: any, res) => {
 });
 
 // SPA fallback - serve index.html for all non-API routes
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
