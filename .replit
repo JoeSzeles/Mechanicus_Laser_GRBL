@@ -73,6 +73,32 @@ waitForPort = 5000
 [workflows.workflow.metadata]
 outputType = "webview"
 
+[[workflows.workflow]]
+name = "Dev: Frontend + Backend"
+author = 41107035
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run server"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm run dev -- --host 0.0.0.0 --port 5000"
+
+[[workflows.workflow]]
+name = "Test: Production Build"
+author = 41107035
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm run build"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm run preview -- --host 0.0.0.0 --port 5000"
+
 [[ports]]
 localPort = 3001
 externalPort = 3001
