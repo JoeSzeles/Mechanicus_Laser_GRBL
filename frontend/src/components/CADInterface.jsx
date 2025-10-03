@@ -177,6 +177,8 @@ function CADInterface() {
   const [mousePosition, setMousePosition] = useState(null)
   const [dragStart, setDragStart] = useState(null)
   const [isDraggingSelection, setIsDraggingSelection] = useState(false)
+  const [altKeyPressed, setAltKeyPressed] = useState(false)
+  const [clonePreview, setClonePreview] = useState(null)
   
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -410,12 +412,30 @@ function CADInterface() {
     const clickedOnEmpty = e.target === e.target.getStage()
     
     // Check if clicking on a selected shape to start drag
-    if (!clickedOnEmpty && e.evt.button === 0 && selectedShapeIds.length > 0) {
+    if (!clickedOnEmpty && e.evt.button === 0) {
       const clickedShapeId = e.target.id()
-      if (selectedShapeIds.includes(clickedShapeId)) {
+      
+      // Multi-selection drag
+      if (selectedShapeIds.length > 0 && selectedShapeIds.includes(clickedShapeId)) {
         const point = getWorldPoint(e, false)
         setDragStart(point)
         setIsDraggingSelection(true)
+        return
+      }
+      
+      // Single shape drag (including Alt+clone mode)
+      if (selectedShapeId === clickedShapeId) {
+        const point = getWorldPoint(e, false)
+        setDragStart(point)
+        setIsDraggingSelection(true)
+        
+        // If Alt is pressed, prepare for clone
+        if (altKeyPressed) {
+          const shape = shapes.find(s => s.id === clickedShapeId)
+          if (shape) {
+            setClonePreview({ ...shape, id: `clone-preview-${Date.now()}` })
+          }
+        }
         return
       }
     }
@@ -564,7 +584,37 @@ function CADInterface() {
       const dx = currentPoint.x - dragStart.x
       const dy = currentPoint.y - dragStart.y
       
-      selectedShapeIds.forEach(id => {
+      // If Alt is pressed and we have a clone preview, update preview instead of original
+      if (altKeyPressed && clonePreview) {
+        const shape = clonePreview
+        const updates = {}
+        
+        if (shape.type === 'line') {
+          updates.x1 = shape.x1 + dx
+          updates.y1 = shape.y1 + dy
+          updates.x2 = shape.x2 + dx
+          updates.y2 = shape.y2 + dy
+        } else if (shape.type === 'circle' || shape.type === 'arc' || shape.type === 'text') {
+          updates.x = shape.x + dx
+          updates.y = shape.y + dy
+        } else if (shape.type === 'rectangle') {
+          updates.x = shape.x + dx
+          updates.y = shape.y + dy
+        } else if (shape.type === 'polygon' || shape.type === 'freehand') {
+          updates.points = shape.points.map((val, i) => 
+            i % 2 === 0 ? val + dx : val + dy
+          )
+        }
+        
+        setClonePreview({ ...shape, ...updates })
+        setDragStart(currentPoint)
+        return
+      }
+      
+      // Normal dragging (multi-selection or single shape)
+      const shapesToDrag = selectedShapeIds.length > 0 ? selectedShapeIds : (selectedShapeId ? [selectedShapeId] : [])
+      
+      shapesToDrag.forEach(id => {
         const shape = shapes.find(s => s.id === id)
         if (!shape) return
         
@@ -898,6 +948,13 @@ function CADInterface() {
     
     // End dragging selection
     if (isDraggingSelection) {
+      // If Alt was pressed, create the clone at the preview position
+      if (altKeyPressed && clonePreview) {
+        const newShape = { ...clonePreview, id: `shape-${Date.now()}` }
+        addShapeWithUndo(newShape)
+        setClonePreview(null)
+      }
+      
       setIsDraggingSelection(false)
       setDragStart(null)
       return
@@ -1072,12 +1129,19 @@ function CADInterface() {
         e.preventDefault()
         spaceKeyPressed.current = true
       }
+      if (e.altKey) {
+        setAltKeyPressed(true)
+      }
     }
 
     const handleKeyUp = (e) => {
       if (e.code === 'Space') {
         spaceKeyPressed.current = false
         setIsPanning(false)
+      }
+      if (!e.altKey) {
+        setAltKeyPressed(false)
+        setClonePreview(null)
       }
     }
 
@@ -2523,6 +2587,93 @@ function CADInterface() {
                       listening={false}
                     />
                   ))}
+                  
+                  {clonePreview && (() => {
+                    const shape = clonePreview
+                    if (shape.type === 'line') {
+                      return (
+                        <Line
+                          key="clone-preview"
+                          points={[shape.x1, shape.y1, shape.x2, shape.y2]}
+                          stroke="#00FF00"
+                          strokeWidth={shape.strokeWidth}
+                          dash={[5, 5]}
+                          listening={false}
+                        />
+                      )
+                    } else if (shape.type === 'circle') {
+                      return (
+                        <Circle
+                          key="clone-preview"
+                          x={shape.x}
+                          y={shape.y}
+                          radius={shape.radius}
+                          stroke="#00FF00"
+                          strokeWidth={shape.strokeWidth}
+                          dash={[5, 5]}
+                          listening={false}
+                        />
+                      )
+                    } else if (shape.type === 'rectangle') {
+                      return (
+                        <Rect
+                          key="clone-preview"
+                          x={shape.x}
+                          y={shape.y}
+                          width={shape.width}
+                          height={shape.height}
+                          stroke="#00FF00"
+                          strokeWidth={shape.strokeWidth}
+                          dash={[5, 5]}
+                          listening={false}
+                        />
+                      )
+                    } else if (shape.type === 'polygon' || shape.type === 'freehand') {
+                      return (
+                        <Line
+                          key="clone-preview"
+                          points={shape.points}
+                          closed={shape.type === 'polygon'}
+                          stroke="#00FF00"
+                          strokeWidth={shape.strokeWidth}
+                          dash={[5, 5]}
+                          listening={false}
+                        />
+                      )
+                    } else if (shape.type === 'arc') {
+                      return (
+                        <Arc
+                          key="clone-preview"
+                          x={shape.x}
+                          y={shape.y}
+                          innerRadius={shape.outerRadius}
+                          outerRadius={shape.outerRadius}
+                          angle={shape.angle}
+                          rotation={shape.rotation || 0}
+                          stroke="#00FF00"
+                          strokeWidth={shape.strokeWidth}
+                          dash={[5, 5]}
+                          listening={false}
+                        />
+                      )
+                    } else if (shape.type === 'text') {
+                      return (
+                        <Text
+                          key="clone-preview"
+                          x={shape.x}
+                          y={shape.y}
+                          text={shape.text}
+                          fontSize={shape.fontSize || 50}
+                          fontFamily={shape.font || 'Impact'}
+                          fill="rgba(0, 255, 0, 0.5)"
+                          stroke="#00FF00"
+                          strokeWidth={shape.strokeWidth || 0}
+                          listening={false}
+                        />
+                      )
+                    }
+                    return null
+                  })()}
                   
                   {selectionRect && selectionRect.width > 0 && selectionRect.height > 0 && (
                     <Rect
