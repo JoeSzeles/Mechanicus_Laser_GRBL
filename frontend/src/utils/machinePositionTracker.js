@@ -9,6 +9,7 @@ export class MachinePositionTracker {
     this.updateInterval = null
     this.wsConnection = null
     this.listeners = new Set()
+    this.movementTimeout = null
   }
 
   // Initialize with WebSocket connection
@@ -18,16 +19,46 @@ export class MachinePositionTracker {
     // Don't start periodic updates - only query when needed
   }
 
-  // Start periodic position updates every 500ms
-  startPeriodicUpdate() {
-    // Disabled - query only on demand
+  // Start tracking position during movement
+  startMovementTracking(portPath, feedRate, distance) {
+    // Clear any existing tracking
+    this.stopMovementTracking()
+    
+    // Calculate approximate movement duration (distance/feedRate in mm/min)
+    const durationMs = (Math.abs(distance) / feedRate) * 60 * 1000
+    const pollInterval = 500 // Poll every 500ms
+    
+    console.log('📍 [TRACKING] Starting position tracking:', {
+      duration: durationMs,
+      pollInterval
+    })
+    
+    // Start polling position every 500ms
+    this.updateInterval = setInterval(() => {
+      this.queryPosition(portPath)
+    }, pollInterval)
+    
+    // Stop tracking after estimated movement time + buffer
+    this.movementTimeout = setTimeout(() => {
+      this.stopMovementTracking()
+      // Final position query
+      setTimeout(() => {
+        this.queryPosition(portPath)
+        console.log('📍 [TRACKING] Final position query')
+      }, 200)
+    }, durationMs + 1000)
   }
 
-  // Stop periodic updates
-  stopPeriodicUpdate() {
+  // Stop movement tracking
+  stopMovementTracking() {
     if (this.updateInterval) {
       clearInterval(this.updateInterval)
       this.updateInterval = null
+      console.log('📍 [TRACKING] Stopped position polling')
+    }
+    if (this.movementTimeout) {
+      clearTimeout(this.movementTimeout)
+      this.movementTimeout = null
     }
   }
 
@@ -130,7 +161,7 @@ export class MachinePositionTracker {
 
   // Cleanup
   destroy() {
-    this.stopPeriodicUpdate()
+    this.stopMovementTracking()
     this.listeners.clear()
     this.wsConnection = null
   }

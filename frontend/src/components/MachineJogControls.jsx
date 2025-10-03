@@ -39,16 +39,17 @@ export default function MachineJogControls() {
     sendGcode(`G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`)
     sendGcode(`G90`)
     
-    // Query position after movement completes
-    setTimeout(() => {
-      console.log('🔍 [JOG] Querying position after jog to:', serialState.port)
-      machinePositionTracker.queryPosition(serialState.port)
-    }, 500)
+    // Start continuous position polling during movement
+    machinePositionTracker.startMovementTracking(serialState.port, feedRate, stepSize)
   }
 
   const handleHome = () => {
     if (!isReady) return
+    console.log('🏠 [HOME] Homing machine to:', serialState.port)
     sendGcode(`G28`)
+    
+    // Start continuous position polling during homing (slower feedrate assumed)
+    machinePositionTracker.startMovementTracking(serialState.port, 1000, 50)
   }
 
   const handleFeedRateChange = (e) => {
