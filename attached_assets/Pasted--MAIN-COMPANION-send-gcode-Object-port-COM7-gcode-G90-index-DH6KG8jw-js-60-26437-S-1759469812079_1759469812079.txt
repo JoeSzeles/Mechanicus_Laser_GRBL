@@ -1,0 +1,54 @@
+ [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-DH6KG8jw.js:60:26437
+SES_UNCAUGHT_EXCEPTION: ReferenceError: machineConnection is not defined
+    v https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:108
+    onClick https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:108
+    p2 https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:48
+    0 https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:48
+    $l https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:48
+    $0 https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:48
+    h1 https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:49
+    zp https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-DH6KG8jw.js:49
+lockdown-install.js:1:145467
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-DH6KG8jw.js:60:24521
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-DH6KG8jw.js:60:26155
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-DH6KG8jw.js:60:24521
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-DH6KG8jw.js:60:26155
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-DH6KG8jw.js:60:24521
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-DH6KG8jw.js:60:26155
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-DH6KG8jw.js:60:24521
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G0 X5.400 Y5.400 F1000" }
+index-DH6KG8jw.js:60:26155
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-DH6KG8jw.js:60:24521
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-DH6KG8jw.js:60:26155
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-DH6KG8jw.js:60:24521
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-DH6KG8jw.js:60:26155
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-DH6KG8jw.js:60:24521
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
