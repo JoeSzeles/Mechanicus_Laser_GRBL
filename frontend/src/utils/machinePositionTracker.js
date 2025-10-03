@@ -1,4 +1,3 @@
-
 // Machine Position Tracker Module
 // Handles M114 position queries and visualization
 
@@ -23,21 +22,21 @@ export class MachinePositionTracker {
   startMovementTracking(portPath, feedRate, distance) {
     // Clear any existing tracking
     this.stopMovementTracking()
-    
+
     // Calculate approximate movement duration (distance/feedRate in mm/min)
     const durationMs = (Math.abs(distance) / feedRate) * 60 * 1000
     const pollInterval = 500 // Poll every 500ms
-    
+
     console.log('📍 [TRACKING] Starting position tracking:', {
       duration: durationMs,
       pollInterval
     })
-    
+
     // Start polling position every 500ms
     this.updateInterval = setInterval(() => {
       this.queryPosition(portPath)
     }, pollInterval)
-    
+
     // Stop tracking after estimated movement time + buffer
     this.movementTimeout = setTimeout(() => {
       this.stopMovementTracking()
@@ -62,32 +61,35 @@ export class MachinePositionTracker {
     }
   }
 
-  // Send ? command to get current position (GRBL status query)
-  queryPosition(portPath) {
-    if (!this.wsConnection || this.wsConnection.readyState !== WebSocket.OPEN) {
-      console.warn('⚠️ [POSITION] Cannot query - WebSocket not connected')
-      return
-    }
-
-    console.log('📤 [? QUERY] ========================================')
-    console.log('📤 [? QUERY] Sending GRBL status query to port:', portPath)
-    console.log('📤 [? QUERY] WebSocket state:', this.wsConnection.readyState)
-    console.log('📤 [? QUERY] ========================================')
-    
-    this.wsConnection.send(JSON.stringify({
-      type: 'send_command',
-      payload: {
-        portPath: portPath,
-        command: '?'
+  // Query machine position
+  queryPosition(portPath, firmwareType = 'grbl') {
+    if (this.wsConnection && portPath) {
+      // Use firmware-specific position query
+      const positionCommands = {
+        grbl: '?',
+        marlin: 'M114',
+        smoothie: '?'
       }
-    }))
+
+      const command = positionCommands[firmwareType] || '?'
+
+      console.log('📍 [TRACKER] Querying position for port:', portPath, 'firmware:', firmwareType, 'command:', command)
+
+      this.wsConnection.send(JSON.stringify({
+        type: 'send_command',
+        payload: {
+          portPath,
+          command
+        }
+      }))
+    }
   }
 
   // Parse GRBL status response: <Idle|MPos:123.45,67.89,10.00|...>
   // Also supports Marlin M114 format: X:123.45 Y:67.89 Z:10.00
   parsePositionResponse(response) {
     console.log('📍 [POSITION] Parsing response:', response)
-    
+
     // Try GRBL format first: <Idle|MPos:x,y,z|...>
     const grblMatch = response.match(/<[^|]*\|MPos:([-\d.]+),([-\d.]+)(?:,([-\d.]+))?/i)
     if (grblMatch) {
@@ -100,15 +102,15 @@ export class MachinePositionTracker {
       this.notifyListeners()
       return true
     }
-    
+
     // Try Marlin M114 format: X:123.45 Y:67.89 Z:10.00
     let match = response.match(/X:([-\d.]+)\s+Y:([-\d.]+)(?:\s+Z:([-\d.]+))?/i)
-    
+
     // Try lowercase format (some firmwares): x:123.45 y:67.89
     if (!match) {
       match = response.match(/x:([-\d.]+)\s+y:([-\d.]+)(?:\s+z:([-\d.]+))?/i)
     }
-    
+
     if (match) {
       this.position = {
         x: parseFloat(match[1]),
@@ -119,7 +121,7 @@ export class MachinePositionTracker {
       this.notifyListeners()
       return true
     }
-    
+
     console.warn('⚠️ [POSITION] Could not parse response:', response)
     return false
   }

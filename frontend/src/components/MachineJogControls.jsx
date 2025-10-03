@@ -40,16 +40,27 @@ export default function MachineJogControls() {
     sendGcode(`G90`)
     
     // Start continuous position polling during movement
-    machinePositionTracker.startMovementTracking(serialState.port, feedRate, stepSize)
+    const firmwareType = machineConnection?.currentProfile?.firmwareType || 'grbl'
+    machinePositionTracker.startMovementTracking(serialState.port, feedRate, stepSize, firmwareType)
   }
 
   const handleHome = () => {
     if (!isReady) return
     console.log('🏠 [HOME] Homing machine to:', serialState.port)
-    sendGcode(`G28`)
+    
+    // Use firmware-specific home command
+    const firmwareType = machineConnection?.currentProfile?.firmwareType || 'grbl'
+    const homeCommands = {
+      grbl: '$H',
+      marlin: 'G28',
+      smoothie: '$H'
+    }
+    const homeCommand = homeCommands[firmwareType] || 'G28'
+    
+    sendGcode(homeCommand)
     
     // Start continuous position polling during homing (slower feedrate assumed)
-    machinePositionTracker.startMovementTracking(serialState.port, 1000, 50)
+    machinePositionTracker.startMovementTracking(serialState.port, 1000, 50, firmwareType)
   }
 
   const handleFeedRateChange = (e) => {

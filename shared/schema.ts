@@ -19,6 +19,9 @@ export const machineConfigs = pgTable("machine_configs", {
   // Machine Type: 'laser_engraver' (2-axis + laser) or 'cnc_printer' (3-axis)
   machineType: text("machine_type").notNull().default('laser_engraver'),
   
+  // Firmware Type: 'grbl', 'marlin', 'smoothie'
+  firmwareType: text("firmware_type").notNull().default('grbl'),
+  
   // Connection Settings
   serialConnection: text("serial_connection").default('COM4'),
   baud: integer("baud").default(250000),

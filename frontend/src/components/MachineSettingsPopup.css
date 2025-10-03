@@ -451,10 +451,7 @@
 
 /* Origin Point Selector */
 .origin-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
+  margin-top: 8px;
 }
 
 .origin-grid {
@@ -571,21 +568,45 @@
   text-transform: capitalize;
 }
 
+.firmware-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #444;
+  background: #2a2a2a;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.firmware-info {
+  margin-top: 8px;
+  padding: 8px;
+  background: #1a1a1a;
+  border-left: 3px solid #4CAF50;
+  border-radius: 4px;
+}
+
+.firmware-info small {
+  color: #aaa;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 /* Responsive adjustments */
-@media (max-width: 768px) {</old_str>
+@media (max-width: 768px) {
   .machine-settings-popup {
     width: 95%;
     max-height: 90vh;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .machine-type-toggle {
     grid-template-columns: 1fr;
   }
-  
+
   .settings-actions {
     flex-direction: column;
   }

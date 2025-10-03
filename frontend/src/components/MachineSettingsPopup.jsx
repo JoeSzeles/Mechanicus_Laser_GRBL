@@ -20,6 +20,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
     name: '',
     machineType: 'laser_engraver',
+    firmwareType: 'grbl',
     // Connection
     serialConnection: 'COM4',
     baud: 250000,
@@ -133,6 +134,7 @@ function MachineSettingsPopup({ isOpen, onClose }) {
     setFormData({
       name: 'New Profile',
       machineType: 'laser_engraver',
+      firmwareType: 'grbl',
       serialConnection: 'COM4',
       baud: 250000,
       preamble: 'G1 Z60',
@@ -349,6 +351,30 @@ function MachineSettingsPopup({ isOpen, onClose }) {
                       🔧 CNC/3D Printer
                       <span className="machine-desc">3-axis for G-code</span>
                     </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Firmware Type</label>
+                  <select 
+                    value={formData.firmwareType}
+                    onChange={(e) => handleInputChange('firmwareType', e.target.value)}
+                    className="firmware-select"
+                  >
+                    <option value="grbl">GRBL (Laser/CNC - baud 115200)</option>
+                    <option value="marlin">Marlin (3D Printer - baud 250000)</option>
+                    <option value="smoothie">Smoothieware (CNC - baud 115200)</option>
+                  </select>
+                  <div className="firmware-info">
+                    {formData.firmwareType === 'grbl' && (
+                      <small>✓ Position: ?, Home: $H, Reset: Ctrl+X, Status responses: &lt;Idle|MPos:x,y,z&gt;</small>
+                    )}
+                    {formData.firmwareType === 'marlin' && (
+                      <small>✓ Position: M114, Home: G28, Reset: M112, Status responses: X:x Y:y Z:z</small>
+                    )}
+                    {formData.firmwareType === 'smoothie' && (
+                      <small>✓ Position: ?, Home: $H, Reset: reset, Status responses: &lt;Idle|MPos:x,y,z&gt;</small>
+                    )}
                   </div>
                 </div>
               </div>
