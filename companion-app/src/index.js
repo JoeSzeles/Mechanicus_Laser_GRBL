@@ -14,7 +14,6 @@ const { log, getLogs, setBroadcastCallback } = require('./logger');
 class MechanicusCompanion {
   constructor() {
     this.port = null;
-    this.parser = null; // Store parser to ensure data listener persists
     this.clients = new Set();
     this.machineProfiles = new Map();
     this.currentProfile = null;
@@ -346,58 +345,36 @@ class MechanicusCompanion {
             
             log('info', 'serial', 'Port opened successfully', { com, baud });
             
-            // Setup data listener for machine responses - STORE PARSER
-            this.parser = serialPort.pipe(new ReadlineParser({ delimiter: '\n' }));
-            
-            console.log('📡 [SERIAL SETUP] Parser created and data listener attached');
-            
-            // Also listen directly on port for raw debugging
-            serialPort.on('data', (rawData) => {
-              console.log('📥 [SERIAL PORT RAW] Direct port data:', rawData.toString());
-            });
-            
-            this.parser.on('data', (data) => {
+            // Setup data listener for machine responses
+            const parser = serialPort.pipe(new ReadlineParser({ delimiter: '\n' }));
+            parser.on('data', (data) => {
               const response = data.toString().trim();
               
-              // Enhanced logging for ALL serial data
-              console.log('═══════════════════════════════════════════════════════');
-              console.log('📥 [MACHINE → COMPANION] Raw response:', JSON.stringify(response));
-              console.log('📥 [MACHINE → COMPANION] Length:', response.length, 'bytes');
-              console.log('📥 [MACHINE → COMPANION] Hex:', Buffer.from(response).toString('hex'));
+              // Log machine response with full details
+              console.log('🔍 [RAW SERIAL]:', JSON.stringify(response));
+              log('info', 'serial', '📨 Machine response', { response });
               
-              log('info', 'serial', '📨 Machine → Companion', { 
-                response, 
-                length: response.length,
-                timestamp: new Date().toISOString()
-              });
-              
-              // Broadcast to all clients (Main App)
-              console.log('📤 [COMPANION → MAIN APP] Broadcasting serial_data');
+              // Broadcast to all clients
               this.broadcastToClients({
                 type: 'serial_data',
                 data: { message: response }
               });
               
-              // Parse M114 position responses
-              // Python sends: "x:123.45 y:67.89 z:10.00" (lowercase)
-              // Or standard: "X:123.45 Y:67.89 Z:10.00"
-              // Or GRBL format: "<Idle|MPos:0.000,0.000,0.000|..."
-              
+              // Parse M114 position responses - Python uses lowercase x: y: z:
+              // Format: "x:123.45 y:67.89 z:10.00" or "X:123.45 Y:67.89 Z:10.00"
               const lowerResponse = response.toLowerCase();
-              
-              // Check for standard x: y: format
               if (lowerResponse.includes('x:') && lowerResponse.includes('y:')) {
-                console.log('🔍 [POSITION] Detected x: y: format, parsing...');
+                console.log('🔍 [M114 DETECTED] Attempting to parse:', response);
                 
                 // Try case-insensitive match
                 const xMatch = response.match(/[xX]:([-\d.]+)/);
                 const yMatch = response.match(/[yY]:([-\d.]+)/);
                 const zMatch = response.match(/[zZ]:([-\d.]+)/);
                 
-                console.log('🔍 [POSITION] Regex matches:', {
-                  x: xMatch?.[0],
-                  y: yMatch?.[0],
-                  z: zMatch?.[0],
+                console.log('🔍 [REGEX MATCHES]:', {
+                  xMatch: xMatch?.[0],
+                  yMatch: yMatch?.[0],
+                  zMatch: zMatch?.[0],
                   xValue: xMatch?.[1],
                   yValue: yMatch?.[1],
                   zValue: zMatch?.[1]
@@ -411,7 +388,6 @@ class MechanicusCompanion {
                   };
                   
                   console.log('✅ [POSITION PARSED]:', position);
-                  console.log('📤 [COMPANION → MAIN APP] Sending position_update');
                   log('info', 'position', '📍 Position update', position);
                   
                   // Broadcast position update
@@ -419,23 +395,11 @@ class MechanicusCompanion {
                     type: 'position_update',
                     data: position
                   });
-                  console.log('✅ [POSITION] Broadcast complete');
                 } else {
-                  console.warn('⚠️ [POSITION] Failed to extract X/Y from:', response);
+                  console.warn('⚠️ [PARSE FAILED] Could not extract X/Y from:', response);
                 }
-              } else {
-                console.log('ℹ️ [SERIAL] Non-position response (ok, error, etc.)');
               }
-              console.log('═══════════════════════════════════════════════════════\n');
             });
-            
-            // Add error handler for parser
-            this.parser.on('error', (err) => {
-              console.error('❌ [PARSER ERROR]:', err);
-              log('error', 'serial', 'Parser error', { error: err.message });
-            });
-            
-            console.log('✅ [SERIAL SETUP] Parser and listeners fully configured');
             
             this.broadcastSSE({
               type: 'serial_state',
@@ -752,17 +716,9 @@ class MechanicusCompanion {
         throw new Error(`Port ${portPath} is not connected`);
       }
 
+      log('info', 'command', `📤 Sending command: ${command}`, { portPath });
       const fullCommand = command + '\n';
-      
-      console.log('═══════════════════════════════════════════════════════');
-      console.log('📤 [COMPANION → MACHINE] Command:', JSON.stringify(command));
-      console.log('📤 [COMPANION → MACHINE] Port:', portPath);
-      console.log('📤 [COMPANION → MACHINE] Full command:', JSON.stringify(fullCommand));
-      log('info', 'command', `📤 Companion → Machine: ${command}`, { portPath });
-      
       this.port.write(fullCommand);
-      console.log('✅ [COMPANION → MACHINE] Write complete');
-      console.log('═══════════════════════════════════════════════════════\n');
       
       this.sendToClient(ws, {
         type: 'command_sent',
@@ -770,7 +726,6 @@ class MechanicusCompanion {
       });
       
     } catch (error) {
-      console.error('❌ [COMMAND ERROR]:', error);
       log('error', 'command', '❌ Command send failed', { error: error.message });
       this.sendToClient(ws, {
         type: 'error',
@@ -822,14 +777,8 @@ class MechanicusCompanion {
         if (!this.isTransmitting) break; // Allow stopping transmission
         
         const command = line.trim() + lineEnding;
-        console.log(`📤 [COMPANION → MACHINE] G-code line ${lineNumber + 1}/${lines.length}: "${line.trim()}"`);
-        log('debug', 'gcode', `✅ Companion → Machine`, { line: line.trim(), lineNumber: lineNumber + 1 });
-        
-        serialPort.write(command, (err) => {
-          if (err) {
-            console.error(`❌ [COMPANION → MACHINE ERROR]:`, err);
-          }
-        });
+        log('debug', 'gcode', `✅ Writing to ${portPath}`, { line: line.trim(), lineNumber: lineNumber + 1 });
+        serialPort.write(command);
         lineNumber++;
         
         // Send progress update

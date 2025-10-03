@@ -42,7 +42,7 @@
                             <span class="serial-label">Baud:</span> <span id="serialBaud">-</span>
                         </div>
                     </div>
-
+                    
                     <div class="serial-request-info" id="serialRequestInfo" style="display: none;">
                         <div class="request-info-card">
                             <h3>Latest Connection Request</h3>
@@ -52,7 +52,7 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <div class="serial-actions">
                         <button class="btn btn-primary" id="connectBtn" disabled>
                             <span class="icon">🔌</span> Connect
@@ -67,18 +67,16 @@
                 </div>
             </section>
 
-            <!-- Real-Time Communication Logs -->
-            <section class="connection-requests">
-              <h2>Communication Logs</h2>
-              <div class="log-controls">
-                <button onclick="clearLogs()" class="btn-secondary">Clear Logs</button>
-                <label>
-                  <input type="checkbox" id="auto-scroll" checked> Auto-scroll
-                </label>
-              </div>
-              <div id="communication-logs" class="communication-logs">
-                <p class="empty-state">Waiting for communication...</p>
-              </div>
+            <section class="section">
+                <div class="section-header">
+                    <h2>🔔 Connection Requests</h2>
+                    <span class="badge" id="requestsBadge">0</span>
+                </div>
+                <div id="connectionRequests" class="requests-container">
+                    <div class="empty-state">
+                        <p>No pending connection requests</p>
+                    </div>
+                </div>
             </section>
 
             <section class="section">
@@ -128,23 +126,26 @@
             </section>
         </main>
 
-    </div>
-
-    <!-- Scan Modal -->
-    <div id="scanModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>🔍 Scanning Serial Ports</h2>
-                <span class="modal-close" id="modalClose">&times;</span>
-            </div>
-            <div id="scanResults" class="modal-body">
-                <p>Initializing scan...</p>
+        <div id="notification" class="notification"></div>
+        
+        <div id="scanModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🔍 Port Scan Results</h2>
+                    <button class="modal-close" id="modalClose">&times;</button>
+                </div>
+                <div class="modal-body" id="scanResults">
+                    <div class="scan-progress">
+                        <p>Scanning ports...</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="scanProgress"></div>
+                        </div>
+                        <p id="scanStatus">Initializing...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification"></div>
 
     <script src="app.js"></script>
 </body>
