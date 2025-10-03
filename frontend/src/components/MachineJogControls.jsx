@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useSerial } from '../contexts/SerialContext'
 import { machinePositionTracker } from '../utils/machinePositionTracker'
+import useCadStore from '../store/cadStore'
 
 export default function MachineJogControls() {
   const { sendGcode, isConnected, serialState } = useSerial()
+  const machineConnection = useCadStore((state) => state.machineConnection)
   const [feedRate, setFeedRate] = useState(1000)
   const [stepSize, setStepSize] = useState(5)
 
