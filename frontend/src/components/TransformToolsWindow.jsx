@@ -3,7 +3,7 @@ import useCadStore from '../store/cadStore'
 import './TransformToolsWindow.css'
 
 function TransformToolsWindow({ onSelectingMirrorAxis, mirrorAxisLineId: externalMirrorAxisLineId, onClearMirrorAxis }) {
-  const [activeTab, setActiveTab] = useState('scale')
+  const [activeTab, setActiveTab] = useState('move')
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
   const shapes = useCadStore((state) => state.shapes)
   const setSelectedShapeId = useCadStore((state) => state.setSelectedShapeId)
@@ -227,6 +227,12 @@ function TransformToolsWindow({ onSelectingMirrorAxis, mirrorAxisLineId: externa
     <div className="transform-tools-window">
       <div className="tabs">
         <button 
+          className={activeTab === 'move' ? 'active' : ''} 
+          onClick={() => setActiveTab('move')}
+        >
+          Move
+        </button>
+        <button 
           className={activeTab === 'scale' ? 'active' : ''} 
           onClick={() => setActiveTab('scale')}
         >
@@ -253,6 +259,66 @@ function TransformToolsWindow({ onSelectingMirrorAxis, mirrorAxisLineId: externa
       </div>
       
       <div className="tab-content">
+        {activeTab === 'move' && (
+          <div className="move-tab">
+            <div className="button-row">
+              <button onClick={handleSelect} disabled={selectedShapeId}>Select</button>
+              <button onClick={handleDeselect} disabled={!selectedShapeId}>Deselect</button>
+            </div>
+            <div className="input-row">
+              <label>
+                Move X (mm):
+                <input 
+                  type="number" 
+                  defaultValue={0}
+                  id="move-x-input"
+                />
+              </label>
+              <label>
+                Move Y (mm):
+                <input 
+                  type="number" 
+                  defaultValue={0}
+                  id="move-y-input"
+                />
+              </label>
+            </div>
+            <div className="button-row">
+              <button onClick={() => {
+                const moveX = parseFloat(document.getElementById('move-x-input').value) || 0
+                const moveY = parseFloat(document.getElementById('move-y-input').value) || 0
+                if (!selectedShape) return
+                
+                const dx = moveX * machineProfile.mmToPx
+                const dy = moveY * machineProfile.mmToPx
+                
+                const updates = {}
+                if (selectedShape.type === 'line') {
+                  updates.x1 = selectedShape.x1 + dx
+                  updates.y1 = selectedShape.y1 + dy
+                  updates.x2 = selectedShape.x2 + dx
+                  updates.y2 = selectedShape.y2 + dy
+                } else if (selectedShape.type === 'circle' || selectedShape.type === 'arc' || selectedShape.type === 'text') {
+                  updates.x = selectedShape.x + dx
+                  updates.y = selectedShape.y + dy
+                } else if (selectedShape.type === 'rectangle') {
+                  updates.x = selectedShape.x + dx
+                  updates.y = selectedShape.y + dy
+                } else if (selectedShape.type === 'polygon' || selectedShape.type === 'freehand') {
+                  updates.points = selectedShape.points.map((val, i) => 
+                    i % 2 === 0 ? val + dx : val + dy
+                  )
+                }
+                
+                updateShape(selectedShapeId, updates)
+              }} disabled={!selectedShapeId}>
+                Apply Move
+              </button>
+            </div>
+            <p className="hint">Drag selected shapes with mouse or enter precise values</p>
+          </div>
+        )}
+        
         {activeTab === 'scale' && (
           <div className="scale-tab">
             <div className="button-row">

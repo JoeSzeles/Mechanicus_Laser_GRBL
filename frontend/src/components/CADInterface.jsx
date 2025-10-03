@@ -175,6 +175,8 @@ function CADInterface() {
   const [showMachineSettings, setShowMachineSettings] = useState(false)
   const [wsConnection, setWsConnection] = useState(null)
   const [mousePosition, setMousePosition] = useState(null)
+  const [dragStart, setDragStart] = useState(null)
+  const [isDraggingSelection, setIsDraggingSelection] = useState(false)
   
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -279,6 +281,7 @@ function CADInterface() {
         setMirrorAxisSelectionCallback(null)
         setMirrorAxisLineId(null)
         setTrimPreviewLines([])
+        setSelectedShapeIds([])
         
         if (lineEditorState) {
           const selectedLines = lineEditorState.selectedLines || []
@@ -326,11 +329,17 @@ function CADInterface() {
           setTextToolState(null)
         }
       } else if (e.key === 'Delete' || e.key === 'Del') {
+        // Delete selected shapes from selection rectangle
         if (selectedShapeIds.length > 0) {
           selectedShapeIds.forEach(id => {
             removeShapeWithUndo(id)
           })
           setSelectedShapeIds([])
+        }
+        // Delete single selected shape
+        else if (selectedShapeId) {
+          removeShapeWithUndo(selectedShapeId)
+          setSelectedShapeId(null)
         }
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
@@ -343,7 +352,7 @@ function CADInterface() {
     
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [lineEditorState, shapes, selectedShapeIds, setActiveTool, updateShape, setLineEditorState, removeShape])
+  }, [lineEditorState, shapes, selectedShapeIds, selectedShapeId, setActiveTool, updateShape, setLineEditorState, removeShape])
 
   const handleWheel = (e) => {
     e.evt.preventDefault()
@@ -399,6 +408,18 @@ function CADInterface() {
     }
     
     const clickedOnEmpty = e.target === e.target.getStage()
+    
+    // Check if clicking on a selected shape to start drag
+    if (!clickedOnEmpty && e.evt.button === 0 && selectedShapeIds.length > 0) {
+      const clickedShapeId = e.target.id()
+      if (selectedShapeIds.includes(clickedShapeId)) {
+        const point = getWorldPoint(e, false)
+        setDragStart(point)
+        setIsDraggingSelection(true)
+        return
+      }
+    }
+    
     if (clickedOnEmpty && e.evt.button === 0) {
       setSelectedShapeId(null)
       setSelectedShapeIds([])
@@ -534,6 +555,41 @@ function CADInterface() {
         y: e.evt.clientY - panStart.y
       }
       updateViewport({ pan: newPan })
+      return
+    }
+    
+    // Handle dragging selected shapes
+    if (isDraggingSelection && dragStart) {
+      const currentPoint = getWorldPoint(e, false)
+      const dx = currentPoint.x - dragStart.x
+      const dy = currentPoint.y - dragStart.y
+      
+      selectedShapeIds.forEach(id => {
+        const shape = shapes.find(s => s.id === id)
+        if (!shape) return
+        
+        const updates = {}
+        if (shape.type === 'line') {
+          updates.x1 = shape.x1 + dx
+          updates.y1 = shape.y1 + dy
+          updates.x2 = shape.x2 + dx
+          updates.y2 = shape.y2 + dy
+        } else if (shape.type === 'circle' || shape.type === 'arc' || shape.type === 'text') {
+          updates.x = shape.x + dx
+          updates.y = shape.y + dy
+        } else if (shape.type === 'rectangle') {
+          updates.x = shape.x + dx
+          updates.y = shape.y + dy
+        } else if (shape.type === 'polygon' || shape.type === 'freehand') {
+          updates.points = shape.points.map((val, i) => 
+            i % 2 === 0 ? val + dx : val + dy
+          )
+        }
+        
+        updateShape(id, updates)
+      })
+      
+      setDragStart(currentPoint)
       return
     }
     
@@ -839,6 +895,13 @@ function CADInterface() {
   const handleMouseUp = (e) => {
     setIsPanning(false)
     setDraggedGuide(null)
+    
+    // End dragging selection
+    if (isDraggingSelection) {
+      setIsDraggingSelection(false)
+      setDragStart(null)
+      return
+    }
     
     if (selectionRect && selectionRect.width > 5 && selectionRect.height > 5) {
       const selectedIds = []
