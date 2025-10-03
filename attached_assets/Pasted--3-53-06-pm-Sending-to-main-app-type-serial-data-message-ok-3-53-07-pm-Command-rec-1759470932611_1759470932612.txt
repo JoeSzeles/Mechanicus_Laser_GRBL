@@ -1,0 +1,51 @@
+
+3:53:06 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+3:53:07 pm 🟢 Command received from main app {"command":"?"}
+3:53:07 pm 🔵 Sending to machine {"portPath":"COM7","command":"?"}
+3:53:07 pm 🟣 Machine response {"response":""}
+3:53:07 pm 🔴 Sending to main app {"type":"serial_data","message":""}
+3:53:07 pm 📍 GRBL Position update {"x":110,"y":109.991,"z":0}
+3:53:07 pm 🟣 Machine response {"response":"ok"}
+3:53:07 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+3:53:08 pm 🟢 Command received from main app {"command":"?"}
+3:53:08 pm 🔵 Sending to machine {"portPath":"COM7","command":"?"}
+3:53:08 pm 🟣 Machine response {"response":""}
+3:53:08 pm 🔴 Sending to main app {"type":"serial_data","message":""}
+3:53:08 pm 📍 GRBL Position update {"x":110,"y":109.991,"z":0}
+3:53:08 pm 🟣 Machine response {"response":"ok"}
+3:53:08 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+3:53:09 pm 🟢 Command received from main app {"command":"?"}
+3:53:09 pm 🔵 Sending to machine {"portPath":"COM7","command":"?"}
+3:53:09 pm 🟣 Machine response {"response":""}
+3:53:09 pm 🔴 Sending to main app {"type":"serial_data","message":""}
+3:53:09 pm 📍 GRBL Position update {"x":110,"y":109.991,"z":0}
+3:53:09 pm 🟣 Machine response {"response":"ok"}
+3:53:09 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+3:53:10 pm 🟢 Command received from main app {"command":"?"}
+3:53:10 pm 🔵 Sending to machine {"portPath":"COM7","command":"?"}
+3:53:10 pm 🟣 Machine response {"response":""}
+3:53:10 pm 🔴 Sending to main app {"type":"serial_data","message":""}
+3:53:10 pm 📍 GRBL Position update {"x":110,"y":109.991,"z":0}
+3:53:10 pm 🟣 Machine response {"response":"ok"}
+3:53:10 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+3:53:11 pm 🟢 Command received from main app {"command":"?"}
+3:53:11 pm 🔵 Sending to machine {"portPath":"COM7","command":"?"}
+3:53:11 pm 🟣 Machine response {"response":""}
+3:53:11 pm 🔴 Sending to main app {"type":"serial_data","message":""}
+3:53:11 pm 📍 GRBL Position update {"x":110,"y":109.991,"z":0}
+3:53:11 pm 🟣 Machine response {"response":"ok"}
+3:53:11 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+3:53:13 pm 🟢 Command received from main app {"command":"?"}
+3:53:13 pm 🔵 Sending to machine {"portPath":"COM7","command":"?"}
+3:53:13 pm 🟣 Machine response {"response":""}
+3:53:13 pm 🔴 Sending to main app {"type":"serial_data","message":""}
+3:53:13 pm 📍 GRBL Position update {"x":110,"y":109.991,"z":0}
+3:53:13 pm 🟣 Machine response {"response":"ok"}
+3:53:13 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+3:53:14 pm 🟢 Command received from main app {"command":"?"}
+3:53:14 pm 🔵 Sending to machine {"portPath":"COM7","command":"?"}
+3:53:14 pm 🟣 Machine response {"response":""}
+3:53:14 pm 🔴 Sending to main app {"type":"serial_data","message":""}
+3:53:14 pm 📍 GRBL Position update {"x":110,"y":109.991,"z":0}
+3:53:14 pm 🟣 Machine response {"response":"ok"}
+3:53:14 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
