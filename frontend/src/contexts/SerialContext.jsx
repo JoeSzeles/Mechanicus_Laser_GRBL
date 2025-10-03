@@ -142,15 +142,16 @@ export function SerialProvider({ children }) {
         break
 
       case 'serial_data':
+        console.log('🟢 [COMPANION→MAIN] serial_data:', data.message)
         addMessage('receive', `📨 ${data.message}`)
         
         // Parse position from M114 response (case-insensitive)
         const lowerMsg = data.message.toLowerCase()
         if (lowerMsg.includes('x:') && lowerMsg.includes('y:')) {
-          console.log('📍 [SERIAL_DATA] Potential M114 response detected:', data.message)
+          console.log('📍 [MAIN APP] M114 response detected:', data.message)
           if (machinePositionTracker.parsePositionResponse(data.message)) {
             const pos = machinePositionTracker.getPosition()
-            console.log('📍 [SERIAL_DATA] Position parsed and updated:', pos)
+            console.log('📍 [MAIN APP] Position parsed:', pos)
             setMachinePosition(pos)
           }
         }
@@ -167,15 +168,13 @@ export function SerialProvider({ children }) {
 
       case 'position_update':
         // Direct position update from companion
+        console.log('🟢 [COMPANION→MAIN] position_update:', data)
         const newPosition = {
           x: data.x || 0,
           y: data.y || 0,
           z: data.z || 0
         }
-        console.log('🎯 [POSITION UPDATE] ========================================')
-        console.log('🎯 [POSITION UPDATE] Received:', newPosition)
-        console.log('🎯 [POSITION UPDATE] Previous:', machinePosition)
-        console.log('🎯 [POSITION UPDATE] ========================================')
+        console.log('🎯 [MAIN APP] Position update received:', newPosition)
         
         setMachinePosition(newPosition)
         
@@ -221,11 +220,9 @@ export function SerialProvider({ children }) {
         }
       }
 
-      console.log('📤 [GCODE SEND] Sending to companion app:', {
-        destination: 'ws://localhost:8080',
+      console.log('🔴 [MAIN→COMPANION] send_gcode:', {
         port: serialState.port,
-        gcodePreview: gcode.substring(0, 100) + (gcode.length > 100 ? '...' : ''),
-        gcodeLength: gcode.length
+        gcode: gcode.substring(0, 100) + (gcode.length > 100 ? '...' : '')
       })
 
       wsRef.current.send(JSON.stringify(payload))

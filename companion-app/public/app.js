@@ -1,13 +1,14 @@
 class CompanionDashboard {
     constructor() {
         this.eventSource = null;
-        this.pairedOrigins = [];
-        this.connectionRequests = [];
+        this.connectedUsers = [];
         this.wildcardEnabled = false;
         this.serialState = null;
         this.latestRequest = null;
         this.scanResults = [];
         this.isScanning = false;
+        this.logs = [];
+        this.maxLogs = 100;
         
         this.init();
     }
@@ -32,8 +33,8 @@ class CompanionDashboard {
             this.toggleWildcard(e.target.checked);
         });
 
-        document.getElementById('refreshBtn').addEventListener('click', () => {
-            this.fetchStatus();
+        document.getElementById('clearLogsBtn').addEventListener('click', () => {
+            this.clearLogs();
         });
 
         document.getElementById('connectBtn').addEventListener('click', () => {
@@ -116,6 +117,11 @@ class CompanionDashboard {
             const data = JSON.parse(e.data);
             this.handleScanComplete(data);
         });
+
+        this.eventSource.addEventListener('log', (e) => {
+            const data = JSON.parse(e.data);
+            this.handleLogEntry(data);
+        });
     }
 
     async fetchStatus() {
@@ -124,18 +130,11 @@ class CompanionDashboard {
             if (!response.ok) throw new Error('Failed to fetch status');
             
             const data = await response.json();
-            this.pairedOrigins = data.pairedOrigins || [];
-            this.connectionRequests = data.pendingRequests || [];
             this.serialState = data.serialState || null;
-            
-            if (data.sessionRequests && data.sessionRequests.length > 0) {
-                this.latestRequest = data.sessionRequests[0];
-            }
             
             this.updateStatus('running', 'Running');
             this.updateConnectionCount(data.activeConnections || 0);
-            this.renderPairedOrigins();
-            this.renderConnectionRequests();
+            this.updateConnectedUsers(data.activeConnections || 0);
             this.updateSerialUI();
         } catch (error) {
             console.error('Error fetching status:', error);
@@ -143,101 +142,69 @@ class CompanionDashboard {
         }
     }
 
-    handleConnectionRequest(data) {
-        const existing = this.connectionRequests.find(r => r.origin === data.origin);
-        if (!existing) {
-            this.connectionRequests.push({
-                origin: data.origin,
-                timestamp: data.timestamp || Date.now()
-            });
-            this.renderConnectionRequests();
-            this.showNotification(`New connection request from ${data.origin}`, 'info');
+    handleLogEntry(logEntry) {
+        this.logs.push(logEntry);
+        if (this.logs.length > this.maxLogs) {
+            this.logs.shift();
         }
+        this.renderLogs();
     }
 
     handleStatusUpdate(data) {
-        if (data.pairedOrigins) {
-            this.pairedOrigins = data.pairedOrigins;
-            this.renderPairedOrigins();
-        }
         if (data.activeConnections !== undefined) {
             this.updateConnectionCount(data.activeConnections);
+            this.updateConnectedUsers(data.activeConnections);
         }
     }
 
-    async acceptConnection(origin) {
-        const card = document.querySelector(`[data-origin="${origin}"]`);
-        if (card) card.classList.add('loading');
-
-        try {
-            const response = await fetch('/pair/accept', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ origin })
-            });
-
-            if (!response.ok) throw new Error('Failed to accept connection');
-
-            this.connectionRequests = this.connectionRequests.filter(r => r.origin !== origin);
-            this.renderConnectionRequests();
-            this.showNotification(`Accepted connection from ${origin}`, 'success');
-            this.fetchStatus();
-        } catch (error) {
-            console.error('Error accepting connection:', error);
-            this.showNotification(`Failed to accept connection: ${error.message}`, 'error');
-        } finally {
-            if (card) card.classList.remove('loading');
-        }
+    clearLogs() {
+        this.logs = [];
+        this.renderLogs();
     }
 
-    async declineConnection(origin) {
-        const card = document.querySelector(`[data-origin="${origin}"]`);
-        if (card) card.classList.add('loading');
-
-        try {
-            const response = await fetch('/pair/decline', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ origin })
-            });
-
-            if (!response.ok) throw new Error('Failed to decline connection');
-
-            this.connectionRequests = this.connectionRequests.filter(r => r.origin !== origin);
-            this.renderConnectionRequests();
-            this.showNotification(`Declined connection from ${origin}`, 'success');
-        } catch (error) {
-            console.error('Error declining connection:', error);
-            this.showNotification(`Failed to decline connection: ${error.message}`, 'error');
-        } finally {
-            if (card) card.classList.remove('loading');
-        }
-    }
-
-    async removeOrigin(origin) {
-        if (!confirm(`Are you sure you want to remove ${origin}?`)) {
+    renderLogs() {
+        const container = document.getElementById('communicationLogs');
+        
+        if (this.logs.length === 0) {
+            container.innerHTML = '<div class="empty-state"><p>No communication logs yet</p></div>';
             return;
         }
 
-        const row = document.querySelector(`tr[data-origin="${origin}"]`);
-        if (row) row.classList.add('loading');
+        container.innerHTML = this.logs.slice(-50).map(log => {
+            const time = new Date(log.timestamp).toLocaleTimeString();
+            const categoryClass = `log-${log.category.replace(/_/g, '-')}`;
+            return `
+                <div class="log-entry ${categoryClass}">
+                    <span class="log-timestamp">${time}</span>
+                    <strong>${log.message}</strong>
+                    ${log.metadata && Object.keys(log.metadata).length > 0 ? 
+                        `<span class="log-metadata">${JSON.stringify(log.metadata)}</span>` : ''}
+                </div>
+            `;
+        }).join('');
 
-        try {
-            const response = await fetch(`/origin/${encodeURIComponent(origin)}`, {
-                method: 'DELETE'
-            });
+        container.scrollTop = container.scrollHeight;
+    }
 
-            if (!response.ok) throw new Error('Failed to remove origin');
+    updateConnectedUsers(count) {
+        const container = document.getElementById('connectedUsers');
+        const badge = document.getElementById('usersBadge');
+        
+        badge.textContent = count;
 
-            this.pairedOrigins = this.pairedOrigins.filter(o => o.origin !== origin);
-            this.renderPairedOrigins();
-            this.showNotification(`Removed origin: ${origin}`, 'success');
-        } catch (error) {
-            console.error('Error removing origin:', error);
-            this.showNotification(`Failed to remove origin: ${error.message}`, 'error');
-        } finally {
-            if (row) row.classList.remove('loading');
+        if (count === 0) {
+            container.innerHTML = '<div class="empty-state"><p>No users connected</p></div>';
+            return;
         }
+
+        container.innerHTML = `
+            <div class="user-card">
+                <div class="user-info">
+                    <span class="user-icon">👤</span>
+                    <span class="username">${count} Active Connection${count !== 1 ? 's' : ''}</span>
+                </div>
+            </div>
+        `;
     }
 
     async toggleWildcard(enabled) {
@@ -265,66 +232,7 @@ class CompanionDashboard {
         }
     }
 
-    renderConnectionRequests() {
-        const container = document.getElementById('connectionRequests');
-        const badge = document.getElementById('requestsBadge');
-        
-        badge.textContent = this.connectionRequests.length;
-
-        if (this.connectionRequests.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <p>No pending connection requests</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = this.connectionRequests.map(request => `
-            <div class="request-card" data-origin="${this.escapeHtml(request.origin)}">
-                <div class="request-info">
-                    <div class="request-origin">${this.escapeHtml(request.origin)}</div>
-                    <div class="request-time">${this.formatTime(request.timestamp)}</div>
-                </div>
-                <div class="request-actions">
-                    <button class="btn btn-primary btn-sm" onclick="dashboard.acceptConnection('${this.escapeHtml(request.origin)}')">
-                        <span class="icon">✓</span> Accept
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="dashboard.declineConnection('${this.escapeHtml(request.origin)}')">
-                        <span class="icon">✕</span> Decline
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    renderPairedOrigins() {
-        const tbody = document.getElementById('pairedOriginsBody');
-
-        if (this.pairedOrigins.length === 0) {
-            tbody.innerHTML = `
-                <tr class="empty-state-row">
-                    <td colspan="4" class="empty-state">
-                        <p>No paired origins yet</p>
-                    </td>
-                </tr>
-            `;
-            return;
-        }
-
-        tbody.innerHTML = this.pairedOrigins.map(origin => `
-            <tr data-origin="${this.escapeHtml(origin.origin)}">
-                <td>${this.escapeHtml(origin.origin)}</td>
-                <td>${this.formatDate(origin.createdAt)}</td>
-                <td>${this.formatDate(origin.lastSeen)}</td>
-                <td>
-                    <button class="btn btn-danger btn-sm" onclick="dashboard.removeOrigin('${this.escapeHtml(origin.origin)}')">
-                        <span class="icon">🗑️</span> Remove
-                    </button>
-                </td>
-            </tr>
-        `).join('');
-    }
+    
 
     updateStatus(status, text) {
         const dot = document.getElementById('statusDot');

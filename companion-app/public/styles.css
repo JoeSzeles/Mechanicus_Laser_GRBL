@@ -647,38 +647,67 @@ tbody tr:hover {
     font-size: 12px;
 }
 
+/* Logs Container */
+.logs-container {
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.users-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#connectedUsers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.log-metadata {
+    display: block;
+    font-size: 11px;
+    color: #6b7280;
+    font-family: monospace;
+    margin-top: 4px;
+}
+
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .status-bar {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .request-card {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
-    
+
     .request-actions {
         width: 100%;
         justify-content: flex-end;
     }
-    
+
     .setting-item {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
-    
+
     table {
         font-size: 14px;
     }
-    
+
     th, td {
         padding: 8px 12px;
     }

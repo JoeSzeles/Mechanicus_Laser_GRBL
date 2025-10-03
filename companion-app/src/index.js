@@ -350,34 +350,56 @@ class MechanicusCompanion {
             parser.on('data', (data) => {
               const response = data.toString().trim();
               
-              // Log machine response with full details
-              console.log('🔍 [RAW SERIAL]:', JSON.stringify(response));
-              log('info', 'serial', '📨 Machine response', { response });
+              // Log incoming machine response
+              console.log('🟣 [MACHINE→COMPANION]:', response);
+              log('info', 'machine-to-companion', '🟣 Machine response', { response });
               
               // Broadcast to all clients
+              console.log('🔴 [COMPANION→MAIN]:', 'serial_data', response);
+              log('info', 'companion-to-main', '🔴 Sending to main app', { type: 'serial_data', message: response });
+              
               this.broadcastToClients({
                 type: 'serial_data',
                 data: { message: response }
               });
               
-              // Parse M114 position responses - Python uses lowercase x: y: z:
-              // Format: "x:123.45 y:67.89 z:10.00" or "X:123.45 Y:67.89 Z:10.00"
+              // Parse position responses - supports multiple formats:
+              // GRBL: <Idle|MPos:123.45,67.89,10.00|...>
+              // Marlin M114: X:123.45 Y:67.89 Z:10.00
+              // Python custom: x:123.45 y:67.89 z:10.00
+              
+              // Try GRBL format first: <Idle|MPos:x,y,z|...>
+              const grblMatch = response.match(/<[^|]*\|MPos:([-\d.]+),([-\d.]+)(?:,([-\d.]+))?/i);
+              if (grblMatch) {
+                const position = {
+                  x: parseFloat(grblMatch[1]),
+                  y: parseFloat(grblMatch[2]),
+                  z: grblMatch[3] ? parseFloat(grblMatch[3]) : 0
+                };
+                
+                console.log('✅ [GRBL POSITION]:', position);
+                log('info', 'position', '📍 GRBL Position update', position);
+                
+                this.broadcastToClients({
+                  type: 'position_update',
+                  data: position
+                });
+                return;
+              }
+              
+              // Try standard X: Y: Z: format (case-insensitive)
               const lowerResponse = response.toLowerCase();
               if (lowerResponse.includes('x:') && lowerResponse.includes('y:')) {
-                console.log('🔍 [M114 DETECTED] Attempting to parse:', response);
+                console.log('🔍 [POSITION DETECTED] Parsing:', response);
                 
-                // Try case-insensitive match
-                const xMatch = response.match(/[xX]:([-\d.]+)/);
-                const yMatch = response.match(/[yY]:([-\d.]+)/);
-                const zMatch = response.match(/[zZ]:([-\d.]+)/);
+                const xMatch = response.match(/[xX]:\s*([-\d.]+)/);
+                const yMatch = response.match(/[yY]:\s*([-\d.]+)/);
+                const zMatch = response.match(/[zZ]:\s*([-\d.]+)/);
                 
                 console.log('🔍 [REGEX MATCHES]:', {
-                  xMatch: xMatch?.[0],
-                  yMatch: yMatch?.[0],
-                  zMatch: zMatch?.[0],
-                  xValue: xMatch?.[1],
-                  yValue: yMatch?.[1],
-                  zValue: zMatch?.[1]
+                  x: xMatch?.[1],
+                  y: yMatch?.[1],
+                  z: zMatch?.[1]
                 });
                 
                 if (xMatch && yMatch) {
@@ -390,7 +412,6 @@ class MechanicusCompanion {
                   console.log('✅ [POSITION PARSED]:', position);
                   log('info', 'position', '📍 Position update', position);
                   
-                  // Broadcast position update
                   this.broadcastToClients({
                     type: 'position_update',
                     data: position
@@ -716,7 +737,12 @@ class MechanicusCompanion {
         throw new Error(`Port ${portPath} is not connected`);
       }
 
-      log('info', 'command', `📤 Sending command: ${command}`, { portPath });
+      console.log('🟢 [MAIN→COMPANION]:', command);
+      log('info', 'main-to-companion', '🟢 Command received from main app', { command });
+      
+      console.log('🔵 [COMPANION→MACHINE]:', command);
+      log('info', 'companion-to-machine', '🔵 Sending to machine', { portPath, command });
+      
       const fullCommand = command + '\n';
       this.port.write(fullCommand);
       
@@ -777,7 +803,8 @@ class MechanicusCompanion {
         if (!this.isTransmitting) break; // Allow stopping transmission
         
         const command = line.trim() + lineEnding;
-        log('debug', 'gcode', `✅ Writing to ${portPath}`, { line: line.trim(), lineNumber: lineNumber + 1 });
+        console.log('🔵 [COMPANION→MACHINE]:', line.trim());
+        log('debug', 'companion-to-machine', `🔵 G-code line ${lineNumber + 1}`, { line: line.trim() });
         serialPort.write(command);
         lineNumber++;
         

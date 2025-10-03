@@ -69,41 +69,27 @@
 
             <section class="section">
                 <div class="section-header">
-                    <h2>🔔 Connection Requests</h2>
-                    <span class="badge" id="requestsBadge">0</span>
+                    <h2>📊 Communication Logs</h2>
+                    <button class="btn btn-secondary btn-sm" id="clearLogsBtn">
+                        <span class="icon">🗑️</span> Clear
+                    </button>
                 </div>
-                <div id="connectionRequests" class="requests-container">
+                <div id="communicationLogs" class="logs-container">
                     <div class="empty-state">
-                        <p>No pending connection requests</p>
+                        <p>No communication logs yet</p>
                     </div>
                 </div>
             </section>
 
             <section class="section">
                 <div class="section-header">
-                    <h2>🔗 Paired Origins</h2>
-                    <button class="btn btn-secondary btn-sm" id="refreshBtn">
-                        <span class="icon">🔄</span> Refresh
-                    </button>
+                    <h2>👥 Connected Users</h2>
+                    <span class="badge" id="usersBadge">0</span>
                 </div>
-                <div class="table-container">
-                    <table id="pairedOriginsTable">
-                        <thead>
-                            <tr>
-                                <th>Origin</th>
-                                <th>Created</th>
-                                <th>Last Seen</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="pairedOriginsBody">
-                            <tr class="empty-state-row">
-                                <td colspan="4" class="empty-state">
-                                    <p>No paired origins yet</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div id="connectedUsers" class="users-container">
+                    <div class="empty-state">
+                        <p>No users connected</p>
+                    </div>
                 </div>
             </section>
 
