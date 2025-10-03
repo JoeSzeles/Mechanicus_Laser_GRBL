@@ -31,14 +31,14 @@ export default function MachineJogControls() {
 
     const gcodeCommands = [
       'G91',
-      `G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`,
+      `G1 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`,
       'G90'
     ]
 
     console.log('🕹️ [JOG] Sending G-code sequence:', gcodeCommands)
 
     sendGcode(`G91`)
-    sendGcode(`G0 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`)
+    sendGcode(`G1 X${xMove.toFixed(3)} Y${yMove.toFixed(3)} F${feedRate}`)
     sendGcode(`G90`)
     
     // Start continuous position polling during movement
