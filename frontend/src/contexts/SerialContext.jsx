@@ -145,10 +145,10 @@ export function SerialProvider({ children }) {
         console.log('🟢 [COMPANION→MAIN] serial_data:', data.message)
         addMessage('receive', `📨 ${data.message}`)
         
-        // Parse position from M114 response (case-insensitive)
+        // Parse position from GRBL status response (<Idle|MPos:x,y,z|...>) or M114 (X:123 Y:456)
         const lowerMsg = data.message.toLowerCase()
-        if (lowerMsg.includes('x:') && lowerMsg.includes('y:')) {
-          console.log('📍 [MAIN APP] M114 response detected:', data.message)
+        if (lowerMsg.includes('mpos:') || (lowerMsg.includes('x:') && lowerMsg.includes('y:'))) {
+          console.log('📍 [MAIN APP] Position response detected:', data.message)
           if (machinePositionTracker.parsePositionResponse(data.message)) {
             const pos = machinePositionTracker.getPosition()
             console.log('📍 [MAIN APP] Position parsed:', pos)

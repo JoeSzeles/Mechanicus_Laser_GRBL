@@ -31,32 +31,46 @@ export class MachinePositionTracker {
     }
   }
 
-  // Send M114 command to get current position
+  // Send ? command to get current position (GRBL status query)
   queryPosition(portPath) {
     if (!this.wsConnection || this.wsConnection.readyState !== WebSocket.OPEN) {
       console.warn('⚠️ [POSITION] Cannot query - WebSocket not connected')
       return
     }
 
-    console.log('📤 [M114 QUERY] ========================================')
-    console.log('📤 [M114 QUERY] Sending to port:', portPath)
-    console.log('📤 [M114 QUERY] WebSocket state:', this.wsConnection.readyState)
-    console.log('📤 [M114 QUERY] ========================================')
+    console.log('📤 [? QUERY] ========================================')
+    console.log('📤 [? QUERY] Sending GRBL status query to port:', portPath)
+    console.log('📤 [? QUERY] WebSocket state:', this.wsConnection.readyState)
+    console.log('📤 [? QUERY] ========================================')
     
     this.wsConnection.send(JSON.stringify({
-      type: 'send_gcode',
+      type: 'send_command',
       payload: {
         portPath: portPath,
-        gcode: 'M114'
+        command: '?'
       }
     }))
   }
 
-  // Parse M114 response: "X:123.45 Y:67.89 Z:10.00" or "x:123.45 y:67.89"
+  // Parse GRBL status response: <Idle|MPos:123.45,67.89,10.00|...>
+  // Also supports Marlin M114 format: X:123.45 Y:67.89 Z:10.00
   parsePositionResponse(response) {
     console.log('📍 [POSITION] Parsing response:', response)
     
-    // Try uppercase format first (GRBL/Marlin): X:123.45 Y:67.89 Z:10.00
+    // Try GRBL format first: <Idle|MPos:x,y,z|...>
+    const grblMatch = response.match(/<[^|]*\|MPos:([-\d.]+),([-\d.]+)(?:,([-\d.]+))?/i)
+    if (grblMatch) {
+      this.position = {
+        x: parseFloat(grblMatch[1]),
+        y: parseFloat(grblMatch[2]),
+        z: grblMatch[3] ? parseFloat(grblMatch[3]) : 0
+      }
+      console.log('✅ [POSITION] GRBL position parsed:', this.position)
+      this.notifyListeners()
+      return true
+    }
+    
+    // Try Marlin M114 format: X:123.45 Y:67.89 Z:10.00
     let match = response.match(/X:([-\d.]+)\s+Y:([-\d.]+)(?:\s+Z:([-\d.]+))?/i)
     
     // Try lowercase format (some firmwares): x:123.45 y:67.89
