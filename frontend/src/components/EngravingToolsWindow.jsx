@@ -257,8 +257,8 @@ function EngravingToolsWindow() {
       // 4. Finish - turn off laser and go home
       sendGcode(generateLaserControl(firmware, 0, false))
       machinePositionTracker.setLaserState(false)
-      const homeCmd = generateHomeCommand(firmware)
-      sendGcode(homeCmd)
+      const homeCmdFinal = generateHomeCommand(firmware)
+      sendGcode(homeCmdFinal)
 
       // Track homing movement
       machinePositionTracker.startMovementTracking(serialState.port, 1000, 50, firmware)
