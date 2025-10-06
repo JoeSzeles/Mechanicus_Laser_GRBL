@@ -2357,8 +2357,6 @@ function CADInterface() {
             <MachineJogControls
               isOpen={jogControlsOpen}
               onClose={() => setJogControlsOpen(false)}
-              position={jogControlsPosition}
-              onDragStart={(e) => handlePopupDragStart(e, setJogControlsPosition)}
             />
             <GcodeBufferWindow
               isOpen={workspace.panelStates.gcodeBuffer || false}
