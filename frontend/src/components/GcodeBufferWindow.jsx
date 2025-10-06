@@ -41,10 +41,15 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       const { message } = event.detail
       console.log('📥 [BUFFER] Received serial response:', message)
 
+      // Forward position updates to main app (they handle it in SerialContext)
+      const lowerMsg = message.toLowerCase()
+      if (lowerMsg.includes('mpos:') || (lowerMsg.includes('x:') && lowerMsg.includes('y:'))) {
+        console.log('📍 [BUFFER] Position response detected, forwarding to SerialContext')
+        // SerialContext will handle position parsing via its own listener
+      }
+
       // Check if we're waiting for a response
       if (waitingForResponseRef.current) {
-        const lowerMsg = message.toLowerCase()
-
         // Accept "ok" or GRBL status responses as acknowledgment
         if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
           console.log('✅ [BUFFER] Command acknowledged:', message)
@@ -118,38 +123,40 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       // Wait for machine response (with timeout)
       const cmd = line.command.trim().toUpperCase()
       
-      // Position queries (? or M114) need shorter timeout and different handling
+      // Position queries (? or M114) don't need acknowledgment, just send and continue
       const isPositionQuery = cmd === '?' || cmd === 'M114'
-      const timeout = cmd.includes('G28') ? 30000 : (isPositionQuery ? 2000 : 5000)
-      const startTime = Date.now()
+      
+      if (isPositionQuery) {
+        // Position queries don't wait for "ok", just mark as completed and continue
+        console.log(`📍 [BUFFER] Position query sent, continuing without waiting`)
+        waitingForResponseRef.current = false
+        setGcodeLines(prev => prev.map((l, idx) => 
+          idx === lineIndex ? { ...l, status: 'completed' } : l
+        ))
+      } else {
+        // Normal commands wait for acknowledgment
+        const timeout = cmd.includes('G28') ? 30000 : 5000
+        const startTime = Date.now()
 
-      console.log(`⏳ [BUFFER] Waiting for response (timeout: ${timeout}ms)...`)
+        console.log(`⏳ [BUFFER] Waiting for response (timeout: ${timeout}ms)...`)
 
-      while (!responseReceivedRef.current && (Date.now() - startTime < timeout)) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-      }
+        while (!responseReceivedRef.current && (Date.now() - startTime < timeout)) {
+          await new Promise(resolve => setTimeout(resolve, 100))
+        }
 
-      waitingForResponseRef.current = false
+        waitingForResponseRef.current = false
 
-      if (!responseReceivedRef.current) {
-        // For position queries, timeout is not critical - just log and continue
-        if (isPositionQuery) {
-          console.warn(`⚠️ [BUFFER] Position query timeout (${timeout}ms) - continuing`)
-          setGcodeLines(prev => prev.map((l, idx) => 
-            idx === lineIndex ? { ...l, status: 'completed' } : l
-          ))
-        } else {
+        if (!responseReceivedRef.current) {
           console.error(`❌ [BUFFER] TIMEOUT (${timeout}ms) waiting for response to: ${line.command}`)
-          // Mark as error but continue
           setGcodeLines(prev => prev.map((l, idx) => 
             idx === lineIndex ? { ...l, status: 'error', error: 'Timeout' } : l
           ))
           setStatus('error')
           setErrorMessage(`Timeout waiting for response to: ${line.command}`)
           return false
+        } else {
+          console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
         }
-      } else {
-        console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
       }
 
       // Mark current line as completed

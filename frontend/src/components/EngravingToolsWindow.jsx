@@ -50,6 +50,18 @@ const generateHomeCommand = (firmware) => {
   return 'G28'; // Default to G28
 };
 
+// Assume generateMovement is defined elsewhere or imported (needed for the changes)
+const generateMovement = (firmware, x, y, z, feedRate, rapid = false) => {
+  const type = rapid ? 'G0' : 'G1';
+  let command = `${type}`;
+  if (x !== null && x !== undefined) command += ` X${x.toFixed(3)}`;
+  if (y !== null && y !== undefined) command += ` Y${y.toFixed(3)}`;
+  if (z !== null && z !== undefined) command += ` Z${z.toFixed(3)}`;
+  if (feedRate !== null && feedRate !== undefined) command += ` F${feedRate}`;
+  return command;
+};
+
+
 function EngravingToolsWindow() {
   const shapes = useCadStore((state) => state.shapes)
   const layers = useCadStore((state) => state.layers)
@@ -94,7 +106,10 @@ function EngravingToolsWindow() {
   // Subscribe to position updates
   useEffect(() => {
     const handlePositionUpdate = (data) => {
-      setMachinePosition(data.position)
+      // Ensure data and data.position exist before setting state
+      if (data && data.position) {
+        setMachinePosition(data.position);
+      }
     }
 
     machinePositionTracker.addListener(handlePositionUpdate)
@@ -280,11 +295,11 @@ function EngravingToolsWindow() {
       const end = convertToMachineCoords(shape.x2, shape.y2)
 
       // Move to start
-      commands.push(`G0 X${start.x.toFixed(3)} Y${start.y.toFixed(3)} F${feedRate}`)
+      commands.push(generateMovement(firmware, start.x, start.y, null, feedRate, true))
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
       // Draw line
-      commands.push(`G1 X${end.x.toFixed(3)} Y${end.y.toFixed(3)} F${feedRate}`)
+      commands.push(generateMovement(firmware, end.x, end.y, null, feedRate, false))
       // Turn off laser
       commands.push(generateLaserControl(firmware, 0, false))
     }
@@ -296,14 +311,14 @@ function EngravingToolsWindow() {
       const bottomLeft = convertToMachineCoords(shape.x, shape.y + shape.height)
 
       // Move to start
-      commands.push(`G0 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
+      commands.push(generateMovement(firmware, topLeft.x, topLeft.y, null, feedRate, true))
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
       // Draw rectangle
-      commands.push(`G1 X${topRight.x.toFixed(3)} Y${topRight.y.toFixed(3)} F${feedRate}`)
-      commands.push(`G1 X${bottomRight.x.toFixed(3)} Y${bottomRight.y.toFixed(3)} F${feedRate}`)
-      commands.push(`G1 X${bottomLeft.x.toFixed(3)} Y${bottomLeft.y.toFixed(3)} F${feedRate}`)
-      commands.push(`G1 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
+      commands.push(generateMovement(firmware, topRight.x, topRight.y, null, feedRate, false))
+      commands.push(generateMovement(firmware, bottomRight.x, bottomRight.y, null, feedRate, false))
+      commands.push(generateMovement(firmware, bottomLeft.x, bottomLeft.y, null, feedRate, false))
+      commands.push(generateMovement(firmware, topLeft.x, topLeft.y, null, feedRate, false))
       // Turn off laser
       commands.push(generateLaserControl(firmware, 0, false))
     }
@@ -311,10 +326,8 @@ function EngravingToolsWindow() {
       // Circle - draw as many segments (matching Python implementation)
       const centerX = shape.x
       const centerY = shape.y
-      const radius = shape.radius
-
       const center = convertToMachineCoords(centerX, centerY)
-      const machineRadius = radius / mmToPx
+      const machineRadius = shape.radius / mmToPx
 
       const numSegments = 72
 
@@ -323,7 +336,7 @@ function EngravingToolsWindow() {
       const startY = center.y
 
       // Move to start position
-      commands.push(`G0 X${startX.toFixed(3)} Y${startY.toFixed(3)} F${feedRate}`)
+      commands.push(generateMovement(firmware, startX, startY, null, feedRate, true))
 
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
@@ -333,7 +346,7 @@ function EngravingToolsWindow() {
         const angle = (2 * Math.PI * i) / numSegments
         const x = center.x + machineRadius * Math.cos(angle)
         const y = center.y + machineRadius * Math.sin(angle)
-        commands.push(`G1 X${x.toFixed(3)} Y${y.toFixed(3)} F${feedRate}`)
+        commands.push(generateMovement(firmware, x, y, null, feedRate, false))
       }
 
       // Turn off laser
@@ -358,15 +371,15 @@ function EngravingToolsWindow() {
         if (points.length === 0) return commands
 
         // Move to start
-        commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+        commands.push(generateMovement(firmware, points[0].x, points[0].y, null, feedRate, true))
         // Turn on laser
         commands.push(generateLaserControl(firmware, laserPower, true))
         // Draw polygon
         for (let i = 1; i < points.length; i++) {
-          commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
+          commands.push(generateMovement(firmware, points[i].x, points[i].y, null, feedRate, false))
         }
         // Close the polygon
-        commands.push(`G1 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+        commands.push(generateMovement(firmware, points[0].x, points[0].y, null, feedRate, false))
         // Turn off laser
         commands.push(generateLaserControl(firmware, 0, false))
       }
@@ -390,12 +403,12 @@ function EngravingToolsWindow() {
         if (points.length === 0) return commands
 
         // Move to start
-        commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+        commands.push(generateMovement(firmware, points[0].x, points[0].y, null, feedRate, true))
         // Turn on laser
         commands.push(generateLaserControl(firmware, laserPower, true))
         // Draw path
         for (let i = 1; i < points.length; i++) {
-          commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
+          commands.push(generateMovement(firmware, points[i].x, points[i].y, null, feedRate, false))
         }
         // Turn off laser
         commands.push(generateLaserControl(firmware, 0, false))
@@ -422,7 +435,7 @@ function EngravingToolsWindow() {
       const startY = center.y + machineRadius * Math.sin(startAngleRad)
 
       // Move to start position
-      commands.push(`G0 X${startX.toFixed(3)} Y${startY.toFixed(3)} F${feedRate}`)
+      commands.push(generateMovement(firmware, startX, startY, null, feedRate, true))
 
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
@@ -433,7 +446,7 @@ function EngravingToolsWindow() {
         const angleRad = ((startAngle + (extent * i / numSegments)) * Math.PI) / 180
         const x = center.x + machineRadius * Math.cos(angleRad)
         const y = center.y + machineRadius * Math.sin(angleRad)
-        commands.push(`G1 X${x.toFixed(3)} Y${y.toFixed(3)} F${feedRate}`)
+        commands.push(generateMovement(firmware, x, y, null, feedRate, false))
       }
 
       // Turn off laser
@@ -454,7 +467,7 @@ function EngravingToolsWindow() {
               laserOn = false
             }
             const point = convertToMachineCoords(segment.x, segment.y)
-            commands.push(`G0 X${point.x.toFixed(3)} Y${point.y.toFixed(3)} F${feedRate}`)
+            commands.push(generateMovement(firmware, point.x, point.y, null, feedRate, true))
             // Turn on laser for drawing
             commands.push(generateLaserControl(firmware, laserPower, true))
             laserOn = true
@@ -465,7 +478,7 @@ function EngravingToolsWindow() {
               laserOn = true
             }
             const point = convertToMachineCoords(segment.x, segment.y)
-            commands.push(`G1 X${point.x.toFixed(3)} Y${point.y.toFixed(3)} F${feedRate}`)
+            commands.push(generateMovement(firmware, point.x, point.y, null, feedRate, false))
           } else if (segment.type === 'Z') {
             // Close path - turn off laser
             if (laserOn) {
