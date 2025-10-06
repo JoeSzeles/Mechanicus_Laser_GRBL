@@ -3141,6 +3141,8 @@ function CADInterface() {
           zIndex={panelPositions.drawingTools.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('drawingTools', x, y)}
           onBringToFront={() => bringPanelToFront('drawingTools')}
+          defaultSize={workspace.panelSizes?.drawingTools || { width: 220, height: 280 }}
+          onSizeChange={(w, h) => setPanelSize('drawingTools', { width: w, height: h })}
         >
           <DrawingToolsWindow />
         </FloatingPanel>
@@ -3153,6 +3155,8 @@ function CADInterface() {
           zIndex={panelPositions.layers.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('layers', x, y)}
           onBringToFront={() => bringPanelToFront('layers')}
+          defaultSize={workspace.panelSizes?.layers || { width: 280, height: 350 }}
+          onSizeChange={(w, h) => setPanelSize('layers', { width: w, height: h })}
         >
           <LayersWindow />
         </FloatingPanel>
@@ -3165,6 +3169,8 @@ function CADInterface() {
           zIndex={panelPositions.shapeProperties.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('shapeProperties', x, y)}
           onBringToFront={() => bringPanelToFront('shapeProperties')}
+          defaultSize={workspace.panelSizes?.shapeProperties || { width: 300, height: 350 }}
+          onSizeChange={(w, h) => setPanelSize('shapeProperties', { width: w, height: h })}
         >
           <ShapePropertiesWindow />
         </FloatingPanel>
@@ -3177,6 +3183,8 @@ function CADInterface() {
           zIndex={panelPositions.snapTools.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('snapTools', x, y)}
           onBringToFront={() => bringPanelToFront('snapTools')}
+          defaultSize={workspace.panelSizes?.snapTools || { width: 220, height: 250 }}
+          onSizeChange={(w, h) => setPanelSize('snapTools', { width: w, height: h })}
         >
           <SnapToolsWindow />
         </FloatingPanel>
@@ -3189,6 +3197,8 @@ function CADInterface() {
           zIndex={panelPositions.markersGuides.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('markersGuides', x, y)}
           onBringToFront={() => bringPanelToFront('markersGuides')}
+          defaultSize={workspace.panelSizes?.markersGuides || { width: 300, height: 400 }}
+          onSizeChange={(w, h) => setPanelSize('markersGuides', { width: w, height: h })}
         >
           <MarkersWindow onActivateTool={setActiveTool} />
         </FloatingPanel>
@@ -3201,6 +3211,8 @@ function CADInterface() {
           zIndex={panelPositions.transformTools.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('transformTools', x, y)}
           onBringToFront={() => bringPanelToFront('transformTools')}
+          defaultSize={workspace.panelSizes?.transformTools || { width: 320, height: 450 }}
+          onSizeChange={(w, h) => setPanelSize('transformTools', { width: w, height: h })}
         >
           <TransformToolsWindow
             onSelectingMirrorAxis={(callback) => setMirrorAxisSelectionCallback(() => callback)}
@@ -3217,6 +3229,8 @@ function CADInterface() {
           zIndex={panelPositions.lineEditorTools.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('lineEditorTools', x, y)}
           onBringToFront={() => bringPanelToFront('lineEditorTools')}
+          defaultSize={workspace.panelSizes?.lineEditorTools || { width: 280, height: 350 }}
+          onSizeChange={(w, h) => setPanelSize('lineEditorTools', { width: w, height: h })}
         >
           <LineEditorToolsWindow />
         </FloatingPanel>
@@ -3229,6 +3243,8 @@ function CADInterface() {
           zIndex={panelPositions.textTools.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('textTools', x, y)}
           onBringToFront={() => bringPanelToFront('textTools')}
+          defaultSize={workspace.panelSizes?.textTools || { width: 300, height: 350 }}
+          onSizeChange={(w, h) => setPanelSize('textTools', { width: w, height: h })}
         >
           <TextFontToolsWindow />
         </FloatingPanel>
@@ -3241,6 +3257,8 @@ function CADInterface() {
           zIndex={panelPositions.engravingTools.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('engravingTools', x, y)}
           onBringToFront={() => bringPanelToFront('engravingTools')}
+          defaultSize={workspace.panelSizes?.engravingTools || { width: 350, height: 500 }}
+          onSizeChange={(w, h) => setPanelSize('engravingTools', { width: w, height: h })}
         >
           <EngravingToolsWindow />
         </FloatingPanel>
