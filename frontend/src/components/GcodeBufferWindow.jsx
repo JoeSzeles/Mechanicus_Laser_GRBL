@@ -143,13 +143,15 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
       }
       
-      // Mark current line as completed
+      // Mark current line as completed and increment BEFORE next iteration
+      const nextLine = currentLine + 1
+      
       setGcodeLines(prev => prev.map((l, idx) => 
         idx === currentLine ? { ...l, status: 'completed' } : l
       ))
       
-      setCurrentLine(prev => prev + 1)
-      setProgress(currentLine + 1)
+      setCurrentLine(nextLine)
+      setProgress(nextLine)
       
       return true
     } catch (error) {
@@ -173,7 +175,9 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     setErrorMessage('')
 
     const runLoop = async () => {
-      while (currentLine < gcodeLines.length && !isStoppedRef.current) {
+      let lineIndex = currentLine
+      
+      while (lineIndex < gcodeLines.length && !isStoppedRef.current) {
         // Check if paused
         while (isPausedRef.current && !isStoppedRef.current) {
           await new Promise(resolve => setTimeout(resolve, 100))
@@ -184,11 +188,14 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         const success = await sendNextCommand()
         if (!success) break
 
+        // Increment local counter
+        lineIndex++
+        
         // Increased delay to prevent command flooding (100ms between commands)
         await new Promise(resolve => setTimeout(resolve, 100))
       }
 
-      if (currentLine >= gcodeLines.length) {
+      if (lineIndex >= gcodeLines.length) {
         setStatus('idle')
       }
     }
