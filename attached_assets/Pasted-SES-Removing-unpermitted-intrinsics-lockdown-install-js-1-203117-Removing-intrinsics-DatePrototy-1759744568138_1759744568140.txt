@@ -1,0 +1,1284 @@
+SES Removing unpermitted intrinsics lockdown-install.js:1:203117
+  Removing intrinsics.%DatePrototype%.toTemporalInstant lockdown-install.js:1:202962
+✅ User authenticated, default profile loaded index-BCBsaonk.js:120:60613
+✅ updateLineEditorState is available index-BCBsaonk.js:120:15405
+🔄 Loading workspace on mount... index-BCBsaonk.js:120:15479
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: true, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759743865987 }
+index-BCBsaonk.js:108:8606
+✅ Workspace loaded successfully index-BCBsaonk.js:108:13805
+✅ Loaded default profile: Joe index-BCBsaonk.js:120:15550
+💾 Auto-saving workspace... index-BCBsaonk.js:120:15921
+💾 Workspace saved: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: true, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759744493725 }
+index-BCBsaonk.js:108:8368
+✅ Workspace saved successfully index-BCBsaonk.js:108:13692
+🔗 Connecting to LOCAL companion: ws://localhost:8080 index-BCBsaonk.js:60:23769
+✅ WebSocket onopen fired index-BCBsaonk.js:60:23876
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "status", data: {…} }
+index-BCBsaonk.js:60:24515
+✅ Received status from companion, now truly connected index-BCBsaonk.js:60:24681
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-BCBsaonk.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X50.000 Y0.000 F1000", "G90" ]
+index-BCBsaonk.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-BCBsaonk.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X50.000 Y0.000 F1000" }
+index-BCBsaonk.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-BCBsaonk.js:60:26622
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 3000, pollInterval: 500 }
+index-BCBsaonk.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X50.000 Y0.000 F1000" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-BCBsaonk.js:60:26338
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:7.863,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:7.863,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:7.863,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:7.863,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:7.863,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 7.863, y: 0, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 7.863, y: 0, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 7.863, y: 0, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 7.863, y: 0, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:16.300,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:16.300,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:16.300,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:16.300,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:16.300,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 16.3, y: 0, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 16.3, y: 0, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 16.3, y: 0, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 16.3, y: 0, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:24.650,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:24.650,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:24.650,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:24.650,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:24.650,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 24.65, y: 0, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 24.65, y: 0, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 24.65, y: 0, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 24.65, y: 0, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:33.000,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:33.000,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:33.000,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:33.000,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:33.000,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 33, y: 0, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 33, y: 0, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 33, y: 0, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 33, y: 0, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:41.375,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:41.375,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:41.375,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:41.375,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:41.375,0.000,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 41.375, y: 0, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 41.375, y: 0, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 41.375, y: 0, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 41.375, y: 0, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-BCBsaonk.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X0.000 Y50.000 F1000", "G90" ]
+index-BCBsaonk.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-BCBsaonk.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X0.000 Y50.000 F1000" }
+index-BCBsaonk.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-BCBsaonk.js:60:26622
+📍 [TRACKING] Stopped position polling index-BCBsaonk.js:60:21519
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 3000, pollInterval: 500 }
+index-BCBsaonk.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X0.000 Y50.000 F1000" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-BCBsaonk.js:60:26338
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:50.000,6.796,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:50.000,6.796,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:50.000,6.796,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:50.000,6.796,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:50.000,6.796,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 6.796, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 6.796, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 6.796, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 6.796, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:50.000,14.941,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:50.000,14.941,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:50.000,14.941,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:50.000,14.941,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:50.000,14.941,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 14.941, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 14.941, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 14.941, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 14.941, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:50.000,23.380,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:50.000,23.380,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:50.000,23.380,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:50.000,23.380,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:50.000,23.380,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 23.38, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 23.38, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 23.38, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 23.38, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:50.000,31.841,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:50.000,31.841,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:50.000,31.841,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:50.000,31.841,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:50.000,31.841,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 31.841, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 31.841, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 31.841, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 31.841, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:50.000,40.887,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:50.000,40.887,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:50.000,40.887,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:50.000,40.887,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:50.000,40.887,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 40.887, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 40.887, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 40.887, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 40.887, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:50.000,49.325,0.000|FS:183,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:50.000,49.325,0.000|FS:183,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:50.000,49.325,0.000|FS:183,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:50.000,49.325,0.000|FS:183,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:50.000,49.325,0.000|FS:183,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 49.325, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 49.325, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 49.325, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 49.325, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📍 [TRACKING] Stopped position polling index-BCBsaonk.js:60:21519
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-BCBsaonk.js:60:21764
+📍 [TRACKING] Final position query index-BCBsaonk.js:60:21350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:108:91874
+📍 [MAIN APP] Position response detected: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:25512
+📍 [POSITION] Parsing response: <Idle|MPos:50.000,50.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-BCBsaonk.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 50, y: 50, z: 0 }
+index-BCBsaonk.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-BCBsaonk.js:108:92139
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 99ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 99ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 103ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 102ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 101ms index-BCBsaonk.js:108:93437
+📤 [BUFFER] Sending line 1/12: G28 index-BCBsaonk.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-BCBsaonk.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-BCBsaonk.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-BCBsaonk.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-BCBsaonk.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-BCBsaonk.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-BCBsaonk.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-BCBsaonk.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-BCBsaonk.js:108:92313
+📥 [BUFFER] Received serial response: ok index-BCBsaonk.js:108:91874
+✅ [BUFFER] Response received after 100ms index-BCBsaonk.js:108:93437
