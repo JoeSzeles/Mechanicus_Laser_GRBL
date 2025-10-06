@@ -37,7 +37,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       }
     }
 
-    // Listen for machine responses
+    // Listen for machine responses from SerialContext
     const handleSerialResponse = (event) => {
       const { message } = event.detail
       console.log('📥 [BUFFER] Received serial response:', message)
@@ -48,12 +48,29 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         
         // Accept "ok" or GRBL status responses as acknowledgment
         if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
-          console.log('✅ [BUFFER] Command acknowledged')
+          console.log('✅ [BUFFER] Command acknowledged:', message)
+          responseReceivedRef.current = true
+          waitingForResponseRef.current = false
+        } else {
+          console.log('⏳ [BUFFER] Waiting for ok, got:', message)
+        }
+      }
+    }
+
+    // Create a custom handler for SerialContext messages
+    const handleSerialData = (data) => {
+      if (waitingForResponseRef.current && data && typeof data === 'string') {
+        const lowerMsg = data.toLowerCase()
+        if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
+          console.log('✅ [BUFFER] Command acknowledged via direct handler:', data)
           responseReceivedRef.current = true
           waitingForResponseRef.current = false
         }
       }
     }
+
+    // Store handler globally so SerialContext can call it
+    window.bufferSerialHandler = handleSerialData
 
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
     window.addEventListener('start-buffer-transmission', handleStartTransmission)
@@ -63,6 +80,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
       window.removeEventListener('start-buffer-transmission', handleStartTransmission)
       window.removeEventListener('buffer-serial-response', handleSerialResponse)
+      delete window.bufferSerialHandler
     }
   }, [status, gcodeLines.length, currentLine])
 

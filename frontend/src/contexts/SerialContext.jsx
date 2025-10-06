@@ -145,7 +145,11 @@ export function SerialProvider({ children }) {
         console.log('🟢 [COMPANION→MAIN] serial_data:', data.message)
         addMessage('receive', `📨 ${data.message}`)
         
-        // Forward to buffer window for acknowledgment tracking
+        // Forward to buffer window for acknowledgment tracking (both methods for reliability)
+        if (typeof window.bufferSerialHandler === 'function') {
+          window.bufferSerialHandler(data.message)
+        }
+        
         const bufferEvent = new CustomEvent('buffer-serial-response', {
           detail: { message: data.message }
         })
