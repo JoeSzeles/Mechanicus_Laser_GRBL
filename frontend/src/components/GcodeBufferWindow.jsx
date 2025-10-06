@@ -44,8 +44,14 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       // Forward position updates to main app (they handle it in SerialContext)
       const lowerMsg = message.toLowerCase()
       if (lowerMsg.includes('mpos:') || (lowerMsg.includes('x:') && lowerMsg.includes('y:'))) {
-        console.log('📍 [BUFFER] Position response detected, forwarding to SerialContext')
-        // SerialContext will handle position parsing via its own listener
+        console.log('📍 [BUFFER FORWARD] Position response detected, forwarding to tracker:', message)
+        // Import and forward to position tracker
+        import('../utils/machinePositionTracker').then(({ machinePositionTracker }) => {
+          if (machinePositionTracker.parsePositionResponse(message)) {
+            const pos = machinePositionTracker.getPosition()
+            console.log('📍 [BUFFER] Position successfully parsed and updated:', pos)
+          }
+        })
       }
 
       // Check if we're waiting for a response

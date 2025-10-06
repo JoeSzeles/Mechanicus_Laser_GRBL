@@ -206,11 +206,15 @@ export function exportGcode(shapes, profile) {
       lines.push(profile.shapePreamble)
     }
 
-    // Move to start
+    // Move to start (travel move, laser off)
     const start = shape[0]
     lines.push(generateMovement(firmware, start.x, start.y, profile.zTravel, profile.travelSpeed, true))
 
-    // Draw shape
+    // Turn laser ON once at the beginning of shape
+    const laserPower = profile.laserPower || 1000
+    lines.push(generateLaserControl(firmware, laserPower, true))
+
+    // Draw entire shape with laser on (continuous movement)
     const pathCommands = []
     shape.forEach((point, i) => {
       if (i === 0) return // Skip first point (already moved there)
@@ -226,14 +230,15 @@ export function exportGcode(shapes, profile) {
     pathCommands.forEach((cmd, index) => {
       lines.push(cmd)
 
-      // Insert position query every N commands (but not after laser on/off or last command)
+      // Insert position query every N commands (but not on last command)
       if ((index + 1) % POSITION_QUERY_INTERVAL === 0 &&
-          index < pathCommands.length - 1 &&
-          !cmd.includes('M3') &&
-          !cmd.includes('M5')) {
+          index < pathCommands.length - 1) {
         lines.push(positionQueryCmd)
       }
     })
+
+    // Turn laser OFF once at the end of shape
+    lines.push(generateLaserControl(firmware, laserPower, false))
 
     // Lift at end
     const end = shape[shape.length - 1]
