@@ -1,14 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSerial } from '../contexts/SerialContext'
+import { machinePositionTracker } from '../utils/machinePositionTracker'
 import PopupWindow from './PopupWindow'
 import './GcodeBufferWindow.css'
-
-// NOTE: The original error was due to an incorrect import of 'resetWorkspaceStorage'
-// from '../utils/workspaceManager'. Based on the provided `workspaceManager.js`
-// content in the thinking process, the function is actually named `resetWorkspace`.
-// This change is NOT reflected here as it was not part of the provided changes,
-// but it's important context for the build error.
-// The following code only incorporates the changes related to the sendNextCommand logic.
 
 function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   const { sendCommand, serialState, isConnected } = useSerial()
@@ -21,6 +15,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   const isPausedRef = useRef(false)
   const isStoppedRef = useRef(false)
   const transmissionLoopRef = useRef(null)
+  const positionTrackingIntervalRef = useRef(null)
 
   // Load G-code from buffer module
   useEffect(() => {
@@ -45,8 +40,35 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     return () => {
       window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
       window.removeEventListener('start-buffer-transmission', handleStartTransmission)
+      stopPositionTracking()
     }
   }, [currentLine, gcodeLines.length, isConnected, serialState.port])
+
+  // Start position tracking during buffer transmission
+  const startPositionTracking = () => {
+    if (!isConnected || !serialState.port) return
+
+    console.log('📍 [BUFFER] Starting position tracking every 500ms')
+    
+    // Query position immediately
+    machinePositionTracker.queryPosition(serialState.port, 'grbl')
+
+    // Then query every 500ms
+    positionTrackingIntervalRef.current = setInterval(() => {
+      if (isConnected && serialState.port) {
+        machinePositionTracker.queryPosition(serialState.port, 'grbl')
+      }
+    }, 500)
+  }
+
+  // Stop position tracking
+  const stopPositionTracking = () => {
+    if (positionTrackingIntervalRef.current) {
+      clearInterval(positionTrackingIntervalRef.current)
+      positionTrackingIntervalRef.current = null
+      console.log('📍 [BUFFER] Stopped position tracking')
+    }
+  }
 
   const sendNextCommand = async () => {
     if (!isConnected || !serialState.port) {
@@ -57,6 +79,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
     if (currentLine >= gcodeLines.length) {
       setStatus('idle')
+      stopPositionTracking()
       return false
     }
 
@@ -93,6 +116,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       ))
       setStatus('error')
       setErrorMessage(error.message)
+      stopPositionTracking()
       return false
     }
   }
@@ -104,6 +128,9 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     isPausedRef.current = false
     isStoppedRef.current = false
     setErrorMessage('')
+
+    // Start position tracking
+    startPositionTracking()
 
     const runLoop = async () => {
       while (currentLine < gcodeLines.length && !isStoppedRef.current) {
@@ -123,6 +150,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
       if (currentLine >= gcodeLines.length) {
         setStatus('idle')
+        stopPositionTracking()
       }
     }
 
@@ -133,6 +161,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     if (status === 'running') {
       isPausedRef.current = true
       setStatus('paused')
+      stopPositionTracking()
     }
   }
 
@@ -140,6 +169,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     if (status === 'paused') {
       isPausedRef.current = false
       setStatus('running')
+      startPositionTracking()
     } else if (status === 'idle' || status === 'error') {
       startTransmission()
     }
@@ -149,12 +179,14 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     isStoppedRef.current = true
     isPausedRef.current = false
     setStatus('stopped')
+    stopPositionTracking()
   }
 
   const handleEmergencyAbort = () => {
     isStoppedRef.current = true
     isPausedRef.current = false
     setStatus('stopped')
+    stopPositionTracking()
 
     // Send emergency stop to machine
     if (isConnected && serialState.port) {
