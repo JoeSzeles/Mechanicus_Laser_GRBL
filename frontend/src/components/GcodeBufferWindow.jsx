@@ -17,6 +17,8 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   const transmissionLoopRef = useRef(null)
   const waitingForResponseRef = useRef(false)
   const responseReceivedRef = useRef(false)
+  const inFlightCountRef = useRef(0)
+  const maxInFlightRef = useRef(8) // Max commands in planner buffer
 
   // Load G-code from buffer module
   useEffect(() => {
@@ -70,30 +72,33 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         })
       }
 
-      // Check if we're waiting for a response
-      if (waitingForResponseRef.current) {
-        // Accept "ok" or GRBL status responses as acknowledgment
-        if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
-          console.log('✅ [BUFFER] Command acknowledged:', message)
-          responseReceivedRef.current = true
-          waitingForResponseRef.current = false
-        } else {
-          console.log('⏳ [BUFFER] Waiting for ok, got:', message)
+      // Process acknowledgements asynchronously
+      if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
+        console.log('✅ [BUFFER] Command acknowledged:', message)
+        responseReceivedRef.current = true
+        
+        // Decrement in-flight counter
+        if (inFlightCountRef.current > 0) {
+          inFlightCountRef.current--
+          console.log(`📊 [BUFFER] In-flight: ${inFlightCountRef.current}/${maxInFlightRef.current}`)
         }
       }
     }
 
     // Create a custom handler for SerialContext messages
     const handleSerialData = (data) => {
-      console.log('🔵 [BUFFER] Direct handler received:', data, 'Waiting:', waitingForResponseRef.current)
-      if (waitingForResponseRef.current && data && typeof data === 'string') {
+      console.log('🔵 [BUFFER] Direct handler received:', data)
+      if (data && typeof data === 'string') {
         const lowerMsg = data.toLowerCase()
         if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
           console.log('✅ [BUFFER] Command acknowledged via direct handler:', data)
           responseReceivedRef.current = true
-          waitingForResponseRef.current = false
-        } else {
-          console.log('⏳ [BUFFER] Got response but not "ok":', data)
+          
+          // Decrement in-flight counter
+          if (inFlightCountRef.current > 0) {
+            inFlightCountRef.current--
+            console.log(`📊 [BUFFER] In-flight: ${inFlightCountRef.current}/${maxInFlightRef.current}`)
+          }
         }
       }
     }
@@ -135,53 +140,21 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     try {
       console.log(`📤 [BUFFER] Sending line ${lineIndex + 1}/${gcodeLines.length}: ${line.command}`)
 
-      // Set up response waiting
-      waitingForResponseRef.current = true
-      responseReceivedRef.current = false
-
-      // Send command
+      // Send command immediately without waiting
       sendCommand(serialState.port, line.command)
 
-      // Wait for machine response (with timeout)
+      // Increment in-flight counter for non-position commands
       const cmd = line.command.trim().toUpperCase()
-
-      // Position queries (? or M114) don't need acknowledgment, just send and continue
       const isPositionQuery = cmd === '?' || cmd === 'M114'
 
-      if (isPositionQuery) {
-        // Position queries don't wait for "ok", just mark as completed and continue
-        console.log(`📍 [BUFFER] Position query sent, continuing without waiting`)
-        waitingForResponseRef.current = false
-        setGcodeLines(prev => prev.map((l, idx) => 
-          idx === lineIndex ? { ...l, status: 'completed' } : l
-        ))
+      if (!isPositionQuery) {
+        inFlightCountRef.current++
+        console.log(`📊 [BUFFER] Sent command, in-flight: ${inFlightCountRef.current}/${maxInFlightRef.current}`)
       } else {
-        // Normal commands wait for acknowledgment
-        const timeout = cmd.includes('G28') ? 30000 : 5000
-        const startTime = Date.now()
-
-        console.log(`⏳ [BUFFER] Waiting for response (timeout: ${timeout}ms)...`)
-
-        while (!responseReceivedRef.current && (Date.now() - startTime < timeout)) {
-          await new Promise(resolve => setTimeout(resolve, 100))
-        }
-
-        waitingForResponseRef.current = false
-
-        if (!responseReceivedRef.current) {
-          console.error(`❌ [BUFFER] TIMEOUT (${timeout}ms) waiting for response to: ${line.command}`)
-          setGcodeLines(prev => prev.map((l, idx) => 
-            idx === lineIndex ? { ...l, status: 'error', error: 'Timeout' } : l
-          ))
-          setStatus('error')
-          setErrorMessage(`Timeout waiting for response to: ${line.command}`)
-          return false
-        } else {
-          console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
-        }
+        console.log(`📍 [BUFFER] Position query sent (not counted in buffer)`)
       }
 
-      // Mark current line as completed
+      // Mark as completed immediately (responses processed asynchronously)
       setGcodeLines(prev => prev.map((l, idx) => 
         idx === lineIndex ? { ...l, status: 'completed' } : l
       ))
@@ -198,7 +171,6 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       ))
       setStatus('error')
       setErrorMessage(error.message)
-      waitingForResponseRef.current = false
       return false
     }
   }
@@ -210,6 +182,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     isPausedRef.current = false
     isStoppedRef.current = false
     setErrorMessage('')
+    inFlightCountRef.current = 0 // Reset counter
 
     const runLoop = async () => {
       let lineIndex = currentLine
@@ -222,31 +195,33 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
         if (isStoppedRef.current) break
 
+        // Wait if planner buffer is full (throttle based on in-flight count)
+        while (inFlightCountRef.current >= maxInFlightRef.current && !isStoppedRef.current && !isPausedRef.current) {
+          console.log(`⏸️ [BUFFER] Planner buffer full (${inFlightCountRef.current}/${maxInFlightRef.current}), waiting...`)
+          await new Promise(resolve => setTimeout(resolve, 50))
+        }
+
+        if (isStoppedRef.current) break
+
         const success = await sendNextCommand(lineIndex)
         if (!success) break
 
         // Increment local counter
         lineIndex++
 
-        // Check if next command is part of continuous movement (G1/G2/G3 without laser toggle)
-        const currentCmd = gcodeLines[lineIndex - 1]?.command.trim().toUpperCase()
-        const nextCmd = gcodeLines[lineIndex]?.command.trim().toUpperCase()
+        // Small delay to prevent overwhelming serial port (but don't wait for responses)
+        await new Promise(resolve => setTimeout(resolve, 5))
+      }
 
-        const isContinuousMove = 
-          nextCmd && 
-          (nextCmd.startsWith('G1') || nextCmd.startsWith('G2') || nextCmd.startsWith('G3')) &&
-          !nextCmd.includes('M3') && 
-          !nextCmd.includes('M5') &&
-          !currentCmd.includes('M3') &&
-          !currentCmd.includes('M5')
-
-        // Reduced delay for continuous shapes (20ms), normal delay otherwise (100ms)
-        const delay = isContinuousMove ? 20 : 100
-        await new Promise(resolve => setTimeout(resolve, delay))
+      // Wait for all in-flight commands to complete before marking idle
+      while (inFlightCountRef.current > 0 && !isStoppedRef.current) {
+        console.log(`⏳ [BUFFER] Waiting for remaining ${inFlightCountRef.current} commands to complete...`)
+        await new Promise(resolve => setTimeout(resolve, 100))
       }
 
       if (lineIndex >= gcodeLines.length) {
         setStatus('idle')
+        console.log('✅ [BUFFER] All commands sent and acknowledged')
       }
     }
 
