@@ -21,6 +21,13 @@ const FloatingPanel = ({
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 })
   const panelRef = useRef(null)
 
+  // Update size when defaultSize changes (e.g., from workspace restore)
+  React.useEffect(() => {
+    if (defaultSize && (defaultSize.width !== size.width || defaultSize.height !== size.height)) {
+      setSize(defaultSize)
+    }
+  }, [defaultSize])
+
   const handleMouseDown = (e) => {
     if (e.target.closest('.panel-close-button')) return
     

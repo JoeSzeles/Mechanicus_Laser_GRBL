@@ -1384,29 +1384,30 @@ function CADInterface() {
   const drawMachinePosition = () => {
     if (!isConnected || !machinePosition) return null
 
-    // Convert machine coordinates to canvas coordinates based on origin point
+    // Convert machine coordinates (mm) to canvas coordinates (pixels) based on origin point
     let canvasX, canvasY
+    const mmToPx = machineProfile.mmToPx
 
     switch (machineProfile.originPoint) {
       case 'bottom-left':
-        canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
-        canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+        canvasX = machinePosition.x * mmToPx
+        canvasY = canvasHeight - (machinePosition.y * mmToPx)
         break
       case 'bottom-right':
-        canvasX = canvasWidth - ((machinePosition.x * canvasWidth) / machineProfile.bedSizeX)
-        canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+        canvasX = canvasWidth - (machinePosition.x * mmToPx)
+        canvasY = canvasHeight - (machinePosition.y * mmToPx)
         break
       case 'top-left':
-        canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
-        canvasY = (machinePosition.y * canvasHeight) / machineProfile.bedSizeY
+        canvasX = machinePosition.x * mmToPx
+        canvasY = machinePosition.y * mmToPx
         break
       case 'top-right':
-        canvasX = canvasWidth - ((machinePosition.x * canvasWidth) / machineProfile.bedSizeX)
-        canvasY = (machinePosition.y * canvasHeight) / machineProfile.bedSizeY
+        canvasX = canvasWidth - (machinePosition.x * mmToPx)
+        canvasY = machinePosition.y * mmToPx
         break
       default:
-        canvasX = (machinePosition.x * canvasWidth) / machineProfile.bedSizeX
-        canvasY = canvasHeight - ((machinePosition.y * canvasHeight) / machineProfile.bedSizeY)
+        canvasX = machinePosition.x * mmToPx
+        canvasY = canvasHeight - (machinePosition.y * mmToPx)
     }
 
     const rectWidth = 20 / viewport.zoom
