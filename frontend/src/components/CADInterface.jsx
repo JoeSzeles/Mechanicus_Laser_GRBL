@@ -3156,7 +3156,7 @@ function CADInterface() {
           zIndex={panelPositions.drawingTools.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('drawingTools', x, y)}
           onBringToFront={() => bringPanelToFront('drawingTools')}
-          defaultSize={workspace.panelSizes?.drawingTools || { width: 220, height: 280 }}
+          defaultSize={workspace.panelSizes?.drawingTools || { width: 220, height: 230 }}
           onSizeChange={(w, h) => setPanelSize('drawingTools', { width: w, height: h })}
         >
           <DrawingToolsWindow />
@@ -3170,7 +3170,7 @@ function CADInterface() {
           zIndex={panelPositions.layers.zIndex}
           onPositionChange={(x, y) => updatePanelPosition('layers', x, y)}
           onBringToFront={() => bringPanelToFront('layers')}
-          defaultSize={workspace.panelSizes?.layers || { width: 280, height: 350 }}
+          defaultSize={workspace.panelSizes?.layers || { width: 280, height: 250 }}
           onSizeChange={(w, h) => setPanelSize('layers', { width: w, height: h })}
         >
           <LayersWindow />

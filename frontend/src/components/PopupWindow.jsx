@@ -71,8 +71,10 @@ function PopupWindow({
     setIsResizing(true)
     setResizeDirection(direction)
     setResizeStart({
-      x: e.clientX,
-      y: e.clientY,
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      x: position.x,
+      y: position.y,
       width: size.width,
       height: size.height
     })
@@ -80,32 +82,55 @@ function PopupWindow({
 
   const handleResizeMouseMove = (e) => {
     if (isResizing && resizeDirection) {
-      const deltaX = e.clientX - resizeStart.x
-      const deltaY = e.clientY - resizeStart.y
+      const deltaX = e.clientX - resizeStart.mouseX
+      const deltaY = e.clientY - resizeStart.mouseY
 
       let newWidth = resizeStart.width
       let newHeight = resizeStart.height
-      let newX = position.x
-      let newY = position.y
+      let newX = resizeStart.x
+      let newY = resizeStart.y
+
+      const minWidth = 200
+      const minHeight = 150
 
       if (resizeDirection.includes('e')) {
-        newWidth = Math.max(200, resizeStart.width + deltaX)
+        newWidth = Math.max(minWidth, resizeStart.width + deltaX)
       }
       if (resizeDirection.includes('w')) {
-        newWidth = Math.max(200, resizeStart.width - deltaX)
-        newX = position.x + deltaX
+        const proposedWidth = resizeStart.width - deltaX
+        if (proposedWidth >= minWidth) {
+          newWidth = proposedWidth
+          newX = resizeStart.x + deltaX
+        } else {
+          newWidth = minWidth
+          newX = resizeStart.x + (resizeStart.width - minWidth)
+        }
       }
       if (resizeDirection.includes('s')) {
-        newHeight = Math.max(150, resizeStart.height + deltaY)
+        newHeight = Math.max(minHeight, resizeStart.height + deltaY)
       }
       if (resizeDirection.includes('n')) {
-        newHeight = Math.max(150, resizeStart.height - deltaY)
-        newY = position.y + deltaY
+        const proposedHeight = resizeStart.height - deltaY
+        if (proposedHeight >= minHeight) {
+          newHeight = proposedHeight
+          newY = resizeStart.y + deltaY
+        } else {
+          newHeight = minHeight
+          newY = resizeStart.y + (resizeStart.height - minHeight)
+        }
       }
+
+      // Constrain window to viewport bounds (minimum 50px visible on each edge)
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+      const minVisible = 50
+
+      newX = Math.max(-newWidth + minVisible, Math.min(viewportWidth - minVisible, newX))
+      newY = Math.max(0, Math.min(viewportHeight - 30, newY)) // Keep header visible
 
       setSize({ width: newWidth, height: newHeight })
       if (onSizeChange) {
-        onSizeChange({ width: newWidth, height: newHeight })
+        onSizeChange(newWidth, newHeight)
       }
       if (newX !== position.x || newY !== position.y) {
         const newPosition = { x: newX, y: newY }

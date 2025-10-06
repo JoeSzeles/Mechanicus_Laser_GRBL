@@ -330,7 +330,7 @@ function GcodeBufferWindow({ isOpen, onClose }) {
       defaultPosition={workspace.panelPositions?.gcodeBuffer || { x: 100, y: 100 }}
       defaultSize={workspace.panelSizes?.gcodeBuffer || { width: 600, height: 500 }}
       onPositionChange={(pos) => setPanelPosition('gcodeBuffer', pos)}
-      onSizeChange={(size) => setPanelSize('gcodeBuffer', size)}
+      onSizeChange={(w, h) => setPanelSize('gcodeBuffer', { width: w, height: h })}
       onFocus={handleFocus}
       zIndex={zIndex}
     >
