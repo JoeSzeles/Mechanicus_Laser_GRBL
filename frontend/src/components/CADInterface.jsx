@@ -2175,6 +2175,19 @@ function CADInterface() {
           >
             Delete Selected
           </button>
+          <button
+            onClick={() => {
+              if (window.confirm('Clear entire canvas? This cannot be undone.')) {
+                setShapes([])
+                setSelectedShapeIds([])
+                setSelectedShapeId(null)
+              }
+            }}
+            className="clear-canvas-button"
+            style={{ marginLeft: '8px' }}
+          >
+            Clear Canvas
+          </button>
         </div>
         <div className="toolbar-center">
         </div>
