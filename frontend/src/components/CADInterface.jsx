@@ -450,6 +450,36 @@ function CADInterface() {
       }
     }
     
+    // Check if clicking on empty canvas to start selection rectangle
+    // BUT also check if clicking on a shape for direct selection
+    if (!activeTool && e.evt.button === 0) {
+      const point = getWorldPoint(e, false)
+      
+      // Check if we clicked on any shape
+      const clickedShape = shapes.find(shape => {
+        const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
+        if (!shapeLayer || !shapeLayer.visible || shapeLayer.locked) return false
+        
+        // Use the isPointInShape helper
+        const store = useCadStore.getState()
+        return store.isPointInShape(point.x, point.y, shape)
+      })
+      
+      if (clickedShape) {
+        // Select this shape and prepare for dragging
+        setSelectedShapeId(clickedShape.id)
+        setSelectedShapeIds([])
+        setDragStart(point)
+        setIsDraggingSelection(true)
+        
+        // If Alt is pressed, prepare for clone
+        if (altKeyPressed) {
+          setClonePreview({ ...clickedShape, id: `clone-preview-${Date.now()}` })
+        }
+        return
+      }
+    }
+    
     if (clickedOnEmpty && e.evt.button === 0) {
       setSelectedShapeId(null)
       setSelectedShapeIds([])
@@ -610,10 +640,13 @@ function CADInterface() {
         } else if (shape.type === 'rectangle') {
           updates.x = shape.x + dx
           updates.y = shape.y + dy
-        } else if (shape.type === 'polygon' || shape.type === 'freehand') {
-          updates.points = shape.points.map((val, i) => 
-            i % 2 === 0 ? val + dx : val + dy
-          )
+        } else if (shape.type === 'polygon' || shape.type === 'freehand' || shape.type === 'path') {
+          // For polygon/freehand, points is a flat array [x1, y1, x2, y2, ...]
+          if (Array.isArray(shape.points)) {
+            updates.points = shape.points.map((val, i) => 
+              i % 2 === 0 ? val + dx : val + dy
+            )
+          }
         }
         
         setClonePreview({ ...shape, ...updates })
@@ -640,10 +673,13 @@ function CADInterface() {
         } else if (shape.type === 'rectangle') {
           updates.x = shape.x + dx
           updates.y = shape.y + dy
-        } else if (shape.type === 'polygon' || shape.type === 'freehand') {
-          updates.points = shape.points.map((val, i) => 
-            i % 2 === 0 ? val + dx : val + dy
-          )
+        } else if (shape.type === 'polygon' || shape.type === 'freehand' || shape.type === 'path') {
+          // For polygon/freehand, points is a flat array [x1, y1, x2, y2, ...]
+          if (Array.isArray(shape.points)) {
+            updates.points = shape.points.map((val, i) => 
+              i % 2 === 0 ? val + dx : val + dy
+            )
+          }
         }
         
         updateShape(id, updates)
