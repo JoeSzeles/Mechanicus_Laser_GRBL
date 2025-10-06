@@ -1,0 +1,51 @@
+📊 Communication Logs
+9:04:00 pm 🟣 Machine response {"response":"ok"}
+9:04:00 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:05 pm 🟢 Command received from main app {"command":"G28"}
+9:04:05 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:05 pm 🟣 Machine response {"response":"ok"}
+9:04:05 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:06 pm 🟢 Command received from main app {"command":"G28"}
+9:04:06 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:06 pm 🟣 Machine response {"response":"ok"}
+9:04:06 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:06 pm 🟢 Command received from main app {"command":"G28"}
+9:04:06 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:06 pm 🟣 Machine response {"response":"ok"}
+9:04:06 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:06 pm 🟢 Command received from main app {"command":"G28"}
+9:04:06 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:06 pm 🟣 Machine response {"response":"ok"}
+9:04:06 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:06 pm 🟢 Command received from main app {"command":"G28"}
+9:04:06 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:06 pm 🟣 Machine response {"response":"ok"}
+9:04:06 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:06 pm 🟢 Command received from main app {"command":"G28"}
+9:04:06 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:07 pm 🟣 Machine response {"response":"ok"}
+9:04:07 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:07 pm 🟢 Command received from main app {"command":"G28"}
+9:04:07 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:07 pm 🟣 Machine response {"response":"ok"}
+9:04:07 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:07 pm 🟢 Command received from main app {"command":"G28"}
+9:04:07 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:07 pm 🟣 Machine response {"response":"ok"}
+9:04:07 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:07 pm 🟢 Command received from main app {"command":"G28"}
+9:04:07 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:07 pm 🟣 Machine response {"response":"ok"}
+9:04:07 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:07 pm 🟢 Command received from main app {"command":"G28"}
+9:04:07 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:07 pm 🟣 Machine response {"response":"ok"}
+9:04:07 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:08 pm 🟢 Command received from main app {"command":"G28"}
+9:04:08 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:08 pm 🟣 Machine response {"response":"ok"}
+9:04:08 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}
+9:04:08 pm 🟢 Command received from main app {"command":"G28"}
+9:04:08 pm 🔵 Sending to machine {"portPath":"COM7","command":"G28"}
+9:04:08 pm 🟣 Machine response {"response":"ok"}
+9:04:08 pm 🔴 Sending to main app {"type":"serial_data","message":"ok"}

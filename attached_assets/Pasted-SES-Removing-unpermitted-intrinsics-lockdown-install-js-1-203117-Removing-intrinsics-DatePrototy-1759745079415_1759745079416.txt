@@ -1,0 +1,1133 @@
+SES Removing unpermitted intrinsics lockdown-install.js:1:203117
+  Removing intrinsics.%DatePrototype%.toTemporalInstant lockdown-install.js:1:202962
+✅ User authenticated, default profile loaded index-CticEKui.js:120:60613
+✅ updateLineEditorState is available index-CticEKui.js:120:15405
+🔄 Loading workspace on mount... index-CticEKui.js:120:15479
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: true, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759744493725 }
+index-CticEKui.js:108:8606
+✅ Workspace loaded successfully index-CticEKui.js:108:13805
+💾 Auto-saving workspace... index-CticEKui.js:120:15921
+💾 Workspace saved: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: true, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759745022198 }
+index-CticEKui.js:108:8368
+✅ Workspace saved successfully index-CticEKui.js:108:13692
+✅ Loaded default profile: Joe index-CticEKui.js:120:15550
+🔗 Connecting to LOCAL companion: ws://localhost:8080 index-CticEKui.js:60:23769
+✅ WebSocket onopen fired index-CticEKui.js:60:23876
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "status", data: {…} }
+index-CticEKui.js:60:24515
+✅ Received status from companion, now truly connected index-CticEKui.js:60:24681
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-CticEKui.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X5.000 Y0.000 F1000", "G90" ]
+index-CticEKui.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X5.000 Y0.000 F1000" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-CticEKui.js:60:26622
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 300, pollInterval: 500 }
+index-CticEKui.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X5.000 Y0.000 F1000" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+📍 [TRACKING] Stopped position polling index-CticEKui.js:60:21519
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+📍 [TRACKING] Final position query index-CticEKui.js:60:21350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 5, y: 0, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-CticEKui.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X0.000 Y23.000 F1000", "G90" ]
+index-CticEKui.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X0.000 Y23.000 F1000" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-CticEKui.js:60:26622
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 1380, pollInterval: 500 }
+index-CticEKui.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X0.000 Y23.000 F1000" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:5.000,7.966,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:5.000,7.966,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:5.000,7.966,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:5.000,7.966,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:5.000,7.966,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 5, y: 7.966, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 5, y: 7.966, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 5, y: 7.966, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 5, y: 7.966, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-CticEKui.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X23.000 Y0.000 F1000", "G90" ]
+index-CticEKui.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X23.000 Y0.000 F1000" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-CticEKui.js:60:26622
+📍 [TRACKING] Stopped position polling index-CticEKui.js:60:21519
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 1380, pollInterval: 500 }
+index-CticEKui.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X23.000 Y0.000 F1000" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-CticEKui.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X23.000 Y23.000 F1000", "G90" ]
+index-CticEKui.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X23.000 Y23.000 F1000" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-CticEKui.js:60:26622
+📍 [TRACKING] Stopped position polling index-CticEKui.js:60:21519
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 1380, pollInterval: 500 }
+index-CticEKui.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X23.000 Y23.000 F1000" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:9.525,22.997,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:9.525,22.997,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:9.525,22.997,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:9.525,22.997,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:9.525,22.997,0.000|FS:1000,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 9.525, y: 22.997, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 9.525, y: 22.997, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 9.525, y: 22.997, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 9.525, y: 22.997, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-CticEKui.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X0.000 Y23.000 F1000", "G90" ]
+index-CticEKui.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X0.000 Y23.000 F1000" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-CticEKui.js:60:26622
+📍 [TRACKING] Stopped position polling index-CticEKui.js:60:21519
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 1380, pollInterval: 500 }
+index-CticEKui.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X0.000 Y23.000 F1000" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-CticEKui.js:108:87258
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X23.000 Y23.000 F1000", "G90" ]
+index-CticEKui.js:108:87431
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X23.000 Y23.000 F1000" }
+index-CticEKui.js:60:26622
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-CticEKui.js:60:26622
+📍 [TRACKING] Stopped position polling index-CticEKui.js:60:21519
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 1380, pollInterval: 500 }
+index-CticEKui.js:60:21099
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X23.000 Y23.000 F1000" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-CticEKui.js:60:26338
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:25.763,22.997,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:25.763,22.997,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:25.763,22.997,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:25.763,22.997,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:25.763,22.997,0.000|FS:1000,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 25.763, y: 22.997, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 25.763, y: 22.997, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 25.763, y: 22.997, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 25.763, y: 22.997, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:32.263,27.250,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:32.263,27.250,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:32.263,27.250,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:32.263,27.250,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:32.263,27.250,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 32.263, y: 27.25, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 32.263, y: 27.25, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 32.263, y: 27.25, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 32.263, y: 27.25, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:38.375,33.371,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:38.375,33.371,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:38.375,33.371,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:38.375,33.371,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:38.375,33.371,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 38.375, y: 33.371, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 38.375, y: 33.371, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 38.375, y: 33.371, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 38.375, y: 33.371, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:44.250,39.244,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:44.250,39.244,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:44.250,39.244,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:44.250,39.244,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:44.250,39.244,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 44.25, y: 39.244, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 44.25, y: 39.244, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 44.25, y: 39.244, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 44.25, y: 39.244, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+📍 [TRACKING] Stopped position polling index-CticEKui.js:60:21519
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-CticEKui.js:60:21764
+📍 [TRACKING] Final position query index-CticEKui.js:60:21350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:51.000,46.152,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: <Run|MPos:51.000,46.152,0.000|FS:1000,0|Pn:P|PS:100|PF:100> Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: <Run|MPos:51.000,46.152,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:108:91874
+📍 [MAIN APP] Position response detected: <Run|MPos:51.000,46.152,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:25512
+📍 [POSITION] Parsing response: <Run|MPos:51.000,46.152,0.000|FS:1000,0|Pn:P|PS:100|PF:100> index-CticEKui.js:60:21968
+✅ [POSITION] GRBL position parsed: 
+Object { x: 51, y: 46.152, z: 0 }
+index-CticEKui.js:60:22177
+📍 [MAIN APP] Position parsed: 
+Object { x: 51, y: 46.152, z: 0 }
+index-CticEKui.js:60:25645
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 51, y: 46.152, z: 0 }
+index-CticEKui.js:60:25840
+🎯 [MAIN APP] Position update received: 
+Object { x: 51, y: 46.152, z: 0 }
+index-CticEKui.js:60:25935
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: false index-CticEKui.js:108:92139
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 100ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 101ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 101ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 100ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 110ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 204ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 101ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 99ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 100ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 101ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 101ms index-CticEKui.js:108:93435
+📤 [BUFFER] Sending line 1/12: G28 index-CticEKui.js:108:93071
+🔴 [MAIN→COMPANION] send_command: G28 index-CticEKui.js:60:27332
+⏳ [BUFFER] Waiting for response (timeout: 30000ms)... index-CticEKui.js:108:93273
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-CticEKui.js:60:24515
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-CticEKui.js:60:26338
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-CticEKui.js:60:24515
+🟢 [COMPANION→MAIN] serial_data: ok index-CticEKui.js:60:25135
+🔵 [BUFFER] Direct handler received: ok Waiting: true index-CticEKui.js:108:92139
+✅ [BUFFER] Command acknowledged via direct handler: ok index-CticEKui.js:108:92313
+📥 [BUFFER] Received serial response: ok index-CticEKui.js:108:91874
+✅ [BUFFER] Response received after 100ms index-CticEKui.js:108:93435
