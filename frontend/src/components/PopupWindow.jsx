@@ -1,7 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 import './PopupWindow.css'
 
-function PopupWindow({ title, children, isOpen, onClose, defaultPosition = { x: 100, y: 100 }, defaultSize = { width: 400, height: 500 }, onFocus }) {
+function PopupWindow({ 
+  title, 
+  children, 
+  isOpen, 
+  onClose, 
+  defaultPosition = { x: 100, y: 100 }, 
+  defaultSize = { width: 400, height: 500 }, 
+  onFocus,
+  onPositionChange,
+  onSizeChange,
+  zIndex = 1000
+}) {
   const [position, setPosition] = useState(defaultPosition)
   const [size, setSize] = useState(defaultSize)
   const [isDragging, setIsDragging] = useState(false)
@@ -10,6 +21,20 @@ function PopupWindow({ title, children, isOpen, onClose, defaultPosition = { x: 
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 })
   const windowRef = useRef(null)
+
+  // Update position when defaultPosition changes (from workspace restore)
+  useEffect(() => {
+    if (defaultPosition && (defaultPosition.x !== position.x || defaultPosition.y !== position.y)) {
+      setPosition(defaultPosition)
+    }
+  }, [defaultPosition])
+
+  // Update size when defaultSize changes (from workspace restore)
+  useEffect(() => {
+    if (defaultSize && (defaultSize.width !== size.width || defaultSize.height !== size.height)) {
+      setSize(defaultSize)
+    }
+  }, [defaultSize])
 
   const handleMouseDown = (e) => {
     // Allow dragging from header or its children, but not from close button
@@ -25,10 +50,14 @@ function PopupWindow({ title, children, isOpen, onClose, defaultPosition = { x: 
 
   const handleMouseMove = (e) => {
     if (isDragging) {
-      setPosition({
+      const newPosition = {
         x: e.clientX - dragOffset.x,
         y: e.clientY - dragOffset.y
-      })
+      }
+      setPosition(newPosition)
+      if (onPositionChange) {
+        onPositionChange(newPosition)
+      }
     }
   }
 
@@ -76,8 +105,15 @@ function PopupWindow({ title, children, isOpen, onClose, defaultPosition = { x: 
       }
 
       setSize({ width: newWidth, height: newHeight })
+      if (onSizeChange) {
+        onSizeChange({ width: newWidth, height: newHeight })
+      }
       if (newX !== position.x || newY !== position.y) {
-        setPosition({ x: newX, y: newY })
+        const newPosition = { x: newX, y: newY }
+        setPosition(newPosition)
+        if (onPositionChange) {
+          onPositionChange(newPosition)
+        }
       }
     }
   }
@@ -114,7 +150,8 @@ function PopupWindow({ title, children, isOpen, onClose, defaultPosition = { x: 
         left: `${position.x}px`,
         top: `${position.y}px`,
         width: `${size.width}px`,
-        height: `${size.height}px`
+        height: `${size.height}px`,
+        zIndex: zIndex
       }}
       onMouseDown={onFocus}
     >

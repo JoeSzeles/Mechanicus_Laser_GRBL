@@ -69,6 +69,7 @@ function CADInterface() {
   const workspace = useCadStore((state) => state.workspace)
   const setPanelState = useCadStore((state) => state.setPanelState)
   const setPanelPosition = useCadStore((state) => state.setPanelPosition)
+  const setPanelSize = useCadStore((state) => state.setPanelSize)
   const saveWorkspaceState = useCadStore((state) => state.saveWorkspaceState)
   const loadWorkspaceState = useCadStore((state) => state.loadWorkspaceState)
   const resetWorkspaceState = useCadStore((state) => state.resetWorkspaceState)
@@ -79,9 +80,6 @@ function CADInterface() {
   const loadDefaultProfile = useCadStore((state) => state.loadDefaultProfile)
 
   const [jogControlsOpen, setJogControlsOpen] = useState(false)
-  const [jogControlsPosition, setJogControlsPosition] = useState({ x: 100, y: 100 })
-  const [bufferWindowOpen, setBufferWindowOpen] = useState(false)
-  const [bufferWindowPosition, setBufferWindowPosition] = useState({ x: 150, y: 150 })
 
   useEffect(() => {
     if (typeof updateLineEditorState !== 'function') {
@@ -114,7 +112,7 @@ function CADInterface() {
 
     // Listen for buffer window open event
     const handleOpenBuffer = () => {
-      setBufferWindowOpen(true)
+      setPanelState('gcodeBuffer', true)
     }
     window.addEventListener('open-buffer-window', handleOpenBuffer)
     
@@ -2170,7 +2168,7 @@ function CADInterface() {
         // Add G-code Buffer to Tools menu
         toolsMenuItems={[
           { label: 'Jog Controls', onClick: () => setJogControlsOpen(true) },
-          { label: 'G-code Buffer', onClick: () => setBufferWindowOpen(true) },
+          { label: 'G-code Buffer', onClick: () => setPanelState('gcodeBuffer', true) },
         ]}
       />
       <div className="top-toolbar">
@@ -2350,8 +2348,8 @@ function CADInterface() {
                 <path d="M9 9h6m-6 4h6m-6 4h4"/>
               </svg>}
               label="G-code Buffer"
-              onClick={() => setBufferWindowOpen(!bufferWindowOpen)}
-              active={bufferWindowOpen}
+              onClick={() => setPanelState('gcodeBuffer', !workspace.panelStates.gcodeBuffer)}
+              active={workspace.panelStates.gcodeBuffer}
             />
           </div>
 
@@ -2363,10 +2361,8 @@ function CADInterface() {
               onDragStart={(e) => handlePopupDragStart(e, setJogControlsPosition)}
             />
             <GcodeBufferWindow
-              isOpen={bufferWindowOpen}
-              onClose={() => setBufferWindowOpen(false)}
-              position={bufferWindowPosition}
-              onDragStart={(e) => handlePopupDragStart(e, setBufferWindowPosition)}
+              isOpen={workspace.panelStates.gcodeBuffer || false}
+              onClose={() => setPanelState('gcodeBuffer', false)}
             />
           </div>
 

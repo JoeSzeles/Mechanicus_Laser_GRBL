@@ -6,6 +6,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
+  width: 100%;
 }
 
 .tool-btn {
@@ -21,7 +22,9 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  min-width: 45px;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .tool-icon {
@@ -34,6 +37,10 @@
   font-size: 9px;
   line-height: 1;
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .tool-btn:hover {

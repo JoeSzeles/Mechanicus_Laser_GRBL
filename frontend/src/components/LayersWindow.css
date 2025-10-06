@@ -51,7 +51,7 @@
 .layers-list {
   flex: 1;
   overflow-y: auto;
-  max-height: 300px;
+  min-height: 50px;
 }
 
 .layer-item {

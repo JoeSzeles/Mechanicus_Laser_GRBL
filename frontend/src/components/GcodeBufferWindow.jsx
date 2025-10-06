@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSerial } from '../contexts/SerialContext'
 import PopupWindow from './PopupWindow'
+import useCadStore from '../store/cadStore'
 import './GcodeBufferWindow.css'
 
-function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
+function GcodeBufferWindow({ isOpen, onClose }) {
+  const workspace = useCadStore((state) => state.workspace)
+  const setPanelPosition = useCadStore((state) => state.setPanelPosition)
+  const setPanelSize = useCadStore((state) => state.setPanelSize)
   const { sendCommand, serialState, isConnected } = useSerial()
   const [gcodeLines, setGcodeLines] = useState([])
   const [currentLine, setCurrentLine] = useState(0)
@@ -307,15 +311,28 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     }
   }
 
+  const handleFocus = () => {
+    // Use cadStore's bringPanelToFront to persist z-index
+    const bringToFront = useCadStore.getState().bringPanelToFront
+    if (bringToFront) {
+      bringToFront('gcodeBuffer')
+    }
+  }
+
+  // Get z-index from workspace or default
+  const zIndex = (workspace.popupZIndices?.gcodeBuffer || 0) + 1050
+
   return (
     <PopupWindow
       title="G-code Buffer & Transmission"
       isOpen={isOpen}
       onClose={onClose}
-      position={position}
-      onDragStart={onDragStart}
-      width={600}
-      height={500}
+      defaultPosition={workspace.panelPositions?.gcodeBuffer || { x: 100, y: 100 }}
+      defaultSize={workspace.panelSizes?.gcodeBuffer || { width: 600, height: 500 }}
+      onPositionChange={(pos) => setPanelPosition('gcodeBuffer', pos)}
+      onSizeChange={(size) => setPanelSize('gcodeBuffer', size)}
+      onFocus={handleFocus}
+      zIndex={zIndex}
     >
       <div className="gcode-buffer-content">
         {/* Status Bar */}

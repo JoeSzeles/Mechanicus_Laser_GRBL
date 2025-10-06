@@ -57,6 +57,8 @@ const useCadStore = create((set) => ({
       textTools: false
     },
     panelPositions: {},
+    panelSizes: {},
+    popupZIndices: {},
     gridVisible: true,
     gridSize: 10,
     gridSnap: false,
@@ -259,6 +261,24 @@ const useCadStore = create((set) => ({
       panelPositions: { ...state.workspace.panelPositions, [panelId]: position }
     }
   })),
+
+  setPanelSize: (panelId, size) => set((state) => ({
+    workspace: {
+      ...state.workspace,
+      panelSizes: { ...state.workspace.panelSizes, [panelId]: size }
+    }
+  })),
+
+  bringPanelToFront: (panelId) => set((state) => {
+    const currentIndices = state.workspace.popupZIndices || {}
+    const maxIndex = Math.max(0, ...Object.values(currentIndices))
+    return {
+      workspace: {
+        ...state.workspace,
+        popupZIndices: { ...currentIndices, [panelId]: maxIndex + 1 }
+      }
+    }
+  }),
 
   saveWorkspaceState: () => {
     const state = useCadStore.getState()

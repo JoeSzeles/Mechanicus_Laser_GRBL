@@ -1,5 +1,8 @@
 .snap-tools-window {
   min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .snap-option {
