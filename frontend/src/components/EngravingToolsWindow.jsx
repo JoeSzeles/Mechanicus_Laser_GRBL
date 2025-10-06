@@ -381,7 +381,20 @@ function EngravingToolsWindow() {
     else if (shape.type === 'polygon') {
       // Polygon - draw all points and close
       if (shape.points && shape.points.length > 0) {
-        const points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
+        // Handle both flat array [x1, y1, x2, y2] and object array [{x, y}, {x, y}]
+        let points
+        if (typeof shape.points[0] === 'number') {
+          // Flat array format
+          points = []
+          for (let i = 0; i < shape.points.length; i += 2) {
+            points.push(convertToMachineCoords(shape.points[i], shape.points[i + 1]))
+          }
+        } else {
+          // Object array format
+          points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
+        }
+
+        if (points.length === 0) return commands
 
         // Move to start
         commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
@@ -400,7 +413,20 @@ function EngravingToolsWindow() {
     else if (shape.type === 'path' || shape.type === 'freehand') {
       // Freehand/path - draw all points
       if (shape.points && shape.points.length > 0) {
-        const points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
+        // Handle both flat array [x1, y1, x2, y2] and object array [{x, y}, {x, y}]
+        let points
+        if (typeof shape.points[0] === 'number') {
+          // Flat array format
+          points = []
+          for (let i = 0; i < shape.points.length; i += 2) {
+            points.push(convertToMachineCoords(shape.points[i], shape.points[i + 1]))
+          }
+        } else {
+          // Object array format
+          points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
+        }
+
+        if (points.length === 0) return commands
 
         // Move to start
         commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
