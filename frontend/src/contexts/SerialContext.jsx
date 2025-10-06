@@ -238,6 +238,23 @@ export function SerialProvider({ children }) {
     }
   }
 
+  const sendCommand = (portPath, command) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN && isConnected) {
+      const payload = {
+        type: 'send_command',
+        payload: {
+          portPath,
+          command
+        }
+      }
+
+      console.log('🔴 [MAIN→COMPANION] send_command:', command)
+      wsRef.current.send(JSON.stringify(payload))
+    } else {
+      console.error('❌ [COMMAND SEND] Cannot send - not connected')
+    }
+  }
+
   const emergencyStop = () => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({ type: 'emergency_stop' }))
@@ -273,6 +290,7 @@ export function SerialProvider({ children }) {
     isHomed, // Expose homed status
     connectToCompanion,
     sendGcode,
+    sendCommand, // Expose sendCommand for single command sending
     emergencyStop,
     clearMessages,
     homeAxes, // Expose homeAxes function

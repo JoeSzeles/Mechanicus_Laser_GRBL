@@ -165,7 +165,7 @@ function EngravingToolsWindow() {
     const totalShapes = visibleShapes.length
     const passCount = passes
     setProgress({ current: 0, total: totalShapes * passCount })
-    setStatus('Initializing engraving...')
+    setStatus('Generating G-code...')
 
     const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
     const mmToPx = machineProfile.mmToPx
@@ -174,41 +174,26 @@ function EngravingToolsWindow() {
     const originPoint = machineConnection.currentProfile?.originPoint || 'bottom-left'
 
     try {
-      // Initialize position tracker
-      machinePositionTracker.init({ send: (msg) => {
-        const data = JSON.parse(msg)
-        if (data.type === 'send_command') {
-          sendGcode(data.payload.command)
-        }
-      }}, serialState.port)
-
-      // 1. Go home first
-      const homeCmd = generateHomeCommand(firmware)
-      sendGcode(homeCmd)
-      await sleep(2000) // Wait for homing
-
-      // Query position after homing
-      machinePositionTracker.queryPosition(serialState.port, firmware)
-      await sleep(500)
-
+      // Generate all G-code commands first (matching Python approach)
+      const allCommands = []
+      
+      // 1. Home command
+      allCommands.push(generateHomeCommand(firmware))
+      
       // 2. Initialize machine
-      sendGcode('G21') // Set units to mm
-      sendGcode('G90') // Absolute positioning
-      sendGcode(`G1 F${feedRate}`) // Set feed rate
-      sendGcode(generateLaserControl(firmware, 0, false)) // Ensure laser is off
-      machinePositionTracker.setLaserState(false)
-
-
-      // 3. Process each pass
+      allCommands.push('G21') // Set units to mm
+      allCommands.push('G90') // Absolute positioning
+      allCommands.push(`G1 F${feedRate}`) // Set feed rate
+      allCommands.push(generateLaserControl(firmware, 0, false)) // Ensure laser is off
+      
+      // 3. Generate commands for each pass
       for (let pass = 0; pass < passCount; pass++) {
-        setStatus(`Pass ${pass + 1}/${passCount}...`)
-
         // Process each shape
         for (let shapeIndex = 0; shapeIndex < visibleShapes.length; shapeIndex++) {
           const shape = visibleShapes[shapeIndex]
-
+          
           // Generate commands for this shape
-          const commands = generateShapeCommands(
+          const shapeCommands = generateShapeCommands(
             shape,
             mmToPx,
             bedMaxX,
@@ -218,64 +203,31 @@ function EngravingToolsWindow() {
             laserPower,
             firmware
           )
-
-          // Send commands
-          let lastPoint = machinePosition // Keep track of the last point for position tracking
-          for (const cmd of commands) {
-            if (cmd.startsWith('G0') || cmd.startsWith('G1')) {
-              // Extract coordinates from G-code
-              const match = cmd.match(/X([+-]?\d*\.?\d+)Y([+-]?\d*\.?\d+)/)
-              if (match) {
-                const targetX = parseFloat(match[1])
-                const targetY = parseFloat(match[2])
-                const distance = Math.sqrt(Math.pow(targetX - lastPoint.x, 2) + Math.pow(targetY - lastPoint.y, 2))
-
-                // Send the command and then start tracking movement
-                sendGcode(cmd)
-                machinePositionTracker.startMovementTracking(serialState.port, feedRate, distance, firmware)
-                lastPoint = { x: targetX, y: targetY }
-              } else {
-                // If no coordinates, just send the command
-                sendGcode(cmd)
-              }
-            } else {
-              // For laser control commands, just send them
-              sendGcode(cmd)
-              if (cmd.includes('M3')) {
-                machinePositionTracker.setLaserState(true)
-              } else if (cmd.includes('M5')) {
-                machinePositionTracker.setLaserState(false)
-              }
-            }
-            await sleep(10) // Small delay between commands
-          }
-
-          setProgress({ current: pass * totalShapes + shapeIndex + 1, total: totalShapes * passCount })
+          
+          allCommands.push(...shapeCommands)
         }
       }
-
-      // 4. Finish - turn off laser and go home
-      sendGcode(generateLaserControl(firmware, 0, false))
-      machinePositionTracker.setLaserState(false)
-      const homeCmdFinal = generateHomeCommand(firmware)
-      sendGcode(homeCmdFinal)
-
-      // Track homing movement
-      machinePositionTracker.startMovementTracking(serialState.port, 1000, 50, firmware)
-
-
-      // Final position query
-      await sleep(1000)
-      machinePositionTracker.queryPosition(serialState.port, firmware)
-
-      setStatus('Engraving completed successfully!')
-      alert('Engraving completed successfully!')
+      
+      // 4. Finish commands - turn off laser and go home
+      allCommands.push(generateLaserControl(firmware, 0, false))
+      allCommands.push(generateHomeCommand(firmware))
+      
+      // Send to buffer module for transmission
+      const bufferEvent = new CustomEvent('gcode-buffer-update', {
+        detail: {
+          lines: allCommands,
+          start: 0
+        }
+      })
+      window.dispatchEvent(bufferEvent)
+      
+      setStatus('G-code sent to buffer. Use Buffer Window to start transmission.')
+      alert('G-code generated successfully! Open the Buffer Window to start engraving.')
+      
     } catch (error) {
-      console.error('Engraving error:', error)
-      setStatus(`Engraving failed: ${error.message}`)
-      alert('Engraving failed: ' + error.message)
-      sendGcode(generateLaserControl(firmware, 0, false))
-      machinePositionTracker.setLaserState(false)
+      console.error('G-code generation error:', error)
+      setStatus(`G-code generation failed: ${error.message}`)
+      alert('G-code generation failed: ' + error.message)
     } finally {
       setIsEngraving(false)
       setProgress({ current: 0, total: 0 })
