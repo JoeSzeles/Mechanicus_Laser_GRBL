@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { saveWorkspace, loadWorkspace, resetWorkspace, getDefaultWorkspace } from '../utils/workspaceManager'
+import { saveWorkspace, loadWorkspace, resetWorkspaceStorage, getDefaultWorkspace } from '../utils/workspaceManager'
 
 const useCadStore = create((set) => ({
   shapes: [],
@@ -281,7 +281,7 @@ const useCadStore = create((set) => ({
 
   resetWorkspaceState: () => {
     const defaultWorkspace = getDefaultWorkspace()
-    resetWorkspace()
+    resetWorkspaceStorage()
     set({ workspace: defaultWorkspace })
     console.log('✅ Workspace reset to defaults')
     return true

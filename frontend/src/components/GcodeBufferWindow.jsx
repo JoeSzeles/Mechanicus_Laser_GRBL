@@ -1,6 +1,6 @@
+
 import { useState, useEffect, useRef } from 'react'
 import { useSerial } from '../contexts/SerialContext'
-import { machinePositionTracker } from '../utils/machinePositionTracker'
 import PopupWindow from './PopupWindow'
 import './GcodeBufferWindow.css'
 
@@ -11,11 +11,10 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   const [status, setStatus] = useState('idle') // idle, running, paused, stopped, error
   const [progress, setProgress] = useState(0)
   const [errorMessage, setErrorMessage] = useState('')
-
+  
   const isPausedRef = useRef(false)
   const isStoppedRef = useRef(false)
   const transmissionLoopRef = useRef(null)
-  const positionTrackingIntervalRef = useRef(null)
 
   // Load G-code from buffer module
   useEffect(() => {
@@ -30,45 +29,9 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       setProgress(start)
     }
 
-    const handleStartTransmission = () => {
-      startTransmission()
-    }
-
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
-    window.addEventListener('start-buffer-transmission', handleStartTransmission)
-    
-    return () => {
-      window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
-      window.removeEventListener('start-buffer-transmission', handleStartTransmission)
-      stopPositionTracking()
-    }
-  }, [currentLine, gcodeLines.length, isConnected, serialState.port])
-
-  // Start position tracking during buffer transmission
-  const startPositionTracking = () => {
-    if (!isConnected || !serialState.port) return
-
-    console.log('📍 [BUFFER] Starting position tracking every 500ms')
-    
-    // Query position immediately
-    machinePositionTracker.queryPosition(serialState.port, 'grbl')
-
-    // Then query every 500ms
-    positionTrackingIntervalRef.current = setInterval(() => {
-      if (isConnected && serialState.port) {
-        machinePositionTracker.queryPosition(serialState.port, 'grbl')
-      }
-    }, 500)
-  }
-
-  // Stop position tracking
-  const stopPositionTracking = () => {
-    if (positionTrackingIntervalRef.current) {
-      clearInterval(positionTrackingIntervalRef.current)
-      positionTrackingIntervalRef.current = null
-      console.log('📍 [BUFFER] Stopped position tracking')
-    }
-  }
+    return () => window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
+  }, [])
 
   const sendNextCommand = async () => {
     if (!isConnected || !serialState.port) {
@@ -79,58 +42,49 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
     if (currentLine >= gcodeLines.length) {
       setStatus('idle')
-      stopPositionTracking()
       return false
     }
 
     const line = gcodeLines[currentLine]
-
+    
     // Update line status to sending
     setGcodeLines(prev => prev.map((l, idx) => 
       idx === currentLine ? { ...l, status: 'sending' } : l
     ))
 
     try {
-      // Send command and wait for response (like Python's ser.readline())
-      const response = await sendCommand(serialState.port, line.command)
-
-      // Log sent command and response (like Python's print statement)
-      console.log(`Sent: ${line.command}, Received: ${response || 'ok'}`)
-
+      // Send command with proper wait
+      sendCommand(serialState.port, line.command)
+      
+      // Wait for response (simulate Python's send_command with wait)
+      await new Promise(resolve => setTimeout(resolve, 50))
+      
       // Mark as completed
       setGcodeLines(prev => prev.map((l, idx) => 
         idx === currentLine ? { ...l, status: 'completed' } : l
       ))
-
+      
       setCurrentLine(prev => prev + 1)
       setProgress(currentLine + 1)
-
-      // Additional small delay to ensure machine processing (matching Python's behavior)
-      await new Promise(resolve => setTimeout(resolve, 10))
-
+      
       return true
     } catch (error) {
-      console.error(`Command failed: ${line.command}, Error: ${error.message}`)
       setGcodeLines(prev => prev.map((l, idx) => 
         idx === currentLine ? { ...l, status: 'error', error: error.message } : l
       ))
       setStatus('error')
       setErrorMessage(error.message)
-      stopPositionTracking()
       return false
     }
   }
 
   const startTransmission = async () => {
     if (status === 'running') return
-
+    
     setStatus('running')
     isPausedRef.current = false
     isStoppedRef.current = false
     setErrorMessage('')
-
-    // Start position tracking
-    startPositionTracking()
 
     const runLoop = async () => {
       while (currentLine < gcodeLines.length && !isStoppedRef.current) {
@@ -150,7 +104,6 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
       if (currentLine >= gcodeLines.length) {
         setStatus('idle')
-        stopPositionTracking()
       }
     }
 
@@ -161,7 +114,6 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     if (status === 'running') {
       isPausedRef.current = true
       setStatus('paused')
-      stopPositionTracking()
     }
   }
 
@@ -169,7 +121,6 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     if (status === 'paused') {
       isPausedRef.current = false
       setStatus('running')
-      startPositionTracking()
     } else if (status === 'idle' || status === 'error') {
       startTransmission()
     }
@@ -179,15 +130,13 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     isStoppedRef.current = true
     isPausedRef.current = false
     setStatus('stopped')
-    stopPositionTracking()
   }
 
   const handleEmergencyAbort = () => {
     isStoppedRef.current = true
     isPausedRef.current = false
     setStatus('stopped')
-    stopPositionTracking()
-
+    
     // Send emergency stop to machine
     if (isConnected && serialState.port) {
       const firmware = 'grbl' // Get from machine profile
