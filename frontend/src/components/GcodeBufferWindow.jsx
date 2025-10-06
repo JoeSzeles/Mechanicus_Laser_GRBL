@@ -207,9 +207,31 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         await new Promise(resolve => setTimeout(resolve, 100))
       }
 
-      if (lineIndex >= gcodeLines.length) {
+      if (lineIndex >= gcodeLines.length && !isStoppedRef.current) {
+        // Check if last command was a home command
+        const lastCommand = gcodeLines[gcodeLines.length - 1]?.command.trim().toUpperCase()
+        const isHomeCommand = lastCommand === 'G28' || lastCommand === '$H'
+        
+        if (isHomeCommand) {
+          console.log('⏳ [BUFFER] Last command was home, waiting for homing to complete...')
+          // Wait additional time for homing to complete (can be long for G28)
+          await new Promise(resolve => setTimeout(resolve, 3000))
+        }
+        
         setStatus('idle')
-        console.log('✅ [BUFFER] All commands sent and acknowledged')
+        console.log('✅ [BUFFER] All commands sent and acknowledged, engraving complete!')
+        
+        // Show success message
+        alert('✅ Engraving complete! All commands executed successfully and machine has returned to home position.')
+        
+        // Clear buffer after completion
+        setTimeout(() => {
+          setGcodeLines([])
+          setDisplayLines([])
+          setCurrentLine(0)
+          setProgress(0)
+          console.log('🗑️ [BUFFER] Buffer cleared')
+        }, 1000)
       }
     }
 

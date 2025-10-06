@@ -1,22 +1,39 @@
 .drawing-tools-window {
-  min-width: 220px;
+  min-width: 200px;
 }
 
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
 }
 
 .tool-btn {
   background-color: #1a2a2f;
   color: white;
   border: 1px solid #444;
-  padding: 10px 8px;
+  padding: 6px 4px;
   border-radius: 3px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 9px;
   transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 45px;
+}
+
+.tool-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-label {
+  font-size: 9px;
+  line-height: 1;
+  text-align: center;
 }
 
 .tool-btn:hover {

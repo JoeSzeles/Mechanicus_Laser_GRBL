@@ -9,10 +9,16 @@ const FloatingPanel = ({
   position = { x: 100, y: 100 },
   zIndex = 10,
   onPositionChange,
-  onBringToFront
+  onBringToFront,
+  defaultSize = { width: 300, height: 400 },
+  onSizeChange
 }) => {
   const [isDragging, setIsDragging] = useState(false)
+  const [isResizing, setIsResizing] = useState(false)
+  const [resizeDirection, setResizeDirection] = useState(null)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const [size, setSize] = useState(defaultSize)
+  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 })
   const panelRef = useRef(null)
 
   const handleMouseDown = (e) => {
@@ -50,6 +56,59 @@ const FloatingPanel = ({
 
   const handleMouseUp = () => {
     setIsDragging(false)
+    setIsResizing(false)
+    setResizeDirection(null)
+  }
+
+  const handleResizeMouseDown = (e, direction) => {
+    e.stopPropagation()
+    setIsResizing(true)
+    setResizeDirection(direction)
+    setResizeStart({
+      x: e.clientX,
+      y: e.clientY,
+      width: size.width,
+      height: size.height
+    })
+    
+    if (onBringToFront) {
+      onBringToFront()
+    }
+  }
+
+  const handleResizeMouseMove = (e) => {
+    if (isResizing && resizeDirection) {
+      const deltaX = e.clientX - resizeStart.x
+      const deltaY = e.clientY - resizeStart.y
+
+      let newWidth = resizeStart.width
+      let newHeight = resizeStart.height
+      let newX = position.x
+      let newY = position.y
+
+      if (resizeDirection.includes('e')) {
+        newWidth = Math.max(200, resizeStart.width + deltaX)
+      }
+      if (resizeDirection.includes('w')) {
+        newWidth = Math.max(200, resizeStart.width - deltaX)
+        newX = position.x + (resizeStart.width - newWidth)
+      }
+      if (resizeDirection.includes('s')) {
+        newHeight = Math.max(150, resizeStart.height + deltaY)
+      }
+      if (resizeDirection.includes('n')) {
+        newHeight = Math.max(150, resizeStart.height - deltaY)
+        newY = position.y + (resizeStart.height - newHeight)
+      }
+
+      setSize({ width: newWidth, height: newHeight })
+      if (onSizeChange) {
+        onSizeChange(newWidth, newHeight)
+      }
+      if ((newX !== position.x || newY !== position.y) && onPositionChange) {
+        onPositionChange(newX, newY)
+      }
+    }
   }
 
   React.useEffect(() => {
@@ -63,6 +122,18 @@ const FloatingPanel = ({
       }
     }
   }, [isDragging, dragStart, position])
+
+  React.useEffect(() => {
+    if (isResizing) {
+      window.addEventListener('mousemove', handleResizeMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
+      
+      return () => {
+        window.removeEventListener('mousemove', handleResizeMouseMove)
+        window.removeEventListener('mouseup', handleMouseUp)
+      }
+    }
+  }, [isResizing, resizeDirection, resizeStart, size, position])
 
   const handlePanelClick = () => {
     if (onBringToFront) {
@@ -80,6 +151,8 @@ const FloatingPanel = ({
         position: 'fixed',
         left: `${position.x}px`,
         top: `${position.y}px`,
+        width: `${size.width}px`,
+        height: `${size.height}px`,
         zIndex 
       }}
       onClick={handlePanelClick}
@@ -111,6 +184,15 @@ const FloatingPanel = ({
       >
         {children}
       </div>
+      {/* Resize handles */}
+      <div className="resize-handle resize-n" onMouseDown={(e) => handleResizeMouseDown(e, 'n')} />
+      <div className="resize-handle resize-s" onMouseDown={(e) => handleResizeMouseDown(e, 's')} />
+      <div className="resize-handle resize-e" onMouseDown={(e) => handleResizeMouseDown(e, 'e')} />
+      <div className="resize-handle resize-w" onMouseDown={(e) => handleResizeMouseDown(e, 'w')} />
+      <div className="resize-handle resize-ne" onMouseDown={(e) => handleResizeMouseDown(e, 'ne')} />
+      <div className="resize-handle resize-nw" onMouseDown={(e) => handleResizeMouseDown(e, 'nw')} />
+      <div className="resize-handle resize-se" onMouseDown={(e) => handleResizeMouseDown(e, 'se')} />
+      <div className="resize-handle resize-sw" onMouseDown={(e) => handleResizeMouseDown(e, 'sw')} />
     </div>
   )
 }
