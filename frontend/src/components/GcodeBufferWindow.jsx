@@ -29,9 +29,20 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       setProgress(start)
     }
 
+    const handleStartTransmission = () => {
+      if (status === 'idle' && gcodeLines.length > 0) {
+        startTransmission()
+      }
+    }
+
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
-    return () => window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
-  }, [])
+    window.addEventListener('start-buffer-transmission', handleStartTransmission)
+    
+    return () => {
+      window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
+      window.removeEventListener('start-buffer-transmission', handleStartTransmission)
+    }
+  }, [status, gcodeLines.length])
 
   const sendNextCommand = async () => {
     if (!isConnected || !serialState.port) {

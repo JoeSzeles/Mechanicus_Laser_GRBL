@@ -221,8 +221,17 @@ function EngravingToolsWindow() {
       })
       window.dispatchEvent(bufferEvent)
       
-      setStatus('G-code sent to buffer. Use Buffer Window to start transmission.')
-      alert('G-code generated successfully! Open the Buffer Window to start engraving.')
+      // Auto-open buffer window if not already open
+      const openBufferEvent = new CustomEvent('open-buffer-window')
+      window.dispatchEvent(openBufferEvent)
+      
+      // Auto-start transmission after a short delay
+      setTimeout(() => {
+        const startTransmissionEvent = new CustomEvent('start-buffer-transmission')
+        window.dispatchEvent(startTransmissionEvent)
+      }, 500)
+      
+      setStatus('G-code sent to buffer and transmission started.')
       
     } catch (error) {
       console.error('G-code generation error:', error)
