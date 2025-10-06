@@ -35,9 +35,18 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       setProgress(start)
     }
 
+    const handleStartTransmission = () => {
+      startTransmission()
+    }
+
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
-    return () => window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
-  }, [])
+    window.addEventListener('start-buffer-transmission', handleStartTransmission)
+    
+    return () => {
+      window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
+      window.removeEventListener('start-buffer-transmission', handleStartTransmission)
+    }
+  }, [currentLine, gcodeLines.length, isConnected, serialState.port])
 
   const sendNextCommand = async () => {
     if (!isConnected || !serialState.port) {

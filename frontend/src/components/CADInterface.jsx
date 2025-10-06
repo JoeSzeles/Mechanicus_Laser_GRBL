@@ -82,6 +82,8 @@ function CADInterface() {
   const [jogControlsPosition, setJogControlsPosition] = useState({ x: 100, y: 100 })
   const [bufferWindowOpen, setBufferWindowOpen] = useState(false)
   const [bufferWindowPosition, setBufferWindowPosition] = useState({ x: 150, y: 150 })
+  const [showBufferWindow, setShowBufferWindow] = useState(false)
+  const [activeWindow, setActiveWindow] = useState(null)
 
   useEffect(() => {
     if (typeof updateLineEditorState !== 'function') {
@@ -209,7 +211,7 @@ function CADInterface() {
     })
 
     // Other panels on LEFT (higher z-index to appear above defaults, but below menu bar which is 100)
-    const leftPanels = ['snapTools', 'markersGuides', 'transformTools', 'lineEditorTools', 'textTools', 'engravingTools']
+    const leftPanels = ['snapTools', 'markersGuides', 'transformTools', 'lineEditorTools', 'textTools', 'engravingTools', 'buffer']
     leftPanels.forEach((panelId, index) => {
       defaultPositions[panelId] = savedPositions[panelId] || {
         x: 80,
@@ -599,6 +601,28 @@ function CADInterface() {
           const markerPoint = getWorldPoint(e, markerSnapEnabled)
           setMarkerState({ tool: 'lineMarker', startX: markerPoint.x, startY: markerPoint.y })
         }
+      } else if (activeTool === 'engrave') {
+        // Logic for engraving tool
+        const engravingPoint = getWorldPoint(e, markerSnapEnabled)
+        // Here we want to open the buffer window and start engraving
+        // For now, let's just log that engraving is initiated
+        console.log("Engraving initiated at:", engravingPoint);
+
+        // Open buffer window if not already open
+        if (!bufferWindowOpen) {
+          setBufferWindowOpen(true)
+          setShowBufferWindow(true) // Ensure the window is visible
+        }
+
+        // In a real scenario, you'd likely send a command to the machine
+        // or trigger an action within the EngravingToolsWindow or GcodeBufferWindow
+        // For demonstration, let's assume EngravingToolsWindow can handle starting the process
+        // If EngravingToolsWindow is open, it might have a button to start
+        // Or, we can directly trigger a function if available
+        // Example: If there's a function `startEngraving` in a context or store
+        // startEngraving(engravingPoint);
+        // For now, we'll just log and open the buffer window.
+        // The actual engraving start would likely be handled by a button click within the GcodeBufferWindow or EngravingToolsWindow
       }
     }
   }
@@ -706,21 +730,14 @@ function CADInterface() {
     }
 
     if (adjustLineState) {
-      const point = getWorldPoint(e)
       const shape = shapes.find(s => s.id === adjustLineState.shapeId)
-      if (shape) {
-        if (adjustLineState.endpoint === 'start') {
-          updateShape(shape.id, {
-            x1: point.x,
-            y1: point.y
-          })
-        } else {
-          updateShape(shape.id, {
-            x2: point.x,
-            y2: point.y
-          })
-        }
+      if (shape && shape.originalStroke) {
+        updateShape(shape.id, {
+          stroke: shape.originalStroke,
+          strokeWidth: shape.originalStrokeWidth
+        })
       }
+      setAdjustLineState(null)
       return
     }
 
@@ -2127,6 +2144,64 @@ function CADInterface() {
     document.addEventListener('mouseup', onMouseUp)
   }
 
+  // This function is intended to toggle windows and set the active window
+  const handleWindowToggle = (windowName) => {
+    switch(windowName) {
+      case 'drawing':
+        setShowDrawingTools(!showDrawingTools)
+        setActiveWindow(showDrawingTools ? null : 'drawing')
+        break
+      case 'snap':
+        setShowSnapTools(!showSnapTools)
+        setActiveWindow(showSnapTools ? null : 'snap')
+        break
+      case 'transform':
+        setShowTransformTools(!showTransformTools)
+        setActiveWindow(showTransformTools ? null : 'transform')
+        break
+      case 'lineEditor':
+        setShowLineEditorTools(!showLineEditorTools)
+        setActiveWindow(showLineEditorTools ? null : 'lineEditor')
+        break
+      case 'engraving':
+        setShowEngravingTools(!showEngravingTools)
+        setActiveWindow(showEngravingTools ? null : 'engraving')
+        break
+      case 'buffer':
+        setShowBufferWindow(!showBufferWindow)
+        setActiveWindow(showBufferWindow ? null : 'buffer')
+        break
+      case 'text':
+        setShowTextTools(!showTextTools)
+        setActiveWindow(showTextTools ? null : 'text')
+        break
+      default:
+        break
+    }
+  }
+
+  const [windowPositions, setWindowPositions] = useState({
+    drawingTools: { x: 80, y: 80, zIndex: 20 },
+    snapTools: { x: 80, y: 230, zIndex: 21 },
+    markersGuides: { x: 80, y: 380, zIndex: 22 },
+    transformTools: { x: 80, y: 530, zIndex: 23 },
+    lineEditor: { x: 300, y: 100, zIndex: 24 },
+    shapeProperties: { x: 1100, y: 80, zIndex: 10 },
+    text: { x: 900, y: 100, zIndex: 25 },
+    layers: { x: 1100, y: 230, zIndex: 11 },
+    engraving: { x: 700, y: 100, zIndex: 26 },
+    buffer: { x: 20, y: 80, zIndex: 27 } // Default position for Buffer Window
+  })
+
+  const handleWindowDragStart = (panelId, x, y) => {
+    setWindowPositions(prev => ({
+      ...prev,
+      [panelId]: { ...prev[panelId], x, y }
+    }))
+    setPanelPosition(panelId, { x, y })
+  }
+
+
   return (
     <div className="cad-interface">
       <MenuBar
@@ -2153,7 +2228,7 @@ function CADInterface() {
         // Add G-code Buffer to Tools menu
         toolsMenuItems={[
           { label: 'Jog Controls', onClick: () => setJogControlsOpen(true) },
-          { label: 'G-code Buffer', onClick: () => setBufferWindowOpen(true) },
+          { label: 'G-code Buffer', onClick: () => setShowBufferWindow(true) },
         ]}
       />
       <div className="top-toolbar">
@@ -2259,59 +2334,65 @@ function CADInterface() {
             <ToolButton
               icon={<DrawingToolsIcon />}
               label="Drawing Tools"
-              onClick={() => setShowDrawingTools(!showDrawingTools)}
+              onClick={() => handleWindowToggle('drawing')}
               active={showDrawingTools}
             />
             <ToolButton
               icon={<SnapToolsIcon />}
               label="Snap Tools"
-              onClick={() => setShowSnapTools(!showSnapTools)}
+              onClick={() => handleWindowToggle('snap')}
               active={showSnapTools}
             />
             <ToolButton
               icon={<MarkersIcon />}
               label="Markers"
-              onClick={() => setShowMarkersWindow(!showMarkersWindow)}
+              onClick={() => handleWindowToggle('markersGuides')}
               active={showMarkersWindow}
             />
             <ToolButton
               icon={<TransformIcon />}
               label="Transform Tools"
-              onClick={() => setShowTransformTools(!showTransformTools)}
+              onClick={() => handleWindowToggle('transform')}
               active={showTransformTools}
             />
 
             <ToolButton
               icon={<LineEditorIcon />}
               label="Line Editor"
-              onClick={() => setShowLineEditorTools(!showLineEditorTools)}
+              onClick={() => handleWindowToggle('lineEditor')}
               active={showLineEditorTools}
             />
             <ToolButton
               icon={<ShapePropertiesIcon />}
               label="Shape Properties"
-              onClick={() => setShowShapeProperties(!showShapeProperties)}
+              onClick={() => handleWindowToggle('shapeProperties')}
               active={showShapeProperties}
             />
             <ToolButton
               icon={<TextToolsIcon />}
               label="Text Tools"
-              onClick={() => setShowTextTools(!showTextTools)}
+              onClick={() => handleWindowToggle('text')}
               active={showTextTools}
             />
             <ToolButton
               icon={<LayersIcon />}
               label="Layers"
-              onClick={() => setShowLayers(!showLayers)}
+              onClick={() => handleWindowToggle('layers')}
               active={showLayers}
             />
 
             <ToolButton
               icon={<LaserIcon />}
               label="Engraving Tools"
-              onClick={() => setShowEngravingTools(!showEngravingTools)}
+              onClick={() => handleWindowToggle('engraving')}
               active={showEngravingTools}
               className="laser-button"
+            />
+             <ToolButton
+              icon={<LaserIcon />} // Reusing LaserIcon for Buffer, can be replaced with a dedicated icon
+              label="G-code Buffer"
+              onClick={() => handleWindowToggle('buffer')}
+              active={showBufferWindow}
             />
           </div>
 
@@ -3102,10 +3183,10 @@ function CADInterface() {
         <FloatingPanel
           title="Drawing Tools"
           isOpen={showDrawingTools}
-          onClose={() => setShowDrawingTools(false)}
-          position={panelPositions.drawingTools}
-          zIndex={panelPositions.drawingTools.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('drawingTools', x, y)}
+          onClose={() => handleWindowToggle('drawing')}
+          position={windowPositions.drawingTools}
+          zIndex={windowPositions.drawingTools.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('drawingTools', x, y)}
           onBringToFront={() => bringPanelToFront('drawingTools')}
         >
           <DrawingToolsWindow />
@@ -3114,10 +3195,10 @@ function CADInterface() {
         <FloatingPanel
           title="Layers"
           isOpen={showLayers}
-          onClose={() => setShowLayers(false)}
-          position={panelPositions.layers}
-          zIndex={panelPositions.layers.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('layers', x, y)}
+          onClose={() => handleWindowToggle('layers')}
+          position={windowPositions.layers}
+          zIndex={windowPositions.layers.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('layers', x, y)}
           onBringToFront={() => bringPanelToFront('layers')}
         >
           <LayersWindow />
@@ -3126,10 +3207,10 @@ function CADInterface() {
         <FloatingPanel
           title="Shape Properties"
           isOpen={showShapeProperties}
-          onClose={() => setShowShapeProperties(false)}
-          position={panelPositions.shapeProperties}
-          zIndex={panelPositions.shapeProperties.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('shapeProperties', x, y)}
+          onClose={() => handleWindowToggle('shapeProperties')}
+          position={windowPositions.shapeProperties}
+          zIndex={windowPositions.shapeProperties.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('shapeProperties', x, y)}
           onBringToFront={() => bringPanelToFront('shapeProperties')}
         >
           <ShapePropertiesWindow />
@@ -3138,10 +3219,10 @@ function CADInterface() {
         <FloatingPanel
           title="Snap Tools"
           isOpen={showSnapTools}
-          onClose={() => setShowSnapTools(false)}
-          position={panelPositions.snapTools}
-          zIndex={panelPositions.snapTools.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('snapTools', x, y)}
+          onClose={() => handleWindowToggle('snap')}
+          position={windowPositions.snapTools}
+          zIndex={windowPositions.snapTools.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('snapTools', x, y)}
           onBringToFront={() => bringPanelToFront('snapTools')}
         >
           <SnapToolsWindow />
@@ -3150,10 +3231,10 @@ function CADInterface() {
         <FloatingPanel
           title="Markers & Guides"
           isOpen={showMarkersWindow}
-          onClose={() => setShowMarkersWindow(false)}
-          position={panelPositions.markersGuides}
-          zIndex={panelPositions.markersGuides.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('markersGuides', x, y)}
+          onClose={() => handleWindowToggle('markersGuides')}
+          position={windowPositions.markersGuides}
+          zIndex={windowPositions.markersGuides.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('markersGuides', x, y)}
           onBringToFront={() => bringPanelToFront('markersGuides')}
         >
           <MarkersWindow onActivateTool={setActiveTool} />
@@ -3162,10 +3243,10 @@ function CADInterface() {
         <FloatingPanel
           title="Transform Tools"
           isOpen={showTransformTools}
-          onClose={() => setShowTransformTools(false)}
-          position={panelPositions.transformTools}
-          zIndex={panelPositions.transformTools.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('transformTools', x, y)}
+          onClose={() => handleWindowToggle('transform')}
+          position={windowPositions.transformTools}
+          zIndex={windowPositions.transformTools.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('transformTools', x, y)}
           onBringToFront={() => bringPanelToFront('transformTools')}
         >
           <TransformToolsWindow
@@ -3178,11 +3259,11 @@ function CADInterface() {
         <FloatingPanel
           title="Line Editor Tools"
           isOpen={showLineEditorTools}
-          onClose={() => setShowLineEditorTools(false)}
-          position={panelPositions.lineEditorTools}
-          zIndex={panelPositions.lineEditorTools.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('lineEditorTools', x, y)}
-          onBringToFront={() => bringPanelToFront('lineEditorTools')}
+          onClose={() => handleWindowToggle('lineEditor')}
+          position={windowPositions.lineEditor}
+          zIndex={windowPositions.lineEditor.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('lineEditor', x, y)}
+          onBringToFront={() => bringPanelToFront('lineEditor')}
         >
           <LineEditorToolsWindow />
         </FloatingPanel>
@@ -3190,11 +3271,11 @@ function CADInterface() {
         <FloatingPanel
           title="Text & Font Tools"
           isOpen={showTextTools}
-          onClose={() => setShowTextTools(false)}
-          position={panelPositions.textTools}
-          zIndex={panelPositions.textTools.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('textTools', x, y)}
-          onBringToFront={() => bringPanelToFront('textTools')}
+          onClose={() => handleWindowToggle('text')}
+          position={windowPositions.text}
+          zIndex={windowPositions.text.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('text', x, y)}
+          onBringToFront={() => bringPanelToFront('text')}
         >
           <TextFontToolsWindow />
         </FloatingPanel>
@@ -3202,13 +3283,25 @@ function CADInterface() {
         <FloatingPanel
           title="Engraving Tools"
           isOpen={showEngravingTools}
-          onClose={() => setShowEngravingTools(false)}
-          position={panelPositions.engravingTools}
-          zIndex={panelPositions.engravingTools.zIndex}
-          onPositionChange={(x, y) => updatePanelPosition('engravingTools', x, y)}
-          onBringToFront={() => bringPanelToFront('engravingTools')}
+          onClose={() => handleWindowToggle('engraving')}
+          position={windowPositions.engraving}
+          zIndex={windowPositions.engraving.zIndex}
+          onPositionChange={(x, y) => handleWindowDragStart('engraving', x, y)}
+          onBringToFront={() => bringPanelToFront('engraving')}
         >
           <EngravingToolsWindow />
+        </FloatingPanel>
+
+        <FloatingPanel
+          title="G-code Buffer"
+          isOpen={showBufferWindow}
+          onClose={() => handleWindowToggle('buffer')}
+          position={windowPositions.buffer || { x: 20, y: 80 }}
+          zIndex={windowPositions.buffer?.zIndex || 27}
+          onPositionChange={(x, y) => handleWindowDragStart('buffer', x, y)}
+          onBringToFront={() => bringPanelToFront('buffer')}
+        >
+          <GcodeBufferWindow />
         </FloatingPanel>
 
         <MachineSettingsPopup
