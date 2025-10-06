@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react'
 import { useSerial } from '../contexts/SerialContext'
 import PopupWindow from './PopupWindow'
@@ -11,7 +10,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   const [status, setStatus] = useState('idle') // idle, running, paused, stopped, error
   const [progress, setProgress] = useState(0)
   const [errorMessage, setErrorMessage] = useState('')
-  
+
   const isPausedRef = useRef(false)
   const isStoppedRef = useRef(false)
   const transmissionLoopRef = useRef(null)
@@ -41,11 +40,11 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     const handleSerialResponse = (event) => {
       const { message } = event.detail
       console.log('📥 [BUFFER] Received serial response:', message)
-      
+
       // Check if we're waiting for a response
       if (waitingForResponseRef.current) {
         const lowerMsg = message.toLowerCase()
-        
+
         // Accept "ok" or GRBL status responses as acknowledgment
         if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
           console.log('✅ [BUFFER] Command acknowledged:', message)
@@ -78,7 +77,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
     window.addEventListener('start-buffer-transmission', handleStartTransmission)
     window.addEventListener('buffer-serial-response', handleSerialResponse)
-    
+
     return () => {
       window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
       window.removeEventListener('start-buffer-transmission', handleStartTransmission)
@@ -100,7 +99,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     }
 
     const line = gcodeLines[lineIndex]
-    
+
     // Update line status to sending
     setGcodeLines(prev => prev.map((l, idx) => 
       idx === lineIndex ? { ...l, status: 'sending' } : l
@@ -108,28 +107,28 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
     try {
       console.log(`📤 [BUFFER] Sending line ${lineIndex + 1}/${gcodeLines.length}: ${line.command}`)
-      
+
       // Set up response waiting
       waitingForResponseRef.current = true
       responseReceivedRef.current = false
-      
+
       // Send command
       sendCommand(serialState.port, line.command)
-      
+
       // Wait for machine response (with timeout)
       // G28 can take 10-30 seconds depending on machine size
       const cmd = line.command.trim().toUpperCase()
       const timeout = cmd.includes('G28') ? 30000 : 5000
       const startTime = Date.now()
-      
+
       console.log(`⏳ [BUFFER] Waiting for response (timeout: ${timeout}ms)...`)
-      
+
       while (!responseReceivedRef.current && (Date.now() - startTime < timeout)) {
         await new Promise(resolve => setTimeout(resolve, 100))
       }
-      
+
       waitingForResponseRef.current = false
-      
+
       if (!responseReceivedRef.current) {
         console.error(`❌ [BUFFER] TIMEOUT (${timeout}ms) waiting for response to: ${line.command}`)
         // Mark as error but continue
@@ -142,16 +141,16 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       } else {
         console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
       }
-      
+
       // Mark current line as completed
       setGcodeLines(prev => prev.map((l, idx) => 
         idx === lineIndex ? { ...l, status: 'completed' } : l
       ))
-      
+
       // Update state for UI
       setCurrentLine(lineIndex + 1)
       setProgress(lineIndex + 1)
-      
+
       return true
     } catch (error) {
       console.error(`❌ [BUFFER] Error sending line ${lineIndex + 1}:`, error)
@@ -167,7 +166,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
   const startTransmission = async () => {
     if (status === 'running') return
-    
+
     setStatus('running')
     isPausedRef.current = false
     isStoppedRef.current = false
@@ -175,7 +174,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
     const runLoop = async () => {
       let lineIndex = currentLine
-      
+
       while (lineIndex < gcodeLines.length && !isStoppedRef.current) {
         // Check if paused
         while (isPausedRef.current && !isStoppedRef.current) {
@@ -189,7 +188,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
         // Increment local counter
         lineIndex++
-        
+
         // Increased delay to prevent command flooding (100ms between commands)
         await new Promise(resolve => setTimeout(resolve, 100))
       }
@@ -229,15 +228,15 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     isPausedRef.current = false
     setStatus('stopped')
     waitingForResponseRef.current = false
-    
+
     // Send emergency stop to machine
     if (isConnected && serialState.port) {
       // Get firmware from machine profile or default to GRBL
       const machineConnection = window.cadStore?.getState?.()?.machineConnection
       const firmware = machineConnection?.currentProfile?.firmwareType || 'grbl'
-      
+
       console.log('🚨 [BUFFER] Emergency abort, firmware:', firmware)
-      
+
       const stopCmd = firmware === 'grbl' ? '\x18' : 'M112'
       sendCommand(serialState.port, stopCmd)
     }
