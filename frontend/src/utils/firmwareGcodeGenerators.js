@@ -227,9 +227,9 @@ export function exportGcode(shapes, profile) {
       lines.push(cmd)
 
       // Insert position query every N commands (but not after laser on/off or last command)
-      if ((index + 1) % POSITION_QUERY_INTERVAL === 0 && 
+      if ((index + 1) % POSITION_QUERY_INTERVAL === 0 &&
           index < pathCommands.length - 1 &&
-          !cmd.includes('M3') && 
+          !cmd.includes('M3') &&
           !cmd.includes('M5')) {
         lines.push(positionQueryCmd)
       }

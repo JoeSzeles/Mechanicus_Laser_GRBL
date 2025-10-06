@@ -122,10 +122,10 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
       // Wait for machine response (with timeout)
       const cmd = line.command.trim().toUpperCase()
-      
+
       // Position queries (? or M114) don't need acknowledgment, just send and continue
       const isPositionQuery = cmd === '?' || cmd === 'M114'
-      
+
       if (isPositionQuery) {
         // Position queries don't wait for "ok", just mark as completed and continue
         console.log(`📍 [BUFFER] Position query sent, continuing without waiting`)
@@ -209,7 +209,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         // Check if next command is part of continuous movement (G1/G2/G3 without laser toggle)
         const currentCmd = gcodeLines[lineIndex - 1]?.command.trim().toUpperCase()
         const nextCmd = gcodeLines[lineIndex]?.command.trim().toUpperCase()
-        
+
         const isContinuousMove = 
           nextCmd && 
           (nextCmd.startsWith('G1') || nextCmd.startsWith('G2') || nextCmd.startsWith('G3')) &&
@@ -217,7 +217,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
           !nextCmd.includes('M5') &&
           !currentCmd.includes('M3') &&
           !currentCmd.includes('M5')
-        
+
         // Reduced delay for continuous shapes (20ms), normal delay otherwise (100ms)
         const delay = isContinuousMove ? 20 : 100
         await new Promise(resolve => setTimeout(resolve, delay))
