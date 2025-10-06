@@ -347,28 +347,34 @@ function EngravingToolsWindow() {
       commands.push(generateLaserControl(firmware, 0, false))
     }
     else if (shape.type === 'circle') {
-      // Circle - draw as many segments
-      const center = convertToMachineCoords(shape.x, shape.y)
-      const radiusX = shape.radius / mmToPx
-      const radiusY = shape.radius / mmToPx
+      // Circle - draw as many segments (matching Python implementation)
+      const centerX = shape.x
+      const centerY = shape.y
+      const radius = shape.radius
+      
+      const center = convertToMachineCoords(centerX, centerY)
+      const machineRadius = radius / mmToPx
 
       const numSegments = 72
-      const points = []
-      for (let i = 0; i <= numSegments; i++) {
-        const angle = (2 * Math.PI * i) / numSegments
-        const x = center.x + radiusX * Math.cos(angle)
-        const y = center.y + radiusY * Math.sin(angle)
-        points.push({ x, y })
-      }
-
-      // Move to start
-      commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+      
+      // Calculate start position
+      const startX = center.x + machineRadius
+      const startY = center.y
+      
+      // Move to start position
+      commands.push(`G0 X${startX.toFixed(3)} Y${startY.toFixed(3)} F${feedRate}`)
+      
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
-      // Draw circle
-      for (let i = 1; i < points.length; i++) {
-        commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
+      
+      // Draw circle using small segments
+      for (let i = 0; i <= numSegments; i++) {
+        const angle = (2 * Math.PI * i) / numSegments
+        const x = center.x + machineRadius * Math.cos(angle)
+        const y = center.y + machineRadius * Math.sin(angle)
+        commands.push(`G1 X${x.toFixed(3)} Y${y.toFixed(3)} F${feedRate}`)
       }
+      
       // Turn off laser
       commands.push(generateLaserControl(firmware, 0, false))
     }
@@ -409,73 +415,86 @@ function EngravingToolsWindow() {
       }
     }
     else if (shape.type === 'arc') {
-      // Arc - draw as segments
-      const centerX = shape.x + shape.radiusX
-      const centerY = shape.y + shape.radiusY
+      // Arc - draw as segments (matching Python implementation)
+      const centerX = shape.x
+      const centerY = shape.y
+      const radius = shape.outerRadius || shape.radius || 50
+      const rotation = shape.rotation || 0
+      const arcAngle = shape.angle || 90
+      
+      // Calculate start and extent angles
+      const startAngle = rotation
+      const extent = arcAngle
+      
       const center = convertToMachineCoords(centerX, centerY)
-      const radiusX = shape.radiusX / mmToPx
-      const radiusY = shape.radiusY / mmToPx
-      const startAngle = (shape.startAngle || 0) * (Math.PI / 180)
-      const endAngle = (shape.endAngle || 360) * (Math.PI / 180)
-
-      const numSegments = Math.max(36, Math.abs(Math.ceil((endAngle - startAngle) * 180 / Math.PI / 5)))
-      const points = []
-      for (let i = 0; i <= numSegments; i++) {
-        const angle = startAngle + ((endAngle - startAngle) * i) / numSegments
-        const x = center.x + radiusX * Math.cos(angle)
-        const y = center.y + radiusY * Math.sin(angle)
-        points.push({ x, y })
-      }
-
-      // Move to start
-      commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+      const machineRadius = radius / mmToPx
+      
+      // Calculate start position in radians
+      const startAngleRad = (startAngle * Math.PI) / 180
+      const startX = center.x + machineRadius * Math.cos(startAngleRad)
+      const startY = center.y + machineRadius * Math.sin(startAngleRad)
+      
+      // Move to start position
+      commands.push(`G0 X${startX.toFixed(3)} Y${startY.toFixed(3)} F${feedRate}`)
+      
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
-      // Draw arc
-      for (let i = 1; i < points.length; i++) {
-        commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
+      
+      // Draw arc using small segments (increased for smoother arcs)
+      const numSegments = Math.max(72, Math.floor(Math.abs(extent) / 5))
+      for (let i = 0; i <= numSegments; i++) {
+        const angleRad = ((startAngle + (extent * i / numSegments)) * Math.PI) / 180
+        const x = center.x + machineRadius * Math.cos(angleRad)
+        const y = center.y + machineRadius * Math.sin(angleRad)
+        commands.push(`G1 X${x.toFixed(3)} Y${y.toFixed(3)} F${feedRate}`)
       }
+      
       // Turn off laser
       commands.push(generateLaserControl(firmware, 0, false))
     }
     else if (shape.type === 'text') {
       // Text - convert to path and engrave
-      // For now, draw bounding box (path conversion happens in TextFontToolsWindow)
-      // If text has pathData property, use that instead
       if (shape.pathData) {
         // Parse SVG path data and convert to G-code
         const pathCommands = parseSVGPath(shape.pathData)
-
-        pathCommands.forEach((segment, index) => {
+        
+        let laserOn = false
+        pathCommands.forEach((segment) => {
           if (segment.type === 'M') {
+            // Move command - turn off laser and move
+            if (laserOn) {
+              commands.push(generateLaserControl(firmware, 0, false))
+              laserOn = false
+            }
             const point = convertToMachineCoords(segment.x, segment.y)
             commands.push(`G0 X${point.x.toFixed(3)} Y${point.y.toFixed(3)} F${feedRate}`)
+            // Turn on laser for drawing
             commands.push(generateLaserControl(firmware, laserPower, true))
+            laserOn = true
           } else if (segment.type === 'L') {
+            // Line command - ensure laser is on
+            if (!laserOn) {
+              commands.push(generateLaserControl(firmware, laserPower, true))
+              laserOn = true
+            }
             const point = convertToMachineCoords(segment.x, segment.y)
             commands.push(`G1 X${point.x.toFixed(3)} Y${point.y.toFixed(3)} F${feedRate}`)
           } else if (segment.type === 'Z') {
-            commands.push(generateLaserControl(firmware, 0, false))
+            // Close path - turn off laser
+            if (laserOn) {
+              commands.push(generateLaserControl(firmware, 0, false))
+              laserOn = false
+            }
           }
         })
+        
+        // Ensure laser is off at the end
+        if (laserOn) {
+          commands.push(generateLaserControl(firmware, 0, false))
+        }
       } else {
-        // Fallback: draw bounding box
-        const fontSize = shape.fontSize || 50
-        const textWidth = shape.width || (shape.text.length * fontSize * 0.6)
-        const textHeight = fontSize
-
-        const topLeft = convertToMachineCoords(shape.x, shape.y - textHeight)
-        const topRight = convertToMachineCoords(shape.x + textWidth, shape.y - textHeight)
-        const bottomRight = convertToMachineCoords(shape.x + textWidth, shape.y)
-        const bottomLeft = convertToMachineCoords(shape.x, shape.y)
-
-        commands.push(`G0 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
-        commands.push(generateLaserControl(firmware, laserPower, true))
-        commands.push(`G1 X${topRight.x.toFixed(3)} Y${topRight.y.toFixed(3)} F${feedRate}`)
-        commands.push(`G1 X${bottomRight.x.toFixed(3)} Y${bottomRight.y.toFixed(3)} F${feedRate}`)
-        commands.push(`G1 X${bottomLeft.x.toFixed(3)} Y${bottomLeft.y.toFixed(3)} F${feedRate}`)
-        commands.push(`G1 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
-        commands.push(generateLaserControl(firmware, 0, false))
+        // No path data - skip text (it should have been converted)
+        console.warn('Text shape without pathData, skipping:', shape)
       }
     }
 
