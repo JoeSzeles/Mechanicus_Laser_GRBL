@@ -116,9 +116,11 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       sendCommand(serialState.port, line.command)
 
       // Wait for machine response (with timeout)
-      // G28 can take 10-30 seconds depending on machine size
       const cmd = line.command.trim().toUpperCase()
-      const timeout = cmd.includes('G28') ? 30000 : 5000
+      
+      // Position queries (? or M114) need shorter timeout and different handling
+      const isPositionQuery = cmd === '?' || cmd === 'M114'
+      const timeout = cmd.includes('G28') ? 30000 : (isPositionQuery ? 2000 : 5000)
       const startTime = Date.now()
 
       console.log(`⏳ [BUFFER] Waiting for response (timeout: ${timeout}ms)...`)
@@ -130,14 +132,22 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       waitingForResponseRef.current = false
 
       if (!responseReceivedRef.current) {
-        console.error(`❌ [BUFFER] TIMEOUT (${timeout}ms) waiting for response to: ${line.command}`)
-        // Mark as error but continue
-        setGcodeLines(prev => prev.map((l, idx) => 
-          idx === lineIndex ? { ...l, status: 'error', error: 'Timeout' } : l
-        ))
-        setStatus('error')
-        setErrorMessage(`Timeout waiting for response to: ${line.command}`)
-        return false
+        // For position queries, timeout is not critical - just log and continue
+        if (isPositionQuery) {
+          console.warn(`⚠️ [BUFFER] Position query timeout (${timeout}ms) - continuing`)
+          setGcodeLines(prev => prev.map((l, idx) => 
+            idx === lineIndex ? { ...l, status: 'completed' } : l
+          ))
+        } else {
+          console.error(`❌ [BUFFER] TIMEOUT (${timeout}ms) waiting for response to: ${line.command}`)
+          // Mark as error but continue
+          setGcodeLines(prev => prev.map((l, idx) => 
+            idx === lineIndex ? { ...l, status: 'error', error: 'Timeout' } : l
+          ))
+          setStatus('error')
+          setErrorMessage(`Timeout waiting for response to: ${line.command}`)
+          return false
+        }
       } else {
         console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
       }
@@ -189,8 +199,21 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         // Increment local counter
         lineIndex++
 
-        // Increased delay to prevent command flooding (100ms between commands)
-        await new Promise(resolve => setTimeout(resolve, 100))
+        // Check if next command is part of continuous movement (G1/G2/G3 without laser toggle)
+        const currentCmd = gcodeLines[lineIndex - 1]?.command.trim().toUpperCase()
+        const nextCmd = gcodeLines[lineIndex]?.command.trim().toUpperCase()
+        
+        const isContinuousMove = 
+          nextCmd && 
+          (nextCmd.startsWith('G1') || nextCmd.startsWith('G2') || nextCmd.startsWith('G3')) &&
+          !nextCmd.includes('M3') && 
+          !nextCmd.includes('M5') &&
+          !currentCmd.includes('M3') &&
+          !currentCmd.includes('M5')
+        
+        // Reduced delay for continuous shapes (20ms), normal delay otherwise (100ms)
+        const delay = isContinuousMove ? 20 : 100
+        await new Promise(resolve => setTimeout(resolve, delay))
       }
 
       if (lineIndex >= gcodeLines.length) {
