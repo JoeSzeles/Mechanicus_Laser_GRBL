@@ -124,7 +124,7 @@ function EngravingToolsWindow() {
       return
     }
 
-    const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
+    const firmware = machineConnection?.currentProfile?.firmwareType || 'grbl'
     const homeCmd = generateHomeCommand(firmware)
 
     sendGcode(homeCmd)
@@ -142,7 +142,7 @@ function EngravingToolsWindow() {
     setStatus('Engraving stopped.')
 
     // Send emergency stop based on firmware
-    const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
+    const firmware = machineConnection?.currentProfile?.firmwareType || 'grbl'
     if (firmware === 'grbl') {
       sendGcode('\x18') // Ctrl+X for GRBL
     } else if (firmware === 'marlin') {

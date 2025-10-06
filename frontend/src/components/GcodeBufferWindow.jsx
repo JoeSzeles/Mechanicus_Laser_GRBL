@@ -304,7 +304,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
   const getStatusColor = (lineStatus, isResponse, isPositionQuery) => {
     if (isResponse) return '#FF4444' // Red for machine responses
-    if (isPositionQuery) return '#FFA500' // Orange for position queries
+    if (isPositionQuery) return '#FF4444' // Red for position queries (user requirement)
     switch (lineStatus) {
       case 'completed': return '#4CAF50'
       case 'sending': return '#2196F3'
