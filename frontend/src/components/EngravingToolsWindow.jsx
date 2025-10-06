@@ -4,6 +4,52 @@ import useCadStore from '../store/cadStore'
 import { machinePositionTracker } from '../utils/machinePositionTracker'
 import './EngravingToolsWindow.css'
 
+// Assume parseSVGPath is defined elsewhere or imported
+// For demonstration purposes, let's define a placeholder if it's not provided:
+const parseSVGPath = (pathData) => {
+  // This is a simplified placeholder. A real implementation would parse SVG path data string.
+  // Example pathData: "M10 10 L90 10 L90 90 Z"
+  const commands = [];
+  const segments = pathData.match(/([MLZ])([^MLZ]*)/g);
+  if (!segments) return [];
+
+  segments.forEach(segment => {
+    const type = segment[0];
+    const coords = segment.substring(1).trim().split(/[\s,]+/).map(Number);
+    if (type === 'M') {
+      commands.push({ type: 'M', x: coords[0], y: coords[1] });
+    } else if (type === 'L') {
+      commands.push({ type: 'L', x: coords[0], y: coords[1] });
+    } else if (type === 'Z') {
+      commands.push({ type: 'Z' });
+    }
+  });
+  return commands;
+};
+
+// Assume generateLaserControl is defined elsewhere or imported
+const generateLaserControl = (firmware, power, on) => {
+  if (!on) return 'M5'; // Turn off laser
+  if (firmware === 'grbl') {
+    // GRBL uses M3/M4 for laser control. S parameter is power.
+    return `M3 S${power}`;
+  } else if (firmware === 'marlin') {
+    // Marlin also uses M3/M4. S parameter is power.
+    return `M3 S${power}`;
+  }
+  return ''; // Default or unsupported
+};
+
+// Assume generateHomeCommand is defined elsewhere or imported
+const generateHomeCommand = (firmware) => {
+  if (firmware === 'grbl') {
+    return '$H'; // GRBL home command
+  } else if (firmware === 'marlin') {
+    return 'G28'; // Marlin home command
+  }
+  return 'G28'; // Default to G28
+};
+
 function EngravingToolsWindow() {
   const shapes = useCadStore((state) => state.shapes)
   const layers = useCadStore((state) => state.layers)
@@ -183,7 +229,7 @@ function EngravingToolsWindow() {
                 const targetX = parseFloat(match[1])
                 const targetY = parseFloat(match[2])
                 const distance = Math.sqrt(Math.pow(targetX - lastPoint.x, 2) + Math.pow(targetY - lastPoint.y, 2))
-                
+
                 // Send the command and then start tracking movement
                 sendGcode(cmd)
                 machinePositionTracker.startMovementTracking(serialState.port, feedRate, distance, firmware)
@@ -391,6 +437,46 @@ function EngravingToolsWindow() {
       }
       // Turn off laser
       commands.push(generateLaserControl(firmware, 0, false))
+    }
+    else if (shape.type === 'text') {
+      // Text - convert to path and engrave
+      // For now, draw bounding box (path conversion happens in TextFontToolsWindow)
+      // If text has pathData property, use that instead
+      if (shape.pathData) {
+        // Parse SVG path data and convert to G-code
+        const pathCommands = parseSVGPath(shape.pathData)
+
+        pathCommands.forEach((segment, index) => {
+          if (segment.type === 'M') {
+            const point = convertToMachineCoords(segment.x, segment.y)
+            commands.push(`G0 X${point.x.toFixed(3)} Y${point.y.toFixed(3)} F${feedRate}`)
+            commands.push(generateLaserControl(firmware, laserPower, true))
+          } else if (segment.type === 'L') {
+            const point = convertToMachineCoords(segment.x, segment.y)
+            commands.push(`G1 X${point.x.toFixed(3)} Y${point.y.toFixed(3)} F${feedRate}`)
+          } else if (segment.type === 'Z') {
+            commands.push(generateLaserControl(firmware, 0, false))
+          }
+        })
+      } else {
+        // Fallback: draw bounding box
+        const fontSize = shape.fontSize || 50
+        const textWidth = shape.width || (shape.text.length * fontSize * 0.6)
+        const textHeight = fontSize
+
+        const topLeft = convertToMachineCoords(shape.x, shape.y - textHeight)
+        const topRight = convertToMachineCoords(shape.x + textWidth, shape.y - textHeight)
+        const bottomRight = convertToMachineCoords(shape.x + textWidth, shape.y)
+        const bottomLeft = convertToMachineCoords(shape.x, shape.y)
+
+        commands.push(`G0 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
+        commands.push(generateLaserControl(firmware, laserPower, true))
+        commands.push(`G1 X${topRight.x.toFixed(3)} Y${topRight.y.toFixed(3)} F${feedRate}`)
+        commands.push(`G1 X${bottomRight.x.toFixed(3)} Y${bottomRight.y.toFixed(3)} F${feedRate}`)
+        commands.push(`G1 X${bottomLeft.x.toFixed(3)} Y${bottomLeft.y.toFixed(3)} F${feedRate}`)
+        commands.push(`G1 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
+        commands.push(generateLaserControl(firmware, 0, false))
+      }
     }
 
     return commands

@@ -44,9 +44,15 @@ export const exportToSVG = (shapes, machineProfile, layers) => {
         }
         svg += `    <path d="${pathData}" stroke="${stroke}" stroke-width="${strokeWidth}" fill="none" />\n`
       } else if (shape.type === 'text') {
-        const fontSize = shape.fontSize || 50
-        const font = shape.font || 'Impact'
-        svg += `    <text x="${shape.x}" y="${shape.y}" font-family="${font}" font-size="${fontSize}" fill="${shape.fill || '#000000'}" stroke="${stroke}" stroke-width="${strokeWidth}">${shape.text}</text>\n`
+        if (shape.pathData) {
+          // Text converted to path
+          svg += `    <path d="${shape.pathData}" fill="${shape.fill || '#000000'}" stroke="${stroke}" stroke-width="${strokeWidth}" />\n`
+        } else {
+          // Regular text
+          const fontSize = shape.fontSize || 50
+          const font = shape.font || 'Impact'
+          svg += `    <text x="${shape.x}" y="${shape.y}" font-family="${font}" font-size="${fontSize}" fill="${shape.fill || '#000000'}" stroke="${stroke}" stroke-width="${strokeWidth}">${shape.text}</text>\n`
+        }
       } else if (shape.type === 'arc') {
         const radius = shape.outerRadius || shape.radius || 50
         const angle = shape.angle || 90

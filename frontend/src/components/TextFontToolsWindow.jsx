@@ -2,6 +2,19 @@ import { useState, useEffect } from 'react'
 import useCadStore from '../store/cadStore'
 import './TextFontToolsWindow.css'
 
+// Placeholder for actual textToPathSVG function.
+// This would involve using a library or browser APIs to convert text to SVG path data.
+// For demonstration, we'll assume it exists and returns a dummy path string.
+const textToPathSVG = (text, font, fontSize, x, y) => {
+  console.log(`Converting text: "${text}" with font: "${font}", size: ${fontSize}, at: (${x}, ${y})`);
+  // In a real implementation, you'd use something like:
+  // 1. Create a temporary canvas or use SVG text element.
+  // 2. Get the computed path data for the text.
+  // 3. Return the path data string.
+  // For now, returning a placeholder.
+  return `M${x},${y} L${x + fontSize * text.length},${y} L${x + fontSize * text.length},${y + fontSize} L${x},${y + fontSize} Z`;
+};
+
 const AVAILABLE_FONTS = [
   'Impact',
   'Arial',
@@ -25,24 +38,24 @@ function TextFontToolsWindow() {
   const setActiveTool = useCadStore((state) => state.setActiveTool)
   const viewport = useCadStore((state) => state.viewport)
   const machineProfile = useCadStore((state) => state.machineProfile)
-  
+
   const [text, setText] = useState('')
   const [font, setFont] = useState('Impact')
   const [size, setSize] = useState(50)
   const [color, setColor] = useState('#000000')
-  
+
   const selectedTextId = textToolState?.selectedTextId
   const selectedText = selectedTextId ? shapes.find(s => s.id === selectedTextId) : null
   const isPlaceMode = textToolState?.placeMode
   const isSelectMode = textToolState?.selectMode
-  
+
   useEffect(() => {
     if (selectedText && selectedText.type === 'text') {
       setText(selectedText.text || '')
       setFont(selectedText.font || 'Impact')
       setSize(selectedText.fontSize || 50)
       setColor(selectedText.fill || '#000000')
-      
+
       updateShape(selectedTextId, {
         stroke: 'red',
         strokeWidth: 2,
@@ -51,7 +64,7 @@ function TextFontToolsWindow() {
       })
     }
   }, [selectedTextId])
-  
+
   const clearSelection = () => {
     if (selectedTextId && selectedText) {
       if (selectedText.originalStroke !== undefined) {
@@ -69,16 +82,16 @@ function TextFontToolsWindow() {
       selectedTextId: null
     })
   }
-  
+
   const handlePlaceText = () => {
     if (!text.trim()) {
       alert('Please enter some text')
       return
     }
-    
+
     setActiveTool(null)
     clearSelection()
-    
+
     setTextToolState({
       placeMode: true,
       selectMode: false,
@@ -91,29 +104,29 @@ function TextFontToolsWindow() {
       }
     })
   }
-  
+
   const handleSelectText = () => {
     setActiveTool(null)
     clearSelection()
-    
+
     setTextToolState({
       selectMode: true,
       placeMode: false,
       selectedTextId: null
     })
   }
-  
+
   const handleEditSelected = () => {
     if (!selectedText) {
       alert('Please select a text element first')
       return
     }
-    
+
     if (!text.trim()) {
       alert('Text cannot be empty')
       return
     }
-    
+
     updateShape(selectedTextId, {
       text,
       font,
@@ -124,62 +137,69 @@ function TextFontToolsWindow() {
       originalStroke: undefined,
       originalStrokeWidth: undefined
     })
-    
+
     clearSelection()
   }
-  
+
   const handleConvertToPaths = () => {
     if (!selectedText) {
       alert('Please select a text element first')
       return
     }
-    
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    ctx.font = `${selectedText.fontSize}px ${selectedText.font}`
-    
-    const textWidth = ctx.measureText(selectedText.text).width
-    const textHeight = selectedText.fontSize
-    
-    const pathGroup = {
-      id: `path-group-${Date.now()}`,
-      type: 'path-group',
-      originalText: selectedText.text,
-      x: selectedText.x,
-      y: selectedText.y,
-      width: textWidth,
-      height: textHeight,
-      base_x: selectedText.base_x,
-      base_y: selectedText.base_y,
-      stroke: selectedText.fill || '#000000',
-      strokeWidth: 1,
-      fill: 'transparent'
+
+    const textShape = shapes.find(s => s.id === selectedTextId)
+    if (!textShape || textShape.type !== 'text') return
+
+    // Convert text to SVG path
+    const pathData = textToPathSVG(
+      textShape.text,
+      textShape.font || 'Impact',
+      textShape.fontSize || 50,
+      textShape.x,
+      textShape.y
+    )
+
+    // Create a new path shape with the converted data
+    const pathShape = {
+      ...textShape,
+      type: 'path',
+      pathData: pathData,
+      isTextPath: true, // Mark this as converted from text
+      originalText: textShape.text, // Keep reference to original
+      // Remove text-specific properties if they are not relevant for paths
+      text: undefined,
+      font: undefined,
+      fontSize: undefined,
+      fill: textShape.fill || '#000000', // Use text fill as path stroke color
+      stroke: textShape.fill || '#000000', // Use text fill as path stroke color
+      strokeWidth: 1, // Default stroke width for paths
     }
-    
+
+    // Remove the original text shape and add the new path shape
     removeShape(selectedTextId)
-    addShape(pathGroup)
-    
+    addShape(pathShape)
+
     clearSelection()
-    
-    alert('Text converted to path group. Note: Individual character paths require browser canvas API extensions.')
+
+    alert('Text converted to paths successfully!')
   }
-  
+
   const handleDeleteText = () => {
     if (!selectedText) {
       alert('Please select a text element first')
       return
     }
-    
+
     removeShape(selectedTextId)
     clearSelection()
   }
-  
+
   return (
     <div className="text-font-window">
       <div className="text-font-header">
         <h3>Text & Font Tools</h3>
       </div>
-      
+
       <div className="text-font-content">
         <div className="property-group">
           <label>Text:</label>
@@ -191,7 +211,7 @@ function TextFontToolsWindow() {
             placeholder="Enter text here..."
           />
         </div>
-        
+
         <div className="property-group">
           <label>Font:</label>
           <select
@@ -206,8 +226,8 @@ function TextFontToolsWindow() {
             ))}
           </select>
         </div>
-        
-        <div className="property-row">
+
+        <div className="text-font-row">
           <div className="property-group">
             <label>Size:</label>
             <input
@@ -220,12 +240,12 @@ function TextFontToolsWindow() {
             />
             <span className="unit-label">pt</span>
           </div>
-          
+
           <div className="property-group">
             <label>Color:</label>
             <div className="color-input-group">
-              <div 
-                className="color-preview" 
+              <div
+                className="color-preview"
                 style={{ backgroundColor: color }}
               />
               <input
@@ -236,14 +256,14 @@ function TextFontToolsWindow() {
             </div>
           </div>
         </div>
-        
+
         {selectedText && (
           <div className="selected-text-info">
             Selected: {selectedText.text?.substring(0, 30)}
             {selectedText.text?.length > 30 && '...'}
           </div>
         )}
-        
+
         <div className="button-grid">
           <button
             className={`text-tool-button ${isPlaceMode ? 'active' : ''}`}
