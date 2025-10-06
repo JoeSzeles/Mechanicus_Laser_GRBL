@@ -1488,12 +1488,25 @@ function CADInterface() {
     hCtx.fillStyle = '#333'
     hCtx.font = '10px Arial'
 
-    // Draw marks every 1mm with varying heights: small (1mm), medium (5mm), long (10mm)
-    const startMM = Math.max(0, Math.floor((-viewport.pan.x / viewport.zoom / machineProfile.mmToPx)))
-    const endMM = Math.min(machineProfile.bedSizeX, startMM + (hRulerCanvas.width / viewport.zoom / machineProfile.mmToPx))
+    // Calculate ruler marks based on machine origin point
+    const originPoint = machineProfile.originPoint || 'bottom-left'
+    
+    // Determine canvas X position where machine X=0 is located
+    let originCanvasX = 0
+    if (originPoint === 'bottom-right' || originPoint === 'top-right') {
+      originCanvasX = canvasWidth
+    }
 
-    for (let mmPos = startMM; mmPos <= endMM; mmPos += 1) {
-      const x = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.x
+    // Draw marks every 1mm
+    for (let mmPos = 0; mmPos <= machineProfile.bedSizeX; mmPos += 1) {
+      // Calculate canvas pixel position for this mm mark
+      let x
+      if (originPoint === 'bottom-right' || originPoint === 'top-right') {
+        x = originCanvasX - (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.x
+      } else {
+        x = originCanvasX + (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.x
+      }
+      
       if (x < 0 || x > hRulerCanvas.width) continue
 
       let tickHeight
@@ -1526,12 +1539,22 @@ function CADInterface() {
     vCtx.fillStyle = '#333'
     vCtx.font = '10px Arial'
 
-    // Draw marks every 1mm with varying widths: small (1mm), medium (5mm), long (10mm)
-    const startMMY = Math.max(0, Math.floor((-viewport.pan.y / viewport.zoom / machineProfile.mmToPx)))
-    const endMMY = Math.min(machineProfile.bedSizeY, startMMY + (vRulerCanvas.height / viewport.zoom / machineProfile.mmToPx))
+    // Determine canvas Y position where machine Y=0 is located
+    let originCanvasY = canvasHeight
+    if (originPoint === 'top-left' || originPoint === 'top-right') {
+      originCanvasY = 0
+    }
 
-    for (let mmPos = startMMY; mmPos <= endMMY; mmPos += 1) {
-      const y = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
+    // Draw marks every 1mm
+    for (let mmPos = 0; mmPos <= machineProfile.bedSizeY; mmPos += 1) {
+      // Calculate canvas pixel position for this mm mark
+      let y
+      if (originPoint === 'top-left' || originPoint === 'top-right') {
+        y = originCanvasY + (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
+      } else {
+        y = originCanvasY - (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
+      }
+      
       if (y < 0 || y > vRulerCanvas.height) continue
 
       let tickWidth

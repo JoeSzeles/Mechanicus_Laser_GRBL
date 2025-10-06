@@ -41,10 +41,9 @@ function PopupWindow({
     if (e.target.classList.contains('popup-close')) return
     
     setIsDragging(true)
-    const rect = windowRef.current.getBoundingClientRect()
     setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
     })
   }
 
