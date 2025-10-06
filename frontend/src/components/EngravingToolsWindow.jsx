@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import useCadStore from '../store/cadStore'
 import { useSerial } from '../contexts/SerialContext'
 import { generateHomeCommand, generateLaserControl } from '../utils/firmwareGcodeGenerators'
+import { machinePositionTracker } from '../utils/machinePositionTracker'
 import './EngravingToolsWindow.css'
 
 function EngravingToolsWindow() {
@@ -30,6 +31,7 @@ function EngravingToolsWindow() {
   
   const [isEngraving, setIsEngraving] = useState(false)
   const [progress, setProgress] = useState({ current: 0, total: 0 })
+  const [machinePosition, setMachinePosition] = useState({ x: 0, y: 0, z: 0 })
 
   // Save values to localStorage when they change
   useEffect(() => {
@@ -44,6 +46,18 @@ function EngravingToolsWindow() {
     localStorage.setItem('engraving_passes', passes.toString())
   }, [passes])
 
+  // Subscribe to position updates
+  useEffect(() => {
+    const handlePositionUpdate = (data) => {
+      setMachinePosition(data.position)
+    }
+
+    machinePositionTracker.addListener(handlePositionUpdate)
+    return () => {
+      machinePositionTracker.removeListener(handlePositionUpdate)
+    }
+  }, [])
+
   const handleHome = () => {
     if (!isConnected || !serialState.port) {
       alert('Machine not connected')
@@ -54,6 +68,11 @@ function EngravingToolsWindow() {
     const homeCmd = generateHomeCommand(firmware)
     
     sendGcode(homeCmd)
+    
+    // Start position tracking after homing
+    setTimeout(() => {
+      machinePositionTracker.queryPosition(serialState.port, firmware)
+    }, 2000)
   }
 
   const handleStop = () => {
@@ -84,20 +103,20 @@ function EngravingToolsWindow() {
       return
     }
 
-    // Get visible lines from canvas
+    // Get visible shapes from canvas
     const visibleShapes = shapes.filter(shape => {
-      if (shape.type !== 'line') return false
       const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
       return shapeLayer && shapeLayer.visible && !shapeLayer.locked
     })
 
     if (visibleShapes.length === 0) {
-      alert('No visible lines to engrave')
+      alert('No visible shapes to engrave')
       return
     }
 
     setIsEngraving(true)
-    setProgress({ current: 0, total: visibleShapes.length * passes })
+    const totalShapes = visibleShapes.length
+    setProgress({ current: 0, total: totalShapes * passes })
 
     const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
     const mmToPx = machineProfile.mmToPx
@@ -106,50 +125,71 @@ function EngravingToolsWindow() {
     const originPoint = machineConnection.currentProfile?.originPoint || 'bottom-left'
 
     try {
+      // Initialize position tracker
+      machinePositionTracker.init({ send: (msg) => {
+        const data = JSON.parse(msg)
+        if (data.type === 'send_command') {
+          sendGcode(data.payload.command)
+        }
+      }}, serialState.port)
+
       // 1. Go home first
       const homeCmd = generateHomeCommand(firmware)
       sendGcode(homeCmd)
       await sleep(2000) // Wait for homing
+      
+      // Query position after homing
+      machinePositionTracker.queryPosition(serialState.port, firmware)
+      await sleep(500)
 
       // 2. Initialize machine
       sendGcode('G21') // Set units to mm
       sendGcode('G90') // Absolute positioning
       sendGcode(`G1 F${feedRate}`) // Set feed rate
+      sendGcode(generateLaserControl(firmware, 0, false)) // Ensure laser is off
 
-      // 3. Group consecutive lines
-      const lineGroups = groupConsecutiveLines(visibleShapes, mmToPx, bedMaxX, bedMaxY, originPoint)
-
-      // 4. Engrave each pass
+      // 3. Process each pass
       for (let pass = 0; pass < passes; pass++) {
         console.log(`Starting pass ${pass + 1}/${passes}`)
 
-        for (let groupIndex = 0; groupIndex < lineGroups.length; groupIndex++) {
-          const group = lineGroups[groupIndex]
+        // Process each shape
+        for (let shapeIndex = 0; shapeIndex < visibleShapes.length; shapeIndex++) {
+          const shape = visibleShapes[shapeIndex]
           
-          // Move to start of group with laser off
-          sendGcode(generateLaserControl(firmware, 0, false))
-          sendGcode(`G0 X${group[0].x1.toFixed(3)} Y${group[0].y1.toFixed(3)} F${feedRate}`)
-          
-          // Turn laser on
-          sendGcode(generateLaserControl(firmware, laserPower, true))
-          
-          // Draw all lines in group
-          for (let i = 0; i < group.length; i++) {
-            const line = group[i]
-            sendGcode(`G1 X${line.x2.toFixed(3)} Y${line.y2.toFixed(3)} F${feedRate}`)
-            
-            setProgress(prev => ({ ...prev, current: pass * visibleShapes.length + groupIndex + 1 }))
+          // Generate commands for this shape
+          const commands = generateShapeCommands(
+            shape,
+            mmToPx,
+            bedMaxX,
+            bedMaxY,
+            originPoint,
+            feedRate,
+            laserPower,
+            firmware
+          )
+
+          // Send commands
+          for (const cmd of commands) {
+            sendGcode(cmd)
             await sleep(10) // Small delay between commands
+            
+            // Query position periodically during movement
+            if (cmd.startsWith('G1') || cmd.startsWith('G0')) {
+              machinePositionTracker.queryPosition(serialState.port, firmware)
+            }
           }
           
-          // Turn laser off after group
-          sendGcode(generateLaserControl(firmware, 0, false))
+          setProgress({ current: pass * totalShapes + shapeIndex + 1, total: totalShapes * passes })
         }
       }
 
-      // 5. Finish - turn off laser and go home
+      // 4. Finish - turn off laser and go home
       sendGcode(generateLaserControl(firmware, 0, false))
       sendGcode(homeCmd)
+      
+      // Final position query
+      await sleep(1000)
+      machinePositionTracker.queryPosition(serialState.port, firmware)
 
       alert('Engraving completed successfully!')
     } catch (error) {
@@ -162,10 +202,10 @@ function EngravingToolsWindow() {
     }
   }
 
-  const groupConsecutiveLines = (shapes, mmToPx, bedMaxX, bedMaxY, originPoint) => {
-    const groups = []
-    let currentGroup = []
-
+  const generateShapeCommands = (shape, mmToPx, bedMaxX, bedMaxY, originPoint, feedRate, laserPower, firmware) => {
+    const commands = []
+    
+    // Helper to convert canvas coordinates to machine coordinates
     const convertToMachineCoords = (canvasX, canvasY) => {
       let machineX = (canvasX / mmToPx)
       let machineY = (canvasY / mmToPx)
@@ -190,48 +230,136 @@ function EngravingToolsWindow() {
       return { x: machineX, y: machineY }
     }
 
-    const convertedLines = shapes.map(shape => {
+    // Turn laser off and move to start position
+    commands.push(generateLaserControl(firmware, 0, false))
+
+    if (shape.type === 'line') {
+      // Single line
       const start = convertToMachineCoords(shape.x1, shape.y1)
       const end = convertToMachineCoords(shape.x2, shape.y2)
-      return {
-        x1: start.x,
-        y1: start.y,
-        x2: end.x,
-        y2: end.y,
-        id: shape.id
-      }
-    })
-
-    for (let i = 0; i < convertedLines.length; i++) {
-      const line = convertedLines[i]
       
-      if (currentGroup.length === 0) {
-        currentGroup.push(line)
-      } else {
-        const lastLine = currentGroup[currentGroup.length - 1]
-        const tolerance = 0.01 // 0.01mm tolerance for connection
+      // Move to start
+      commands.push(`G0 X${start.x.toFixed(3)} Y${start.y.toFixed(3)} F${feedRate}`)
+      // Turn on laser
+      commands.push(generateLaserControl(firmware, laserPower, true))
+      // Draw line
+      commands.push(`G1 X${end.x.toFixed(3)} Y${end.y.toFixed(3)} F${feedRate}`)
+      // Turn off laser
+      commands.push(generateLaserControl(firmware, 0, false))
+    }
+    else if (shape.type === 'rectangle') {
+      // Rectangle - draw as closed polygon
+      const topLeft = convertToMachineCoords(shape.x, shape.y)
+      const topRight = convertToMachineCoords(shape.x + shape.width, shape.y)
+      const bottomRight = convertToMachineCoords(shape.x + shape.width, shape.y + shape.height)
+      const bottomLeft = convertToMachineCoords(shape.x, shape.y + shape.height)
+      
+      // Move to start
+      commands.push(`G0 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
+      // Turn on laser
+      commands.push(generateLaserControl(firmware, laserPower, true))
+      // Draw rectangle
+      commands.push(`G1 X${topRight.x.toFixed(3)} Y${topRight.y.toFixed(3)} F${feedRate}`)
+      commands.push(`G1 X${bottomRight.x.toFixed(3)} Y${bottomRight.y.toFixed(3)} F${feedRate}`)
+      commands.push(`G1 X${bottomLeft.x.toFixed(3)} Y${bottomLeft.y.toFixed(3)} F${feedRate}`)
+      commands.push(`G1 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
+      // Turn off laser
+      commands.push(generateLaserControl(firmware, 0, false))
+    }
+    else if (shape.type === 'circle') {
+      // Circle - draw as many segments
+      const center = convertToMachineCoords(shape.x, shape.y)
+      const radiusX = shape.radius / mmToPx
+      const radiusY = shape.radius / mmToPx
+      
+      const numSegments = 72
+      const points = []
+      for (let i = 0; i <= numSegments; i++) {
+        const angle = (2 * Math.PI * i) / numSegments
+        const x = center.x + radiusX * Math.cos(angle)
+        const y = center.y + radiusY * Math.sin(angle)
+        points.push({ x, y })
+      }
+      
+      // Move to start
+      commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+      // Turn on laser
+      commands.push(generateLaserControl(firmware, laserPower, true))
+      // Draw circle
+      for (let i = 1; i < points.length; i++) {
+        commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
+      }
+      // Turn off laser
+      commands.push(generateLaserControl(firmware, 0, false))
+    }
+    else if (shape.type === 'polygon') {
+      // Polygon - draw all points and close
+      if (shape.points && shape.points.length > 0) {
+        const points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
         
-        // Check if this line connects to the last line
-        const connected = (
-          Math.abs(lastLine.x2 - line.x1) < tolerance &&
-          Math.abs(lastLine.y2 - line.y1) < tolerance
-        )
-        
-        if (connected) {
-          currentGroup.push(line)
-        } else {
-          // Start new group
-          groups.push(currentGroup)
-          currentGroup = [line]
+        // Move to start
+        commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+        // Turn on laser
+        commands.push(generateLaserControl(firmware, laserPower, true))
+        // Draw polygon
+        for (let i = 1; i < points.length; i++) {
+          commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
         }
+        // Close the polygon
+        commands.push(`G1 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+        // Turn off laser
+        commands.push(generateLaserControl(firmware, 0, false))
       }
     }
-    
-    if (currentGroup.length > 0) {
-      groups.push(currentGroup)
+    else if (shape.type === 'path' || shape.type === 'freehand') {
+      // Freehand/path - draw all points
+      if (shape.points && shape.points.length > 0) {
+        const points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
+        
+        // Move to start
+        commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+        // Turn on laser
+        commands.push(generateLaserControl(firmware, laserPower, true))
+        // Draw path
+        for (let i = 1; i < points.length; i++) {
+          commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
+        }
+        // Turn off laser
+        commands.push(generateLaserControl(firmware, 0, false))
+      }
+    }
+    else if (shape.type === 'arc') {
+      // Arc - draw as segments
+      const centerX = shape.x + shape.radiusX
+      const centerY = shape.y + shape.radiusY
+      const center = convertToMachineCoords(centerX, centerY)
+      const radiusX = shape.radiusX / mmToPx
+      const radiusY = shape.radiusY / mmToPx
+      const startAngle = (shape.startAngle || 0) * (Math.PI / 180)
+      const endAngle = (shape.endAngle || 360) * (Math.PI / 180)
+      
+      const numSegments = Math.max(36, Math.abs(Math.ceil((endAngle - startAngle) * 180 / Math.PI / 5)))
+      const points = []
+      for (let i = 0; i <= numSegments; i++) {
+        const angle = startAngle + ((endAngle - startAngle) * i) / numSegments
+        const x = center.x + radiusX * Math.cos(angle)
+        const y = center.y + radiusY * Math.sin(angle)
+        points.push({ x, y })
+      }
+      
+      // Move to start
+      commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
+      // Turn on laser
+      commands.push(generateLaserControl(firmware, laserPower, true))
+      // Draw arc
+      for (let i = 1; i < points.length; i++) {
+        commands.push(`G1 X${points[i].x.toFixed(3)} Y${points[i].y.toFixed(3)} F${feedRate}`)
+      }
+      // Turn off laser
+      commands.push(generateLaserControl(firmware, 0, false))
     }
 
-    return groups
+    return commands
   }
 
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms))
@@ -279,6 +407,10 @@ function EngravingToolsWindow() {
         </label>
       </div>
 
+      <div className="position-display">
+        Position: X:{machinePosition.x.toFixed(2)} Y:{machinePosition.y.toFixed(2)} Z:{machinePosition.z.toFixed(2)}
+      </div>
+
       {isEngraving && (
         <div className="progress-info">
           Engraving: {progress.current} / {progress.total}
@@ -312,7 +444,7 @@ function EngravingToolsWindow() {
       </div>
 
       <p className="hint">
-        Engraves all visible lines on canvas. Connected lines are engraved continuously with laser active.
+        Engraves all visible shapes on canvas. Supports lines, rectangles, circles, polygons, arcs, and freehand paths.
       </p>
     </div>
   )
