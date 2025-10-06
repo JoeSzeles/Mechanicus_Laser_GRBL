@@ -35,14 +35,32 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       }
     }
 
+    // Listen for machine responses from companion app
+    const handleSerialResponse = (event) => {
+      const { message } = event.detail
+      console.log('📥 [BUFFER] Received serial response:', message)
+      
+      // Machine responded - mark current line as completed and move to next
+      if (message && status === 'running') {
+        const prevLine = currentLine - 1
+        if (prevLine >= 0 && prevLine < gcodeLines.length) {
+          setGcodeLines(prev => prev.map((l, idx) => 
+            idx === prevLine ? { ...l, status: 'completed' } : l
+          ))
+        }
+      }
+    }
+
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
     window.addEventListener('start-buffer-transmission', handleStartTransmission)
+    window.addEventListener('buffer-serial-response', handleSerialResponse)
     
     return () => {
       window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
       window.removeEventListener('start-buffer-transmission', handleStartTransmission)
+      window.removeEventListener('buffer-serial-response', handleSerialResponse)
     }
-  }, [status, gcodeLines.length])
+  }, [status, gcodeLines.length, currentLine])
 
   const sendNextCommand = async () => {
     if (!isConnected || !serialState.port) {
@@ -64,22 +82,23 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     ))
 
     try {
-      // Send command with proper wait
+      console.log(`📤 [BUFFER] Sending line ${currentLine + 1}/${gcodeLines.length}: ${line.command}`)
+      
+      // Send command
       sendCommand(serialState.port, line.command)
       
-      // Wait for response (simulate Python's send_command with wait)
-      await new Promise(resolve => setTimeout(resolve, 50))
+      // Wait for machine to process (10ms between commands like Python implementation)
+      await new Promise(resolve => setTimeout(resolve, 10))
       
-      // Mark as completed
-      setGcodeLines(prev => prev.map((l, idx) => 
-        idx === currentLine ? { ...l, status: 'completed' } : l
-      ))
+      // Note: Line will be marked as completed when we receive serial response
+      // via the handleSerialResponse listener
       
       setCurrentLine(prev => prev + 1)
       setProgress(currentLine + 1)
       
       return true
     } catch (error) {
+      console.error(`❌ [BUFFER] Error sending line ${currentLine + 1}:`, error)
       setGcodeLines(prev => prev.map((l, idx) => 
         idx === currentLine ? { ...l, status: 'error', error: error.message } : l
       ))

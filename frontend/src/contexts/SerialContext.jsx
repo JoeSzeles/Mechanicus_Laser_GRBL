@@ -145,6 +145,12 @@ export function SerialProvider({ children }) {
         console.log('🟢 [COMPANION→MAIN] serial_data:', data.message)
         addMessage('receive', `📨 ${data.message}`)
         
+        // Forward to buffer window for acknowledgment tracking
+        const bufferEvent = new CustomEvent('buffer-serial-response', {
+          detail: { message: data.message }
+        })
+        window.dispatchEvent(bufferEvent)
+        
         // Parse position from GRBL status response (<Idle|MPos:x,y,z|...>) or M114 (X:123 Y:456)
         const lowerMsg = data.message.toLowerCase()
         if (lowerMsg.includes('mpos:') || (lowerMsg.includes('x:') && lowerMsg.includes('y:'))) {
