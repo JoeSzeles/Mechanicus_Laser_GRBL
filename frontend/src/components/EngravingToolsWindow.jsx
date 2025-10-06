@@ -176,22 +176,22 @@ function EngravingToolsWindow() {
     try {
       // Generate all G-code commands first (matching Python approach)
       const allCommands = []
-      
+
       // 1. Home command
       allCommands.push(generateHomeCommand(firmware))
-      
+
       // 2. Initialize machine
       allCommands.push('G21') // Set units to mm
       allCommands.push('G90') // Absolute positioning
       allCommands.push(`G1 F${feedRate}`) // Set feed rate
       allCommands.push(generateLaserControl(firmware, 0, false)) // Ensure laser is off
-      
+
       // 3. Generate commands for each pass
       for (let pass = 0; pass < passCount; pass++) {
         // Process each shape
         for (let shapeIndex = 0; shapeIndex < visibleShapes.length; shapeIndex++) {
           const shape = visibleShapes[shapeIndex]
-          
+
           // Generate commands for this shape
           const shapeCommands = generateShapeCommands(
             shape,
@@ -203,15 +203,15 @@ function EngravingToolsWindow() {
             laserPower,
             firmware
           )
-          
+
           allCommands.push(...shapeCommands)
         }
       }
-      
+
       // 4. Finish commands - turn off laser and go home
       allCommands.push(generateLaserControl(firmware, 0, false))
       allCommands.push(generateHomeCommand(firmware))
-      
+
       // Send to buffer module for transmission
       const bufferEvent = new CustomEvent('gcode-buffer-update', {
         detail: {
@@ -220,19 +220,19 @@ function EngravingToolsWindow() {
         }
       })
       window.dispatchEvent(bufferEvent)
-      
+
       // Auto-open buffer window if not already open
       const openBufferEvent = new CustomEvent('open-buffer-window')
       window.dispatchEvent(openBufferEvent)
-      
+
       // Auto-start transmission after a short delay
       setTimeout(() => {
         const startTransmissionEvent = new CustomEvent('start-buffer-transmission')
         window.dispatchEvent(startTransmissionEvent)
       }, 500)
-      
+
       setStatus('G-code sent to buffer and transmission started.')
-      
+
     } catch (error) {
       console.error('G-code generation error:', error)
       setStatus(`G-code generation failed: ${error.message}`)
@@ -312,22 +312,22 @@ function EngravingToolsWindow() {
       const centerX = shape.x
       const centerY = shape.y
       const radius = shape.radius
-      
+
       const center = convertToMachineCoords(centerX, centerY)
       const machineRadius = radius / mmToPx
 
       const numSegments = 72
-      
+
       // Calculate start position
       const startX = center.x + machineRadius
       const startY = center.y
-      
+
       // Move to start position
       commands.push(`G0 X${startX.toFixed(3)} Y${startY.toFixed(3)} F${feedRate}`)
-      
+
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
-      
+
       // Draw circle using small segments
       for (let i = 0; i <= numSegments; i++) {
         const angle = (2 * Math.PI * i) / numSegments
@@ -335,7 +335,7 @@ function EngravingToolsWindow() {
         const y = center.y + machineRadius * Math.sin(angle)
         commands.push(`G1 X${x.toFixed(3)} Y${y.toFixed(3)} F${feedRate}`)
       }
-      
+
       // Turn off laser
       commands.push(generateLaserControl(firmware, 0, false))
     }
@@ -408,25 +408,25 @@ function EngravingToolsWindow() {
       const radius = shape.outerRadius || shape.radius || 50
       const rotation = shape.rotation || 0
       const arcAngle = shape.angle || 90
-      
+
       // Calculate start and extent angles
       const startAngle = rotation
       const extent = arcAngle
-      
+
       const center = convertToMachineCoords(centerX, centerY)
       const machineRadius = radius / mmToPx
-      
+
       // Calculate start position in radians
       const startAngleRad = (startAngle * Math.PI) / 180
       const startX = center.x + machineRadius * Math.cos(startAngleRad)
       const startY = center.y + machineRadius * Math.sin(startAngleRad)
-      
+
       // Move to start position
       commands.push(`G0 X${startX.toFixed(3)} Y${startY.toFixed(3)} F${feedRate}`)
-      
+
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
-      
+
       // Draw arc using small segments (increased for smoother arcs)
       const numSegments = Math.max(72, Math.floor(Math.abs(extent) / 5))
       for (let i = 0; i <= numSegments; i++) {
@@ -435,7 +435,7 @@ function EngravingToolsWindow() {
         const y = center.y + machineRadius * Math.sin(angleRad)
         commands.push(`G1 X${x.toFixed(3)} Y${y.toFixed(3)} F${feedRate}`)
       }
-      
+
       // Turn off laser
       commands.push(generateLaserControl(firmware, 0, false))
     }
@@ -444,7 +444,7 @@ function EngravingToolsWindow() {
       if (shape.pathData) {
         // Parse SVG path data and convert to G-code
         const pathCommands = parseSVGPath(shape.pathData)
-        
+
         let laserOn = false
         pathCommands.forEach((segment) => {
           if (segment.type === 'M') {
@@ -474,7 +474,7 @@ function EngravingToolsWindow() {
             }
           }
         })
-        
+
         // Ensure laser is off at the end
         if (laserOn) {
           commands.push(generateLaserControl(firmware, 0, false))

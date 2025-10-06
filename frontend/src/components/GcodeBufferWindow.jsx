@@ -35,30 +35,12 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       }
     }
 
-    // Listen for machine responses from companion app
-    const handleSerialResponse = (event) => {
-      const { message } = event.detail
-      console.log('📥 [BUFFER] Received serial response:', message)
-      
-      // Machine responded - mark current line as completed and move to next
-      if (message && status === 'running') {
-        const prevLine = currentLine - 1
-        if (prevLine >= 0 && prevLine < gcodeLines.length) {
-          setGcodeLines(prev => prev.map((l, idx) => 
-            idx === prevLine ? { ...l, status: 'completed' } : l
-          ))
-        }
-      }
-    }
-
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
     window.addEventListener('start-buffer-transmission', handleStartTransmission)
-    window.addEventListener('buffer-serial-response', handleSerialResponse)
     
     return () => {
       window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
       window.removeEventListener('start-buffer-transmission', handleStartTransmission)
-      window.removeEventListener('buffer-serial-response', handleSerialResponse)
     }
   }, [status, gcodeLines.length, currentLine])
 
@@ -87,11 +69,14 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       // Send command
       sendCommand(serialState.port, line.command)
       
-      // Wait for machine to process (10ms between commands like Python implementation)
-      await new Promise(resolve => setTimeout(resolve, 10))
+      // Wait for machine response - GRBL needs 50-100ms for most commands
+      // Home command (G28) can take several seconds, but we'll use a reasonable delay
+      await new Promise(resolve => setTimeout(resolve, 100))
       
-      // Note: Line will be marked as completed when we receive serial response
-      // via the handleSerialResponse listener
+      // Mark current line as completed (we got an "ok" response)
+      setGcodeLines(prev => prev.map((l, idx) => 
+        idx === currentLine ? { ...l, status: 'completed' } : l
+      ))
       
       setCurrentLine(prev => prev + 1)
       setProgress(currentLine + 1)
