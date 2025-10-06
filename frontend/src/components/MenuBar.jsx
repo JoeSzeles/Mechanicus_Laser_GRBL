@@ -27,9 +27,17 @@ const MenuBar = ({
   const setSelectedShapeId = useCadStore((state) => state.setSelectedShapeId)
   const removeShapeWithUndo = useCadStore((state) => state.removeShapeWithUndo)
   const selectedShapeId = useCadStore((state) => state.selectedShapeId)
+  const newProject = useCadStore((state) => state.newProject)
+
+  const handleNewProject = () => {
+    const confirmed = window.confirm('Start a new project? All unsaved changes will be lost.')
+    if (confirmed) {
+      newProject()
+    }
+  }
 
   const fileMenuItems = [
-    { label: 'New Project', onClick: () => console.log('New Project'), disabled: true },
+    { label: 'New Project', onClick: handleNewProject, shortcut: 'Ctrl+N' },
     { label: 'Open Project', onClick: () => console.log('Open Project'), disabled: true },
     { separator: true },
     { label: 'Save Project', onClick: () => console.log('Save Project'), shortcut: 'Ctrl+S', disabled: true },

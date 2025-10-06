@@ -2,37 +2,7 @@ import { create } from 'zustand'
 import { saveWorkspace, loadWorkspace, resetWorkspace as resetWorkspaceStorage, getDefaultWorkspace } from '../utils/workspaceManager'
 
 const useCadStore = create((set) => ({
-  shapes: [
-    { 
-      id: 'test-line-1', 
-      type: 'line', 
-      x1: 100, 
-      y1: 100, 
-      x2: 300, 
-      y2: 100,
-      stroke: '#000',
-      strokeWidth: 2
-    },
-    { 
-      id: 'test-line-2', 
-      type: 'line', 
-      x1: 300, 
-      y1: 100, 
-      x2: 300, 
-      y2: 300,
-      stroke: '#000',
-      strokeWidth: 2
-    },
-    { 
-      id: 'test-circle', 
-      type: 'circle', 
-      x: 500, 
-      y: 200, 
-      radius: 50,
-      stroke: '#000',
-      strokeWidth: 2
-    }
-  ],
+  shapes: [],
   layers: [
     { id: 'layer1', name: 'Layer 1', visible: true, locked: false }
   ],
@@ -258,6 +228,19 @@ const useCadStore = create((set) => ({
   })),
   
   clearHistory: () => set({ undoStack: [], redoStack: [] }),
+  
+  newProject: () => set({
+    shapes: [],
+    selectedShapeId: null,
+    selectedShapeIds: [],
+    markers: [],
+    guides: [],
+    undoStack: [],
+    redoStack: [],
+    lineEditorState: null,
+    shapePropertiesState: null,
+    textToolState: null
+  }),
   
   updateWorkspace: (updates) => set((state) => ({
     workspace: { ...state.workspace, ...updates }

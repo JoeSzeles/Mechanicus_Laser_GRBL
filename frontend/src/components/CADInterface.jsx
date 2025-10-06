@@ -346,6 +346,13 @@ function CADInterface() {
           removeShapeWithUndo(selectedShapeId)
           setSelectedShapeId(null)
         }
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault()
+        const newProject = useCadStore.getState().newProject
+        const confirmed = window.confirm('Start a new project? All unsaved changes will be lost.')
+        if (confirmed) {
+          newProject()
+        }
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
         e.preventDefault()
         undo()
