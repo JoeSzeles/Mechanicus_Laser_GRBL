@@ -87,27 +87,27 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     }
   }, [status, gcodeLines.length, currentLine])
 
-  const sendNextCommand = async () => {
+  const sendNextCommand = async (lineIndex) => {
     if (!isConnected || !serialState.port) {
       setStatus('error')
       setErrorMessage('Machine not connected')
       return false
     }
 
-    if (currentLine >= gcodeLines.length) {
+    if (lineIndex >= gcodeLines.length) {
       setStatus('idle')
       return false
     }
 
-    const line = gcodeLines[currentLine]
+    const line = gcodeLines[lineIndex]
     
     // Update line status to sending
     setGcodeLines(prev => prev.map((l, idx) => 
-      idx === currentLine ? { ...l, status: 'sending' } : l
+      idx === lineIndex ? { ...l, status: 'sending' } : l
     ))
 
     try {
-      console.log(`📤 [BUFFER] Sending line ${currentLine + 1}/${gcodeLines.length}: ${line.command}`)
+      console.log(`📤 [BUFFER] Sending line ${lineIndex + 1}/${gcodeLines.length}: ${line.command}`)
       
       // Set up response waiting
       waitingForResponseRef.current = true
@@ -134,7 +134,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         console.error(`❌ [BUFFER] TIMEOUT (${timeout}ms) waiting for response to: ${line.command}`)
         // Mark as error but continue
         setGcodeLines(prev => prev.map((l, idx) => 
-          idx === currentLine ? { ...l, status: 'error', error: 'Timeout' } : l
+          idx === lineIndex ? { ...l, status: 'error', error: 'Timeout' } : l
         ))
         setStatus('error')
         setErrorMessage(`Timeout waiting for response to: ${line.command}`)
@@ -143,21 +143,20 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
       }
       
-      // Mark current line as completed and increment BEFORE next iteration
-      const nextLine = currentLine + 1
-      
+      // Mark current line as completed
       setGcodeLines(prev => prev.map((l, idx) => 
-        idx === currentLine ? { ...l, status: 'completed' } : l
+        idx === lineIndex ? { ...l, status: 'completed' } : l
       ))
       
-      setCurrentLine(nextLine)
-      setProgress(nextLine)
+      // Update state for UI
+      setCurrentLine(lineIndex + 1)
+      setProgress(lineIndex + 1)
       
       return true
     } catch (error) {
-      console.error(`❌ [BUFFER] Error sending line ${currentLine + 1}:`, error)
+      console.error(`❌ [BUFFER] Error sending line ${lineIndex + 1}:`, error)
       setGcodeLines(prev => prev.map((l, idx) => 
-        idx === currentLine ? { ...l, status: 'error', error: error.message } : l
+        idx === lineIndex ? { ...l, status: 'error', error: error.message } : l
       ))
       setStatus('error')
       setErrorMessage(error.message)
@@ -185,7 +184,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
         if (isStoppedRef.current) break
 
-        const success = await sendNextCommand()
+        const success = await sendNextCommand(lineIndex)
         if (!success) break
 
         // Increment local counter
