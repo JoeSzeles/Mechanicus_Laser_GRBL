@@ -1,0 +1,173 @@
+Current Problem: Laser Toggling & Position Tracking Issues
+Problem 1: Laser Turning On/Off for Every Segment (Jerky Movement)
+What's Happening:
+The laser engraver is turning the laser on (M3) and off (M5) for every single segment of a continuous shape (circles, freehand paths), causing:
+
+Jerky, stuttering movement instead of smooth cutting
+Significantly slower engraving speed
+Poor quality cuts with visible start/stop marks at each segment
+Expected Behavior:
+Laser should turn ON once at the start of a continuous shape
+Laser should stay ON while drawing all segments of that shape
+Laser should turn OFF once at the end of the shape
+Movement should be smooth and continuous
+Root Cause:
+Looking at the code structure, the issue likely exists in:
+
+File: frontend/src/utils/firmwareGcodeGenerators.js (lines ~135-180)
+
+The current code architecture:
+
+✅ FIXED: Laser control is now at shape level (M3 once at start, M5 once at end)
+❌ STILL BROKEN: Individual path segments may still be getting laser commands if they're generated elsewhere
+Where to investigate:
+
+Check the shape generation logic in frontend/src/components/EngravingToolsWindow.jsx:
+
+Line ~200-300: How are circles/freehand paths being converted to G-code?
+Are they calling generateLaserControl() for each segment?
+Check the buffer transmission in frontend/src/components/GcodeBufferWindow.jsx:
+
+Lines ~220-260: The buffer detects continuous movement but doesn't prevent laser toggles
+It only adjusts timing delays, not the actual commands
+Check path conversion utilities:
+
+frontend/src/utils/svgUtils.js: How SVG paths are parsed into segments
+Are segments being treated as separate shapes?
+The Critical Issue:
+Even though firmwareGcodeGenerators.js now adds M3/M5 at shape boundaries, something upstream is still generating individual shapes for each segment instead of treating a circle/path as a single shape.
+
+Example of what's happening:
+
+; Circle (should be ONE shape)
+G0 X10 Y10      ; Move to start
+M3 S1000        ; Laser ON ✓ (correct)
+G1 X11 Y10      ; Segment 1
+M5              ; Laser OFF ✗ (WRONG - this shouldn't be here!)
+M3 S1000        ; Laser ON ✗ (WRONG - this shouldn't be here!)
+G1 X12 Y10      ; Segment 2
+M5              ; Laser OFF ✗ (WRONG)
+M3 S1000        ; Laser ON ✗ (WRONG)
+G1 X13 Y10      ; Segment 3
+M5              ; Laser OFF ✓ (correct, end of shape)
+What it should be:
+
+; Circle (ONE shape)
+G0 X10 Y10      ; Move to start
+M3 S1000        ; Laser ON once
+G1 X11 Y10      ; Segment 1
+G1 X12 Y10      ; Segment 2
+G1 X13 Y10      ; Segment 3
+M5              ; Laser OFF once
+Problem 2: Position Tracking Not Working
+What's Happening:
+The machine position display shows X: 0.00, Y: 0.00, Z: 0.00 and never updates during movement.
+
+Expected Behavior:
+Position queries (? for GRBL or M114 for Marlin) should be sent periodically
+Responses like <Idle|MPos:123.45,67.89,10.00> should be parsed
+UI should update to show current machine position in real-time
+Data Flow (How it SHOULD work):
+1. Buffer sends: "?"
+2. Machine responds: "<Idle|MPos:123.45,67.89,10.00>"
+3. Companion app receives response
+4. Companion forwards to main app via WebSocket
+5. SerialContext receives message
+6. SerialContext forwards to machinePositionTracker
+7. machinePositionTracker parses and updates position
+8. UI displays updated position
+Where the Flow is Breaking:
+Investigation checklist:
+
+Are position queries being sent?
+
+Check: frontend/src/utils/firmwareGcodeGenerators.js line ~165
+Position queries are inserted every 10 commands
+✅ This appears to be working
+Is the machine responding?
+
+Check companion app logs when buffer runs
+Look for position responses in serial data
+Key file: companion-app/src/index.js (WebSocket message handling)
+Is the companion forwarding the response?
+
+Check: companion-app/src/index.js around line 100-200
+Look for serial_data message type being sent to main app
+The companion should forward ALL serial responses, including position data
+Is SerialContext receiving it?
+
+Check: frontend/src/contexts/SerialContext.jsx line ~82-100
+Look for case 'serial_data': handler
+✅ Code exists to parse position responses
+Is the position being parsed correctly?
+
+Check: frontend/src/utils/machinePositionTracker.js line ~65-95
+The parsePositionResponse() function should handle both GRBL and Marlin formats
+✅ Parser looks correct
+Is the GcodeBufferWindow forwarding responses?
+
+Check: frontend/src/components/GcodeBufferWindow.jsx line ~50-70
+✅ Code was recently added to forward position responses
+BUT: Uses dynamic import which may cause timing issues
+The Critical Issue:
+The position data flow has multiple handoff points, and it's breaking somewhere in the chain:
+
+Most likely culprits:
+
+Buffer window is consuming the response before it reaches position tracker
+
+The buffer waits for "ok" responses
+Position query responses might be getting caught in the buffer's acknowledgment logic
+Check: GcodeBufferWindow.jsx lines ~75-95
+Dynamic import timing issue
+
+import('../utils/machinePositionTracker').then(...) may execute too late
+Position tracker should be imported at module level, not dynamically
+Companion app not forwarding position responses
+
+Check if companion app filters or ignores certain serial messages
+Position responses might not trigger serial_data WebSocket message
+Files to Inspect for Agent AI:
+Priority 1: Laser Toggling Issue
+frontend/src/components/EngravingToolsWindow.jsx (lines 200-400)
+
+Check how handleEngrave() converts canvas objects to shapes array
+Look for circle/path generation logic
+See if each segment becomes a separate "shape"
+frontend/src/utils/svgUtils.js
+
+Check parseSVGPath() and related functions
+See how continuous paths are split into segments
+Priority 2: Position Tracking Issue
+frontend/src/components/GcodeBufferWindow.jsx (lines 40-100)
+
+Fix dynamic import issue
+Ensure position responses bypass acknowledgment wait
+Verify forwarding to position tracker
+companion-app/src/index.js (WebSocket handlers)
+
+Verify serial data forwarding logic
+Check if position responses are being sent to main app
+frontend/src/contexts/SerialContext.jsx (lines 80-130)
+
+Verify serial_data handler processes position responses
+Check if data reaches machinePositionTracker
+Quick Test to Confirm Issues:
+Test 1: Laser Toggling
+Generate G-code for a simple circle
+Open G-code buffer window
+Count how many M3 and M5 commands appear
+Expected: 1 M3 and 1 M5
+Actual (broken): Multiple M3/M5 pairs
+Test 2: Position Tracking
+Connect to machine
+Send a simple jog command: G1 X10 F1000
+Check browser console for:
+📍 [BUFFER] Position query sent
+📍 [POSITION] Parsing response
+✅ [POSITION] Updated position
+Expected: All three log messages appear
+Actual (broken): Messages missing or position not updating
+
+Scroll to latest
+Assistant mode

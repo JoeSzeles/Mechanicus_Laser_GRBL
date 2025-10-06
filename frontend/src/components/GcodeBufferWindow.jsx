@@ -10,6 +10,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   const [status, setStatus] = useState('idle') // idle, running, paused, stopped, error
   const [progress, setProgress] = useState(0)
   const [errorMessage, setErrorMessage] = useState('')
+  const [displayLines, setDisplayLines] = useState([]) // Lines with responses inserted for display
 
   const isPausedRef = useRef(false)
   const isStoppedRef = useRef(false)
@@ -21,11 +22,18 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   useEffect(() => {
     const handleBufferUpdate = (event) => {
       const { lines, start } = event.detail
-      setGcodeLines(lines.map((line, idx) => ({
-        lineNumber: idx + 1,
-        command: line,
-        status: idx < start ? 'completed' : 'pending'
-      })))
+      const gLines = lines.map((line, idx) => {
+        const cmd = line.trim().toUpperCase()
+        const isPositionQuery = cmd === '?' || cmd === 'M114'
+        return {
+          lineNumber: idx + 1,
+          command: line,
+          status: idx < start ? 'completed' : 'pending',
+          isPositionQuery
+        }
+      })
+      setGcodeLines(gLines)
+      setDisplayLines(gLines) // Initialize display lines
       setCurrentLine(start)
       setProgress(start)
     }
@@ -40,6 +48,14 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     const handleSerialResponse = (event) => {
       const { message } = event.detail
       console.log('📥 [BUFFER] Received serial response:', message)
+
+      // Add ALL machine responses to display (in red)
+      setDisplayLines(prev => [...prev, {
+        lineNumber: null,
+        command: message,
+        status: 'response',
+        isResponse: true
+      }])
 
       // Forward position updates to main app (they handle it in SerialContext)
       const lowerMsg = message.toLowerCase()
@@ -286,7 +302,9 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     setGcodeLines(prev => prev.map(l => ({ ...l, status: 'pending' })))
   }
 
-  const getStatusColor = (lineStatus) => {
+  const getStatusColor = (lineStatus, isResponse, isPositionQuery) => {
+    if (isResponse) return '#FF4444' // Red for machine responses
+    if (isPositionQuery) return '#FFA500' // Orange for position queries
     switch (lineStatus) {
       case 'completed': return '#4CAF50'
       case 'sending': return '#2196F3'
@@ -380,14 +398,14 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
               </tr>
             </thead>
             <tbody>
-              {gcodeLines.map((line, idx) => (
+              {displayLines.map((line, idx) => (
                 <tr
-                  key={idx}
-                  className={`gcode-line ${line.status} ${idx === currentLine ? 'current' : ''}`}
-                  style={{ color: getStatusColor(line.status) }}
+                  key={`${line.lineNumber || 'resp'}-${idx}`}
+                  className={`gcode-line ${line.status} ${line.isResponse ? 'response-line' : ''} ${line.isPositionQuery ? 'position-query' : ''} ${idx === currentLine ? 'current' : ''}`}
+                  style={{ color: getStatusColor(line.status, line.isResponse, line.isPositionQuery) }}
                 >
-                  <td className="line-number">{line.lineNumber}</td>
-                  <td className="line-status">{getStatusIcon(line.status)}</td>
+                  <td className="line-number">{line.isResponse ? '→' : line.lineNumber}</td>
+                  <td className="line-status">{line.isResponse ? '◀' : getStatusIcon(line.status)}</td>
                   <td className="line-command">
                     {line.command}
                     {line.error && <span className="line-error"> ({line.error})</span>}

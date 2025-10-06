@@ -72,12 +72,12 @@ function EngravingToolsWindow() {
   // Load saved values from localStorage or use machine profile defaults
   const [feedRate, setFeedRate] = useState(() => {
     const saved = localStorage.getItem('engraving_feedRate')
-    return saved ? parseInt(saved) : machineConnection.currentProfile?.drawSpeed || 2000
+    return saved ? parseInt(saved) : machineConnection?.currentProfile?.drawSpeed || 2000
   })
 
   const [laserPower, setLaserPower] = useState(() => {
     const saved = localStorage.getItem('engraving_laserPower')
-    return saved ? parseInt(saved) : machineConnection.currentProfile?.laserPower || 1000
+    return saved ? parseInt(saved) : machineConnection?.currentProfile?.laserPower || 1000
   })
 
   const [passes, setPasses] = useState(() => {
@@ -182,11 +182,11 @@ function EngravingToolsWindow() {
     setProgress({ current: 0, total: totalShapes * passCount })
     setStatus('Generating G-code...')
 
-    const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
+    const firmware = machineConnection?.currentProfile?.firmwareType || 'grbl'
     const mmToPx = machineProfile.mmToPx
-    const bedMaxX = machineConnection.currentProfile?.bedMaxX || 300
-    const bedMaxY = machineConnection.currentProfile?.bedMaxY || 200
-    const originPoint = machineConnection.currentProfile?.originPoint || 'bottom-left'
+    const bedMaxX = machineConnection?.currentProfile?.bedMaxX || 300
+    const bedMaxY = machineConnection?.currentProfile?.bedMaxY || 200
+    const originPoint = machineConnection?.currentProfile?.originPoint || 'bottom-left'
 
     try {
       // Generate all G-code commands first (matching Python approach)
