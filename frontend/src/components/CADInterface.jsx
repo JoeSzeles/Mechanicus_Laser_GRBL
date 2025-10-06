@@ -1490,22 +1490,17 @@ function CADInterface() {
 
     // Calculate ruler marks based on machine origin point
     const originPoint = machineProfile.originPoint || 'bottom-left'
+    const originIsRight = originPoint === 'bottom-right' || originPoint === 'top-right'
     
-    // Determine canvas X position where machine X=0 is located
-    let originCanvasX = 0
-    if (originPoint === 'bottom-right' || originPoint === 'top-right') {
-      originCanvasX = canvasWidth
-    }
-
     // Draw marks every 1mm
     for (let mmPos = 0; mmPos <= machineProfile.bedSizeX; mmPos += 1) {
-      // Calculate canvas pixel position for this mm mark
-      let x
-      if (originPoint === 'bottom-right' || originPoint === 'top-right') {
-        x = originCanvasX - (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.x
-      } else {
-        x = originCanvasX + (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.x
-      }
+      // Step 1: Calculate world X coordinate (unzoomed canvas position)
+      const worldX = originIsRight 
+        ? canvasWidth - (mmPos * machineProfile.mmToPx)
+        : mmPos * machineProfile.mmToPx
+      
+      // Step 2: Apply zoom and pan to get screen position
+      const x = worldX * viewport.zoom + viewport.pan.x
       
       if (x < 0 || x > hRulerCanvas.width) continue
 
@@ -1540,16 +1535,16 @@ function CADInterface() {
     vCtx.font = '10px Arial'
 
     // Draw marks every 1mm starting from 0 at the origin
+    const originIsTop = originPoint === 'top-left' || originPoint === 'top-right'
+    
     for (let mmPos = 0; mmPos <= machineProfile.bedSizeY; mmPos += 1) {
-      // Calculate canvas Y position based on origin point
-      let y
-      if (originPoint === 'top-left' || originPoint === 'top-right') {
-        // Origin at top: count down from top
-        y = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
-      } else {
-        // Origin at bottom: count up from bottom
-        y = canvasHeight - (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
-      }
+      // Step 1: Calculate world Y coordinate (unzoomed canvas position)
+      const worldY = originIsTop 
+        ? mmPos * machineProfile.mmToPx
+        : canvasHeight - (mmPos * machineProfile.mmToPx)
+      
+      // Step 2: Apply zoom and pan to get screen position
+      const y = worldY * viewport.zoom + viewport.pan.y
       
       if (y < 0 || y > vRulerCanvas.height) continue
 
