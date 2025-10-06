@@ -1,8 +1,6 @@
-
 import { useState, useEffect } from 'react'
-import useCadStore from '../store/cadStore'
 import { useSerial } from '../contexts/SerialContext'
-import { generateHomeCommand, generateLaserControl } from '../utils/firmwareGcodeGenerators'
+import useCadStore from '../store/cadStore'
 import { machinePositionTracker } from '../utils/machinePositionTracker'
 import './EngravingToolsWindow.css'
 
@@ -12,26 +10,27 @@ function EngravingToolsWindow() {
   const machineProfile = useCadStore((state) => state.machineProfile)
   const machineConnection = useCadStore((state) => state.machineConnection)
   const { sendGcode, isConnected, serialState } = useSerial()
-  
+
   // Load saved values from localStorage or use machine profile defaults
   const [feedRate, setFeedRate] = useState(() => {
     const saved = localStorage.getItem('engraving_feedRate')
     return saved ? parseInt(saved) : machineConnection.currentProfile?.drawSpeed || 2000
   })
-  
+
   const [laserPower, setLaserPower] = useState(() => {
     const saved = localStorage.getItem('engraving_laserPower')
     return saved ? parseInt(saved) : machineConnection.currentProfile?.laserPower || 1000
   })
-  
+
   const [passes, setPasses] = useState(() => {
     const saved = localStorage.getItem('engraving_passes')
     return saved ? parseInt(saved) : 1
   })
-  
+
   const [isEngraving, setIsEngraving] = useState(false)
   const [progress, setProgress] = useState({ current: 0, total: 0 })
   const [machinePosition, setMachinePosition] = useState({ x: 0, y: 0, z: 0 })
+  const [status, setStatus] = useState('')
 
   // Save values to localStorage when they change
   useEffect(() => {
@@ -66,9 +65,9 @@ function EngravingToolsWindow() {
 
     const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
     const homeCmd = generateHomeCommand(firmware)
-    
+
     sendGcode(homeCmd)
-    
+
     // Start position tracking after homing
     setTimeout(() => {
       machinePositionTracker.queryPosition(serialState.port, firmware)
@@ -77,9 +76,10 @@ function EngravingToolsWindow() {
 
   const handleStop = () => {
     if (!isConnected || !serialState.port) return
-    
+
     setIsEngraving(false)
-    
+    setStatus('Engraving stopped.')
+
     // Send emergency stop based on firmware
     const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
     if (firmware === 'grbl') {
@@ -87,9 +87,10 @@ function EngravingToolsWindow() {
     } else if (firmware === 'marlin') {
       sendGcode('M112') // Emergency stop for Marlin
     }
-    
+
     // Turn off laser
     sendGcode(generateLaserControl(firmware, 0, false))
+    machinePositionTracker.setLaserState(false)
   }
 
   const handleEngrave = async () => {
@@ -116,7 +117,9 @@ function EngravingToolsWindow() {
 
     setIsEngraving(true)
     const totalShapes = visibleShapes.length
-    setProgress({ current: 0, total: totalShapes * passes })
+    const passCount = passes
+    setProgress({ current: 0, total: totalShapes * passCount })
+    setStatus('Initializing engraving...')
 
     const firmware = machineConnection.currentProfile?.firmwareType || 'grbl'
     const mmToPx = machineProfile.mmToPx
@@ -137,7 +140,7 @@ function EngravingToolsWindow() {
       const homeCmd = generateHomeCommand(firmware)
       sendGcode(homeCmd)
       await sleep(2000) // Wait for homing
-      
+
       // Query position after homing
       machinePositionTracker.queryPosition(serialState.port, firmware)
       await sleep(500)
@@ -147,15 +150,17 @@ function EngravingToolsWindow() {
       sendGcode('G90') // Absolute positioning
       sendGcode(`G1 F${feedRate}`) // Set feed rate
       sendGcode(generateLaserControl(firmware, 0, false)) // Ensure laser is off
+      machinePositionTracker.setLaserState(false)
+
 
       // 3. Process each pass
-      for (let pass = 0; pass < passes; pass++) {
-        console.log(`Starting pass ${pass + 1}/${passes}`)
+      for (let pass = 0; pass < passCount; pass++) {
+        setStatus(`Pass ${pass + 1}/${passCount}...`)
 
         // Process each shape
         for (let shapeIndex = 0; shapeIndex < visibleShapes.length; shapeIndex++) {
           const shape = visibleShapes[shapeIndex]
-          
+
           // Generate commands for this shape
           const commands = generateShapeCommands(
             shape,
@@ -169,33 +174,62 @@ function EngravingToolsWindow() {
           )
 
           // Send commands
+          let lastPoint = machinePosition // Keep track of the last point for position tracking
           for (const cmd of commands) {
-            sendGcode(cmd)
-            await sleep(10) // Small delay between commands
-            
-            // Query position periodically during movement
-            if (cmd.startsWith('G1') || cmd.startsWith('G0')) {
-              machinePositionTracker.queryPosition(serialState.port, firmware)
+            if (cmd.startsWith('G0') || cmd.startsWith('G1')) {
+              // Extract coordinates from G-code
+              const match = cmd.match(/X([+-]?\d*\.?\d+)Y([+-]?\d*\.?\d+)/)
+              if (match) {
+                const targetX = parseFloat(match[1])
+                const targetY = parseFloat(match[2])
+                const distance = Math.sqrt(Math.pow(targetX - lastPoint.x, 2) + Math.pow(targetY - lastPoint.y, 2))
+                
+                // Send the command and then start tracking movement
+                sendGcode(cmd)
+                machinePositionTracker.startMovementTracking(serialState.port, feedRate, distance, firmware)
+                lastPoint = { x: targetX, y: targetY }
+              } else {
+                // If no coordinates, just send the command
+                sendGcode(cmd)
+              }
+            } else {
+              // For laser control commands, just send them
+              sendGcode(cmd)
+              if (cmd.includes('M3')) {
+                machinePositionTracker.setLaserState(true)
+              } else if (cmd.includes('M5')) {
+                machinePositionTracker.setLaserState(false)
+              }
             }
+            await sleep(10) // Small delay between commands
           }
-          
-          setProgress({ current: pass * totalShapes + shapeIndex + 1, total: totalShapes * passes })
+
+          setProgress({ current: pass * totalShapes + shapeIndex + 1, total: totalShapes * passCount })
         }
       }
 
       // 4. Finish - turn off laser and go home
       sendGcode(generateLaserControl(firmware, 0, false))
+      machinePositionTracker.setLaserState(false)
+      const homeCmd = generateHomeCommand(firmware)
       sendGcode(homeCmd)
-      
+
+      // Track homing movement
+      machinePositionTracker.startMovementTracking(serialState.port, 1000, 50, firmware)
+
+
       // Final position query
       await sleep(1000)
       machinePositionTracker.queryPosition(serialState.port, firmware)
 
+      setStatus('Engraving completed successfully!')
       alert('Engraving completed successfully!')
     } catch (error) {
       console.error('Engraving error:', error)
+      setStatus(`Engraving failed: ${error.message}`)
       alert('Engraving failed: ' + error.message)
       sendGcode(generateLaserControl(firmware, 0, false))
+      machinePositionTracker.setLaserState(false)
     } finally {
       setIsEngraving(false)
       setProgress({ current: 0, total: 0 })
@@ -204,7 +238,7 @@ function EngravingToolsWindow() {
 
   const generateShapeCommands = (shape, mmToPx, bedMaxX, bedMaxY, originPoint, feedRate, laserPower, firmware) => {
     const commands = []
-    
+
     // Helper to convert canvas coordinates to machine coordinates
     const convertToMachineCoords = (canvasX, canvasY) => {
       let machineX = (canvasX / mmToPx)
@@ -237,7 +271,7 @@ function EngravingToolsWindow() {
       // Single line
       const start = convertToMachineCoords(shape.x1, shape.y1)
       const end = convertToMachineCoords(shape.x2, shape.y2)
-      
+
       // Move to start
       commands.push(`G0 X${start.x.toFixed(3)} Y${start.y.toFixed(3)} F${feedRate}`)
       // Turn on laser
@@ -253,7 +287,7 @@ function EngravingToolsWindow() {
       const topRight = convertToMachineCoords(shape.x + shape.width, shape.y)
       const bottomRight = convertToMachineCoords(shape.x + shape.width, shape.y + shape.height)
       const bottomLeft = convertToMachineCoords(shape.x, shape.y + shape.height)
-      
+
       // Move to start
       commands.push(`G0 X${topLeft.x.toFixed(3)} Y${topLeft.y.toFixed(3)} F${feedRate}`)
       // Turn on laser
@@ -271,7 +305,7 @@ function EngravingToolsWindow() {
       const center = convertToMachineCoords(shape.x, shape.y)
       const radiusX = shape.radius / mmToPx
       const radiusY = shape.radius / mmToPx
-      
+
       const numSegments = 72
       const points = []
       for (let i = 0; i <= numSegments; i++) {
@@ -280,7 +314,7 @@ function EngravingToolsWindow() {
         const y = center.y + radiusY * Math.sin(angle)
         points.push({ x, y })
       }
-      
+
       // Move to start
       commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
       // Turn on laser
@@ -296,7 +330,7 @@ function EngravingToolsWindow() {
       // Polygon - draw all points and close
       if (shape.points && shape.points.length > 0) {
         const points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
-        
+
         // Move to start
         commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
         // Turn on laser
@@ -315,7 +349,7 @@ function EngravingToolsWindow() {
       // Freehand/path - draw all points
       if (shape.points && shape.points.length > 0) {
         const points = shape.points.map(p => convertToMachineCoords(p.x, p.y))
-        
+
         // Move to start
         commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
         // Turn on laser
@@ -337,7 +371,7 @@ function EngravingToolsWindow() {
       const radiusY = shape.radiusY / mmToPx
       const startAngle = (shape.startAngle || 0) * (Math.PI / 180)
       const endAngle = (shape.endAngle || 360) * (Math.PI / 180)
-      
+
       const numSegments = Math.max(36, Math.abs(Math.ceil((endAngle - startAngle) * 180 / Math.PI / 5)))
       const points = []
       for (let i = 0; i <= numSegments; i++) {
@@ -346,7 +380,7 @@ function EngravingToolsWindow() {
         const y = center.y + radiusY * Math.sin(angle)
         points.push({ x, y })
       }
-      
+
       // Move to start
       commands.push(`G0 X${points[0].x.toFixed(3)} Y${points[0].y.toFixed(3)} F${feedRate}`)
       // Turn on laser
@@ -413,7 +447,7 @@ function EngravingToolsWindow() {
 
       {isEngraving && (
         <div className="progress-info">
-          Engraving: {progress.current} / {progress.total}
+          {status} Engraving: {progress.current} / {progress.total}
         </div>
       )}
 
