@@ -59,12 +59,15 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
 
     // Create a custom handler for SerialContext messages
     const handleSerialData = (data) => {
+      console.log('🔵 [BUFFER] Direct handler received:', data, 'Waiting:', waitingForResponseRef.current)
       if (waitingForResponseRef.current && data && typeof data === 'string') {
         const lowerMsg = data.toLowerCase()
         if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
           console.log('✅ [BUFFER] Command acknowledged via direct handler:', data)
           responseReceivedRef.current = true
           waitingForResponseRef.current = false
+        } else {
+          console.log('⏳ [BUFFER] Got response but not "ok":', data)
         }
       }
     }
@@ -114,17 +117,30 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       sendCommand(serialState.port, line.command)
       
       // Wait for machine response (with timeout)
-      const timeout = line.command.trim().toUpperCase().includes('G28') ? 10000 : 2000
+      // G28 can take 10-30 seconds depending on machine size
+      const cmd = line.command.trim().toUpperCase()
+      const timeout = cmd.includes('G28') ? 30000 : 5000
       const startTime = Date.now()
       
+      console.log(`⏳ [BUFFER] Waiting for response (timeout: ${timeout}ms)...`)
+      
       while (!responseReceivedRef.current && (Date.now() - startTime < timeout)) {
-        await new Promise(resolve => setTimeout(resolve, 50))
+        await new Promise(resolve => setTimeout(resolve, 100))
       }
       
       waitingForResponseRef.current = false
       
       if (!responseReceivedRef.current) {
-        console.warn(`⚠️ [BUFFER] Timeout waiting for response to: ${line.command}`)
+        console.error(`❌ [BUFFER] TIMEOUT (${timeout}ms) waiting for response to: ${line.command}`)
+        // Mark as error but continue
+        setGcodeLines(prev => prev.map((l, idx) => 
+          idx === currentLine ? { ...l, status: 'error', error: 'Timeout' } : l
+        ))
+        setStatus('error')
+        setErrorMessage(`Timeout waiting for response to: ${line.command}`)
+        return false
+      } else {
+        console.log(`✅ [BUFFER] Response received after ${Date.now() - startTime}ms`)
       }
       
       // Mark current line as completed
@@ -168,8 +184,8 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
         const success = await sendNextCommand()
         if (!success) break
 
-        // Match Python implementation: 10ms delay between commands
-        await new Promise(resolve => setTimeout(resolve, 10))
+        // Increased delay to prevent command flooding (100ms between commands)
+        await new Promise(resolve => setTimeout(resolve, 100))
       }
 
       if (currentLine >= gcodeLines.length) {
