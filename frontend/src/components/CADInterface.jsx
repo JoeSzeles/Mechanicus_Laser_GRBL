@@ -1118,11 +1118,18 @@ function CADInterface() {
         delete newShape.y
         delete newShape.radius
       } else if (drawingState.tool === 'arc') {
+        // Calculate angle based on mouse position relative to center
+        const point = getWorldPoint(e)
+        const angleFromCenter = Math.atan2(
+          point.y - drawingState.centerY,
+          point.x - drawingState.centerX
+        ) * 180 / Math.PI
+        
         newShape.type = 'arc'
-        newShape.angle = 0
+        newShape.angle = 90 // Default 90 degree arc (quarter circle)
         newShape.innerRadius = 0
         newShape.outerRadius = previewShape.radius
-        newShape.rotation = 0
+        newShape.rotation = angleFromCenter - 45 // Center the arc on mouse position
       }
 
       addShapeWithUndo(newShape)
