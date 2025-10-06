@@ -13,7 +13,7 @@ export const saveWorkspace = (state) => {
       viewportPosition: state.viewportPosition,
       timestamp: Date.now()
     }
-    
+
     localStorage.setItem(WORKSPACE_KEY, JSON.stringify(workspaceState))
     console.log('💾 Workspace saved:', workspaceState)
     return true
@@ -30,7 +30,7 @@ export const loadWorkspace = () => {
       console.log('No saved workspace found')
       return null
     }
-    
+
     const workspace = JSON.parse(saved)
     console.log('📂 Workspace loaded:', workspace)
     return workspace
@@ -61,7 +61,8 @@ export const getDefaultWorkspace = () => {
       markersGuides: false,
       transformTools: false,
       lineEditorTools: false,
-      textTools: false
+      textTools: false,
+      engravingTools: false
     },
     gridVisible: true,
     gridSize: 10,

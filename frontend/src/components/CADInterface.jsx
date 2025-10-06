@@ -12,6 +12,7 @@ import ShapePropertiesWindow from './ShapePropertiesWindow'
 import TextFontToolsWindow from './TextFontToolsWindow'
 import LayersWindow from './LayersWindow'
 import MachineSettingsPopup from './MachineSettingsPopup'
+import EngravingToolsWindow from './EngravingToolsWindow'
 import MachineJogControls from './MachineJogControls'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
@@ -21,7 +22,7 @@ import {
   ImportIcon, ExportIcon, UndoIcon, RedoIcon,
   DrawingToolsIcon, SnapToolsIcon, MarkersIcon, TransformIcon,
   LineEditorIcon, ShapePropertiesIcon, TextToolsIcon, LayersIcon,
-  UserIcon, LogoutIcon
+  UserIcon, LogoutIcon, LaserIcon
 } from './ToolIcons'
 import MenuBar from './MenuBar'
 import FloatingPanel from './FloatingPanel'
@@ -123,6 +124,7 @@ function CADInterface() {
   const showShapeProperties = workspace.panelStates.shapeProperties
   const showTextTools = workspace.panelStates.textTools
   const showLayers = workspace.panelStates.layers
+  const showEngravingTools = workspace.panelStates.engravingTools
   
   const setShowDrawingTools = (isOpen) => setPanelState('drawingTools', isOpen)
   const setShowSnapTools = (isOpen) => setPanelState('snapTools', isOpen)
@@ -132,6 +134,7 @@ function CADInterface() {
   const setShowShapeProperties = (isOpen) => setPanelState('shapeProperties', isOpen)
   const setShowTextTools = (isOpen) => setPanelState('textTools', isOpen)
   const setShowLayers = (isOpen) => setPanelState('layers', isOpen)
+  const setShowEngravingTools = (isOpen) => setPanelState('engravingTools', isOpen)
   const [isPanning, setIsPanning] = useState(false)
   const [panStart, setPanStart] = useState({ x: 0, y: 0 })
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 })
@@ -200,7 +203,7 @@ function CADInterface() {
     })
     
     // Other panels on LEFT (higher z-index to appear above defaults, but below menu bar which is 100)
-    const leftPanels = ['snapTools', 'markersGuides', 'transformTools', 'lineEditorTools', 'textTools']
+    const leftPanels = ['snapTools', 'markersGuides', 'transformTools', 'lineEditorTools', 'textTools', 'engravingTools']
     leftPanels.forEach((panelId, index) => {
       defaultPositions[panelId] = savedPositions[panelId] || {
         x: 80,
@@ -2226,6 +2229,14 @@ function CADInterface() {
               onClick={() => setShowLayers(!showLayers)}
               active={showLayers}
             />
+
+            <ToolButton 
+              icon={<LaserIcon />} 
+              label="Engraving Tools" 
+              onClick={() => setShowEngravingTools(!showEngravingTools)}
+              active={showEngravingTools}
+              className="laser-button"
+            />
           </div>
 
           <div className="machine-settings-section">
@@ -3099,6 +3110,18 @@ function CADInterface() {
           onBringToFront={() => bringPanelToFront('textTools')}
         >
           <TextFontToolsWindow />
+        </FloatingPanel>
+
+        <FloatingPanel 
+          title="Engraving Tools" 
+          isOpen={showEngravingTools}
+          onClose={() => setShowEngravingTools(false)}
+          position={panelPositions.engravingTools}
+          zIndex={panelPositions.engravingTools.zIndex}
+          onPositionChange={(x, y) => updatePanelPosition('engravingTools', x, y)}
+          onBringToFront={() => bringPanelToFront('engravingTools')}
+        >
+          <EngravingToolsWindow />
         </FloatingPanel>
         
         <MachineSettingsPopup 

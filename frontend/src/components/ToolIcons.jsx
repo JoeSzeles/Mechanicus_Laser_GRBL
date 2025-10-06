@@ -114,3 +114,11 @@ export const LogoutIcon = () => (
     <line x1="21" y1="12" x2="9" y2="12" />
   </svg>
 )
+
+export const LaserIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 2L12 6M12 18L12 22M6 12L2 12M22 12L18 12" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" />
+    <path d="M12 12L17 17M12 12L7 17M12 12L17 7M12 12L7 7" strokeWidth="1.5" />
+  </svg>
+)

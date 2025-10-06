@@ -59,8 +59,28 @@
 }
 
 .tool-button:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
+  background: #1f2937;
+}
+
+.tool-button:disabled:hover {
+  background: #1f2937;
+  transform: none;
+}
+
+.tool-button.laser-button {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.tool-button.laser-button:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
+.tool-button.laser-button.active {
+  background: #991b1b;
+  border-color: #991b1b;
 }
 
 .tool-button svg {
