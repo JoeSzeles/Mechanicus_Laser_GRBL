@@ -15,6 +15,8 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
   const isPausedRef = useRef(false)
   const isStoppedRef = useRef(false)
   const transmissionLoopRef = useRef(null)
+  const waitingForResponseRef = useRef(false)
+  const responseReceivedRef = useRef(false)
 
   // Load G-code from buffer module
   useEffect(() => {
@@ -35,12 +37,32 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       }
     }
 
+    // Listen for machine responses
+    const handleSerialResponse = (event) => {
+      const { message } = event.detail
+      console.log('📥 [BUFFER] Received serial response:', message)
+      
+      // Check if we're waiting for a response
+      if (waitingForResponseRef.current) {
+        const lowerMsg = message.toLowerCase()
+        
+        // Accept "ok" or GRBL status responses as acknowledgment
+        if (lowerMsg.includes('ok') || lowerMsg.startsWith('<')) {
+          console.log('✅ [BUFFER] Command acknowledged')
+          responseReceivedRef.current = true
+          waitingForResponseRef.current = false
+        }
+      }
+    }
+
     window.addEventListener('gcode-buffer-update', handleBufferUpdate)
     window.addEventListener('start-buffer-transmission', handleStartTransmission)
+    window.addEventListener('buffer-serial-response', handleSerialResponse)
     
     return () => {
       window.removeEventListener('gcode-buffer-update', handleBufferUpdate)
       window.removeEventListener('start-buffer-transmission', handleStartTransmission)
+      window.removeEventListener('buffer-serial-response', handleSerialResponse)
     }
   }, [status, gcodeLines.length, currentLine])
 
@@ -66,14 +88,28 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     try {
       console.log(`📤 [BUFFER] Sending line ${currentLine + 1}/${gcodeLines.length}: ${line.command}`)
       
+      // Set up response waiting
+      waitingForResponseRef.current = true
+      responseReceivedRef.current = false
+      
       // Send command
       sendCommand(serialState.port, line.command)
       
-      // Wait for machine response - GRBL needs 50-100ms for most commands
-      // Home command (G28) can take several seconds, but we'll use a reasonable delay
-      await new Promise(resolve => setTimeout(resolve, 100))
+      // Wait for machine response (with timeout)
+      const timeout = line.command.trim().toUpperCase().includes('G28') ? 10000 : 2000
+      const startTime = Date.now()
       
-      // Mark current line as completed (we got an "ok" response)
+      while (!responseReceivedRef.current && (Date.now() - startTime < timeout)) {
+        await new Promise(resolve => setTimeout(resolve, 50))
+      }
+      
+      waitingForResponseRef.current = false
+      
+      if (!responseReceivedRef.current) {
+        console.warn(`⚠️ [BUFFER] Timeout waiting for response to: ${line.command}`)
+      }
+      
+      // Mark current line as completed
       setGcodeLines(prev => prev.map((l, idx) => 
         idx === currentLine ? { ...l, status: 'completed' } : l
       ))
@@ -89,6 +125,7 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
       ))
       setStatus('error')
       setErrorMessage(error.message)
+      waitingForResponseRef.current = false
       return false
     }
   }
@@ -151,10 +188,16 @@ function GcodeBufferWindow({ isOpen, onClose, position, onDragStart }) {
     isStoppedRef.current = true
     isPausedRef.current = false
     setStatus('stopped')
+    waitingForResponseRef.current = false
     
     // Send emergency stop to machine
     if (isConnected && serialState.port) {
-      const firmware = 'grbl' // Get from machine profile
+      // Get firmware from machine profile or default to GRBL
+      const machineConnection = window.cadStore?.getState?.()?.machineConnection
+      const firmware = machineConnection?.currentProfile?.firmwareType || 'grbl'
+      
+      console.log('🚨 [BUFFER] Emergency abort, firmware:', firmware)
+      
       const stopCmd = firmware === 'grbl' ? '\x18' : 'M112'
       sendCommand(serialState.port, stopCmd)
     }
