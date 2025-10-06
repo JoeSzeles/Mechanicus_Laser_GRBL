@@ -1539,20 +1539,16 @@ function CADInterface() {
     vCtx.fillStyle = '#333'
     vCtx.font = '10px Arial'
 
-    // Determine canvas Y position where machine Y=0 is located
-    let originCanvasY = canvasHeight
-    if (originPoint === 'top-left' || originPoint === 'top-right') {
-      originCanvasY = 0
-    }
-
-    // Draw marks every 1mm
+    // Draw marks every 1mm starting from 0 at the origin
     for (let mmPos = 0; mmPos <= machineProfile.bedSizeY; mmPos += 1) {
-      // Calculate canvas pixel position for this mm mark
+      // Calculate canvas Y position based on origin point
       let y
       if (originPoint === 'top-left' || originPoint === 'top-right') {
-        y = originCanvasY + (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
+        // Origin at top: count down from top
+        y = (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
       } else {
-        y = originCanvasY - (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
+        // Origin at bottom: count up from bottom
+        y = canvasHeight - (mmPos * machineProfile.mmToPx * viewport.zoom) + viewport.pan.y
       }
       
       if (y < 0 || y > vRulerCanvas.height) continue
