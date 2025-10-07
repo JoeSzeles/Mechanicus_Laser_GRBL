@@ -94,6 +94,12 @@ function EngravingToolsWindow() {
   // Listen for engrave-selected event
   useEffect(() => {
     const handleEngraveSelected = (event) => {
+      console.log('🔥 Engrave-selected event received:', {
+        shapeIds: event.detail.shapeIds,
+        isConnected,
+        serialState,
+        port: serialState?.port
+      })
       setSelectedShapeIds(event.detail.shapeIds)
       // Auto-trigger engraving after a short delay
       setTimeout(() => {
@@ -103,7 +109,7 @@ function EngravingToolsWindow() {
     
     window.addEventListener('engrave-selected', handleEngraveSelected)
     return () => window.removeEventListener('engrave-selected', handleEngraveSelected)
-  }, [])
+  }, [isConnected, serialState])
 
   // Save values to localStorage when they change
   useEffect(() => {
@@ -170,8 +176,13 @@ function EngravingToolsWindow() {
   }
 
   const handleEngrave = async (specificShapeIds = null) => {
-    if (!isConnected || !serialState.port) {
-      alert('Machine not connected')
+    // Check connection status
+    const currentSerialState = serialState || {}
+    const currentIsConnected = isConnected || currentSerialState.connected
+    
+    if (!currentIsConnected || !currentSerialState.port) {
+      console.error('Connection check failed:', { isConnected, serialState: currentSerialState })
+      alert('Machine not connected. Please connect to the machine first.')
       return
     }
 

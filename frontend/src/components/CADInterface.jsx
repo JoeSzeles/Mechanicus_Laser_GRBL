@@ -433,26 +433,26 @@ function CADInterface() {
       e.evt.preventDefault()
       const clickedOnEmpty = e.target === e.target.getStage()
       
+      // If anything is selected, show context menu regardless of where clicked
+      if (selectedShapeIds.length > 0 || selectedShapeId) {
+        setContextMenu({
+          x: e.evt.clientX,
+          y: e.evt.clientY
+        })
+        return
+      }
+      
+      // If nothing selected, check if clicking on a shape to select and show menu
       if (!clickedOnEmpty) {
         const clickedShapeId = e.target.id()
         const clickedShape = shapes.find(s => s.id === clickedShapeId)
         
         if (clickedShape) {
-          // If clicked shape is not selected, select it first
-          if (!selectedShapeIds.includes(clickedShapeId) && selectedShapeId !== clickedShapeId) {
-            setSelectedShapeId(clickedShapeId)
-            setSelectedShapeIds([])
-          }
+          // Select the clicked shape
+          setSelectedShapeId(clickedShapeId)
+          setSelectedShapeIds([])
           
           // Show context menu at mouse position
-          setContextMenu({
-            x: e.evt.clientX,
-            y: e.evt.clientY
-          })
-        }
-      } else {
-        // Right-click on empty canvas shows menu for current selection
-        if (selectedShapeIds.length > 0 || selectedShapeId) {
           setContextMenu({
             x: e.evt.clientX,
             y: e.evt.clientY
