@@ -258,6 +258,8 @@ function EngravingToolsWindow() {
       allCommands.push(generateLaserControl(firmware, 0, false)) // Ensure laser is off
 
       // 3. Generate commands for each pass
+      const positionQueryCmd = firmware === 'grbl' ? '?' : 'M114'
+      
       for (let pass = 0; pass < passCount; pass++) {
         // Process each shape
         for (let shapeIndex = 0; shapeIndex < visibleShapes.length; shapeIndex++) {
@@ -276,6 +278,12 @@ function EngravingToolsWindow() {
           )
 
           allCommands.push(...shapeCommands)
+          
+          // Add buffer pause between shapes to ensure proper processing
+          // This helps prevent command skipping on complex shapes
+          if (shapeIndex < visibleShapes.length - 1) {
+            allCommands.push(positionQueryCmd)  // Query position to allow buffer to catch up
+          }
         }
       }
 
@@ -397,12 +405,18 @@ function EngravingToolsWindow() {
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
 
-      // Draw circle using small segments
+      // Draw circle using small segments with position queries for buffer management
+      const positionQueryCmd = firmware === 'grbl' ? '?' : 'M114'
       for (let i = 0; i <= numSegments; i++) {
         const angle = (2 * Math.PI * i) / numSegments
         const x = center.x + machineRadius * Math.cos(angle)
         const y = center.y + machineRadius * Math.sin(angle)
         commands.push(generateMovement(firmware, x, y, null, feedRate, false))
+        
+        // Insert position query every 10 segments to prevent buffer overflow
+        if (i > 0 && i % 10 === 0 && i < numSegments) {
+          commands.push(positionQueryCmd)
+        }
       }
 
       // Turn off laser
@@ -498,11 +512,18 @@ function EngravingToolsWindow() {
 
       // Draw arc using small segments (increased for smoother arcs)
       const numSegments = Math.max(72, Math.floor(Math.abs(extent) / 5))
+      const positionQueryCmd = firmware === 'grbl' ? '?' : 'M114'
+      
       for (let i = 0; i <= numSegments; i++) {
         const angleRad = ((startAngle + (extent * i / numSegments)) * Math.PI) / 180
         const x = center.x + machineRadius * Math.cos(angleRad)
         const y = center.y + machineRadius * Math.sin(angleRad)
         commands.push(generateMovement(firmware, x, y, null, feedRate, false))
+        
+        // Insert position query every 10 segments to prevent buffer overflow
+        if (i > 0 && i % 10 === 0 && i < numSegments) {
+          commands.push(positionQueryCmd)
+        }
       }
 
       // Turn off laser
