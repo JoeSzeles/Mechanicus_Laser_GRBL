@@ -1,0 +1,582 @@
+SES Removing unpermitted intrinsics lockdown-install.js:1:203117
+  Removing intrinsics.%DatePrototype%.toTemporalInstant lockdown-install.js:1:202962
+✅ User authenticated, default profile loaded index-DSiz-0uJ.js:120:63462
+✅ updateLineEditorState is available index-DSiz-0uJ.js:120:16973
+🔄 Loading workspace on mount... index-DSiz-0uJ.js:120:17047
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: true, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759822420046 }
+index-DSiz-0uJ.js:108:8606
+✅ Workspace loaded successfully index-DSiz-0uJ.js:108:14103
+💾 Auto-saving workspace... index-DSiz-0uJ.js:120:17503
+💾 Workspace saved: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: true, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759822424674 }
+index-DSiz-0uJ.js:108:8368
+✅ Workspace saved successfully index-DSiz-0uJ.js:108:13990
+✅ Loaded default profile: Joe index-DSiz-0uJ.js:120:17118
+🔗 Connecting to LOCAL companion: ws://localhost:8080 index-DSiz-0uJ.js:60:23775
+✅ WebSocket onopen fired index-DSiz-0uJ.js:60:23880
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "status", data: {…} }
+index-DSiz-0uJ.js:60:24517
+✅ Received status from companion, now truly connected index-DSiz-0uJ.js:60:24683
+🕹️ [JOG] Jogging machine: 
+Object { direction: {…}, distance: {…}, feedRate: 1000, port: "COM7" }
+index-DSiz-0uJ.js:108:89978
+🕹️ [JOG] Sending G-code sequence: 
+Array(3) [ "G91", "G1 X5.000 Y0.000 F1000", "G90" ]
+index-DSiz-0uJ.js:108:90151
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G91" }
+index-DSiz-0uJ.js:60:26627
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G1 X5.000 Y0.000 F1000" }
+index-DSiz-0uJ.js:60:26627
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G90" }
+index-DSiz-0uJ.js:60:26627
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 300, pollInterval: 500 }
+index-DSiz-0uJ.js:60:21106
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G91" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G1 X5.000 Y0.000 F1000" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G90" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-DSiz-0uJ.js:60:26347
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:5.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 5, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+🏠 [HOME] Homing machine to: COM7 index-DSiz-0uJ.js:108:90379
+🔴 [MAIN→COMPANION] send_gcode: 
+Object { port: "COM7", gcode: "G28" }
+index-DSiz-0uJ.js:60:26627
+📍 [TRACKING] Stopped position polling index-DSiz-0uJ.js:60:21526
+📍 [TRACKING] Starting position tracking: 
+Object { duration: 3000, pollInterval: 500 }
+index-DSiz-0uJ.js:60:21106
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_start", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_start 
+Object { portPath: "COM7", totalLines: 1 }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_progress", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_progress 
+Object { portPath: "COM7", lineNumber: 1, totalLines: 1, percentage: 100, currentLine: "G28" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "gcode_complete", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: gcode_complete 
+Object { portPath: "COM7", linesTransmitted: 1 }
+index-DSiz-0uJ.js:60:26347
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+📍 [TRACKING] Stopped position polling index-DSiz-0uJ.js:60:21526
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-DSiz-0uJ.js:60:21771
+📍 [TRACKING] Final position query index-DSiz-0uJ.js:60:21357
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-DSiz-0uJ.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-DSiz-0uJ.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-DSiz-0uJ.js:108:96990
+📍 [MAIN APP] Position response detected: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-DSiz-0uJ.js:60:25514
+📍 [POSITION] Parsing response: <Idle|MPos:0.000,0.000,0.000|FS:0,0|Pn:P|Ov:100,100,100|PS:100|PF:100> index-DSiz-0uJ.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 0, y: 0, z: 0 }
+index-DSiz-0uJ.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-DSiz-0uJ.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-DSiz-0uJ.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-DSiz-0uJ.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-DSiz-0uJ.js:108:97311
+📥 [BUFFER] Received serial response: ok index-DSiz-0uJ.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-DSiz-0uJ.js:108:96990
+👆 SHAPE CLICKED: shape-1759822447110 type: circle index-DSiz-0uJ.js:120:43361
+   showLineEditorTools: false index-DSiz-0uJ.js:120:43414
+   lineEditorState: null index-DSiz-0uJ.js:120:43456
+   → Default selection index-DSiz-0uJ.js:120:44392
+👆 SHAPE CLICKED: shape-1759822447110 type: circle index-DSiz-0uJ.js:120:43361
+   showLineEditorTools: false index-DSiz-0uJ.js:120:43414
+   lineEditorState: null index-DSiz-0uJ.js:120:43456
+   → Default selection index-DSiz-0uJ.js:120:44392
+🔥 Context Menu - Engrave Selected clicked: 
+Object { allSelectedIds: (1) […], selectedShapeIds: [], selectedShapeId: "shape-1759822447110", shapesCount: 1 }
+index-DSiz-0uJ.js:108:103600
+🔥 Engrave-selected event received: 
+Object { shapeIds: (1) […], isConnected: true, serialState: {…}, port: "COM7" }
+index-DSiz-0uJ.js:108:82453
+📊 All shapes in store: 0 
+Array []
+index-DSiz-0uJ.js:108:83737
+🔍 Looking for shapes with IDs: 
+Array [ "shape-1759822447110" ]
+index-DSiz-0uJ.js:108:83847
+🔥 Engrave selected: 
+Object { specificShapeIds: (1) […], foundShapes: 0, visibleShapes: [] }
+index-DSiz-0uJ.js:108:84025
+❌ No shapes found matching IDs: 
+Array [ "shape-1759822447110" ]
+index-DSiz-0uJ.js:108:84185
+❌ Available shape IDs: 
+Array []
+index-DSiz-0uJ.js:108:84236
