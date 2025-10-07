@@ -283,6 +283,13 @@ function EngravingToolsWindow() {
           // This helps prevent command skipping on complex shapes
           if (shapeIndex < visibleShapes.length - 1) {
             allCommands.push(positionQueryCmd)  // Query position to allow buffer to catch up
+
+            // Add firmware-specific dwell command (500ms delay between shapes)
+            if (firmware === 'marlin') {
+              allCommands.push('G4 P500')  // Marlin uses milliseconds
+            } else {
+              allCommands.push('G4 P0.5')  // GRBL/Smoothie use seconds
+            }
           }
         }
       }
