@@ -89,6 +89,21 @@ function EngravingToolsWindow() {
   const [progress, setProgress] = useState({ current: 0, total: 0 })
   const [machinePosition, setMachinePosition] = useState({ x: 0, y: 0, z: 0 })
   const [status, setStatus] = useState('')
+  const [selectedShapeIds, setSelectedShapeIds] = useState([])
+
+  // Listen for engrave-selected event
+  useEffect(() => {
+    const handleEngraveSelected = (event) => {
+      setSelectedShapeIds(event.detail.shapeIds)
+      // Auto-trigger engraving after a short delay
+      setTimeout(() => {
+        handleEngrave(event.detail.shapeIds)
+      }, 100)
+    }
+    
+    window.addEventListener('engrave-selected', handleEngraveSelected)
+    return () => window.removeEventListener('engrave-selected', handleEngraveSelected)
+  }, [])
 
   // Save values to localStorage when they change
   useEffect(() => {
@@ -154,7 +169,7 @@ function EngravingToolsWindow() {
     machinePositionTracker.setLaserState(false)
   }
 
-  const handleEngrave = async () => {
+  const handleEngrave = async (specificShapeIds = null) => {
     if (!isConnected || !serialState.port) {
       alert('Machine not connected')
       return
@@ -165,14 +180,22 @@ function EngravingToolsWindow() {
       return
     }
 
-    // Get visible shapes from canvas
-    const visibleShapes = shapes.filter(shape => {
-      const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
-      return shapeLayer && shapeLayer.visible && !shapeLayer.locked
-    })
+    // Get shapes to engrave
+    let visibleShapes
+    if (specificShapeIds && specificShapeIds.length > 0) {
+      // Engrave only selected shapes
+      visibleShapes = shapes.filter(shape => specificShapeIds.includes(shape.id))
+      setStatus(`Engraving ${visibleShapes.length} selected shape(s)...`)
+    } else {
+      // Get visible shapes from canvas
+      visibleShapes = shapes.filter(shape => {
+        const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
+        return shapeLayer && shapeLayer.visible && !shapeLayer.locked
+      })
+    }
 
     if (visibleShapes.length === 0) {
-      alert('No visible shapes to engrave')
+      alert(specificShapeIds ? 'No shapes selected to engrave' : 'No visible shapes to engrave')
       return
     }
 

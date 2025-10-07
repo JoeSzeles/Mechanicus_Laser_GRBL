@@ -15,6 +15,7 @@ import MachineSettingsPopup from './MachineSettingsPopup'
 import EngravingToolsWindow from './EngravingToolsWindow'
 import MachineJogControls from './MachineJogControls'
 import GcodeBufferWindow from './GcodeBufferWindow'
+import ContextMenu from './ContextMenu'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
@@ -196,6 +197,7 @@ function CADInterface() {
   const [isDraggingSelection, setIsDraggingSelection] = useState(false)
   const [altKeyPressed, setAltKeyPressed] = useState(false)
   const [clonePreview, setClonePreview] = useState(null)
+  const [contextMenu, setContextMenu] = useState(null)
 
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -426,6 +428,40 @@ function CADInterface() {
   }
 
   const handleMouseDown = (e) => {
+    // Handle right-click for context menu
+    if (e.evt.button === 2) {
+      e.evt.preventDefault()
+      const clickedOnEmpty = e.target === e.target.getStage()
+      
+      if (!clickedOnEmpty) {
+        const clickedShapeId = e.target.id()
+        const clickedShape = shapes.find(s => s.id === clickedShapeId)
+        
+        if (clickedShape) {
+          // If clicked shape is not selected, select it first
+          if (!selectedShapeIds.includes(clickedShapeId) && selectedShapeId !== clickedShapeId) {
+            setSelectedShapeId(clickedShapeId)
+            setSelectedShapeIds([])
+          }
+          
+          // Show context menu at mouse position
+          setContextMenu({
+            x: e.evt.clientX,
+            y: e.evt.clientY
+          })
+        }
+      } else {
+        // Right-click on empty canvas shows menu for current selection
+        if (selectedShapeIds.length > 0 || selectedShapeId) {
+          setContextMenu({
+            x: e.evt.clientX,
+            y: e.evt.clientY
+          })
+        }
+      }
+      return
+    }
+
     if ((e.evt.button === 0 && spaceKeyPressed.current) || e.evt.button === 1) {
       e.evt.preventDefault()
       setIsPanning(true)
@@ -2451,6 +2487,7 @@ function CADInterface() {
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
+                onContextMenu={(e) => e.evt.preventDefault()}
                 style={{ backgroundColor: '#263d42' }}
               >
                 <Layer>
@@ -3282,6 +3319,16 @@ function CADInterface() {
           isOpen={showMachineSettings}
           onClose={() => setShowMachineSettings(false)}
         />
+
+        {contextMenu && (
+          <ContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            onClose={() => setContextMenu(null)}
+            selectedShapeIds={selectedShapeIds}
+            selectedShapeId={selectedShapeId}
+          />
+        )}
       </div>
     </div>
   )
