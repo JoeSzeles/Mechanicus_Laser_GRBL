@@ -194,20 +194,27 @@ function EngravingToolsWindow() {
     // Get shapes to engrave
     let visibleShapes
     if (specificShapeIds && specificShapeIds.length > 0) {
-      // Engrave only selected shapes
+      // Engrave only selected shapes - ignore layer visibility when explicitly selected
       visibleShapes = shapes.filter(shape => specificShapeIds.includes(shape.id))
+      console.log('🔥 Engrave selected:', { specificShapeIds, foundShapes: visibleShapes.length, visibleShapes })
       setStatus(`Engraving ${visibleShapes.length} selected shape(s)...`)
+      
+      if (visibleShapes.length === 0) {
+        console.error('❌ No shapes found matching IDs:', specificShapeIds)
+        alert('No shapes selected to engrave. The selected shapes may have been deleted.')
+        return
+      }
     } else {
       // Get visible shapes from canvas
       visibleShapes = shapes.filter(shape => {
         const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
         return shapeLayer && shapeLayer.visible && !shapeLayer.locked
       })
-    }
-
-    if (visibleShapes.length === 0) {
-      alert(specificShapeIds ? 'No shapes selected to engrave' : 'No visible shapes to engrave')
-      return
+      
+      if (visibleShapes.length === 0) {
+        alert('No visible shapes to engrave')
+        return
+      }
     }
 
     setIsEngraving(true)

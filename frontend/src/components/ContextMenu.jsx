@@ -22,6 +22,13 @@ function ContextMenu({ x, y, onClose, selectedShapeIds, selectedShapeId }) {
   }, [onClose])
 
   const handleEngraveSelected = () => {
+    console.log('🔥 Context Menu - Engrave Selected clicked:', {
+      allSelectedIds,
+      selectedShapeIds,
+      selectedShapeId,
+      shapesCount: shapes.length
+    })
+    
     // Dispatch event to open engraving tools and engrave only selected items
     const engraveEvent = new CustomEvent('engrave-selected', {
       detail: { shapeIds: allSelectedIds }
