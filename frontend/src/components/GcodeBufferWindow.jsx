@@ -137,7 +137,7 @@ function GcodeBufferWindow({ isOpen, onClose }) {
 
       // Increment in-flight counter for non-position commands
       const cmd = line.command.trim().toUpperCase()
-      const isPositionQuery = cmd === '?' || cmd === 'M114'' || cmd === 'M114'
+      const isPositionQuery = cmd === '?' || cmd === 'M114'
 
       if (!isPositionQuery) {
         inFlightCountRef.current++
