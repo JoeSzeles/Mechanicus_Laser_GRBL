@@ -1046,7 +1046,8 @@ function CADInterface() {
     if (isDraggingSelection) {
       // If Alt was pressed, create the clone at the preview position
       if (altKeyPressed && clonePreview) {
-        const newShape = { ...clonePreview, id: `shape-${Date.now()}` }
+        const newShape = { ...clonePreview, id: `shape-${Date.now()}`, layerId: 'layer1' }
+        console.log('🔷 Adding cloned shape to store:', newShape)
         addShapeWithUndo(newShape)
         setClonePreview(null)
       }
@@ -1133,6 +1134,7 @@ function CADInterface() {
         id: `shape-${Date.now()}`,
         stroke: '#000',
         strokeWidth: 2,
+        layerId: 'layer1',
         ...previewShape
       }
 
@@ -1166,7 +1168,9 @@ function CADInterface() {
         newShape.rotation = angleFromCenter - 45 // Center the arc on mouse position
       }
 
+      console.log('🔷 Adding new shape to store:', newShape)
       addShapeWithUndo(newShape)
+      console.log('✅ Shape added, current shapes count:', useCadStore.getState().shapes.length)
       setDrawingState(null)
       setPreviewShape(null)
     }

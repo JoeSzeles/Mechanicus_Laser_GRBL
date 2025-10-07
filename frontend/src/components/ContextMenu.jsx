@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import useCadStore from '../store/cadStore'
 import './ContextMenu.css'
@@ -22,18 +21,24 @@ function ContextMenu({ x, y, onClose, selectedShapeIds, selectedShapeId }) {
   }, [onClose])
 
   const handleEngraveSelected = () => {
+    const allSelectedIds = selectedShapeIds.length > 0 ? selectedShapeIds : (selectedShapeId ? [selectedShapeId] : [])
+
+    // Verify shapes exist in store
+    const currentShapes = useCadStore.getState().shapes
     console.log('🔥 Context Menu - Engrave Selected clicked:', {
       allSelectedIds,
       selectedShapeIds,
       selectedShapeId,
-      shapesCount: shapes.length
+      shapesCount: allSelectedIds.length,
+      shapesInStore: currentShapes.length,
+      shapesInStoreIds: currentShapes.map(s => s.id)
     })
-    
-    // Dispatch event to open engraving tools and engrave only selected items
-    const engraveEvent = new CustomEvent('engrave-selected', {
+
+    // Dispatch custom event with selected shape IDs
+    const event = new CustomEvent('engrave-selected', {
       detail: { shapeIds: allSelectedIds }
     })
-    window.dispatchEvent(engraveEvent)
+    window.dispatchEvent(event)
     onClose()
   }
 
@@ -76,9 +81,9 @@ function ContextMenu({ x, y, onClose, selectedShapeIds, selectedShapeId }) {
       >
         🔥 Engrave Selected ({allSelectedIds.length})
       </div>
-      
+
       <div className="context-menu-separator" />
-      
+
       <div 
         className="context-menu-item"
         onClick={handleDeleteSelected}
@@ -86,18 +91,18 @@ function ContextMenu({ x, y, onClose, selectedShapeIds, selectedShapeId }) {
       >
         🗑 Delete Selected ({allSelectedIds.length})
       </div>
-      
+
       <div className="context-menu-separator" />
-      
+
       <div 
         className="context-menu-item context-menu-danger"
         onClick={handleClearCanvas}
       >
         ⚠️ Clear Canvas
       </div>
-      
+
       <div className="context-menu-separator" />
-      
+
       <div 
         className="context-menu-item context-menu-submenu"
         onMouseEnter={() => setShowLayerSubmenu(true)}
@@ -105,7 +110,7 @@ function ContextMenu({ x, y, onClose, selectedShapeIds, selectedShapeId }) {
         style={{ opacity: allSelectedIds.length === 0 ? 0.5 : 1 }}
       >
         📁 Add to Layer ({allSelectedIds.length}) ▶
-        
+
         {showLayerSubmenu && (
           <div className="context-submenu">
             {layers.map(layer => (
