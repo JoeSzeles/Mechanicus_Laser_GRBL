@@ -106,7 +106,7 @@ function EngravingToolsWindow() {
         handleEngrave(event.detail.shapeIds)
       }, 100)
     }
-    
+
     window.addEventListener('engrave-selected', handleEngraveSelected)
     return () => window.removeEventListener('engrave-selected', handleEngraveSelected)
   }, [isConnected, serialState])
@@ -179,7 +179,7 @@ function EngravingToolsWindow() {
     // Check connection status
     const currentSerialState = serialState || {}
     const currentIsConnected = isConnected || currentSerialState.connected
-    
+
     if (!currentIsConnected || !currentSerialState.port) {
       console.error('Connection check failed:', { isConnected, serialState: currentSerialState })
       alert('Machine not connected. Please connect to the machine first.')
@@ -194,25 +194,25 @@ function EngravingToolsWindow() {
     // Get FRESH shapes from store to avoid stale state
     const currentShapes = useCadStore.getState().shapes
     const currentLayers = useCadStore.getState().layers
-    
+
     // Debug: Log current shapes in store
     console.log('📊 All shapes in store:', currentShapes.length, currentShapes.map(s => ({ id: s.id, type: s.type })))
-    
+
     // Get shapes to engrave
     let visibleShapes
     if (specificShapeIds && specificShapeIds.length > 0) {
       // Engrave only selected shapes - ignore layer visibility when explicitly selected
       console.log('🔍 Looking for shapes with IDs:', specificShapeIds)
-      
+
       visibleShapes = currentShapes.filter(shape => {
         const matches = specificShapeIds.includes(shape.id)
         console.log(`  - Shape ${shape.id} (${shape.type}): ${matches ? '✅ MATCH' : '❌ no match'}`)
         return matches
       })
-      
+
       console.log('🔥 Engrave selected:', { specificShapeIds, foundShapes: visibleShapes.length, visibleShapes })
       setStatus(`Engraving ${visibleShapes.length} selected shape(s)...`)
-      
+
       if (visibleShapes.length === 0) {
         console.error('❌ No shapes found matching IDs:', specificShapeIds)
         console.error('❌ Available shape IDs:', currentShapes.map(s => s.id))
@@ -225,7 +225,7 @@ function EngravingToolsWindow() {
         const shapeLayer = currentLayers.find(l => l.id === shape.layerId) || currentLayers[0]
         return shapeLayer && shapeLayer.visible && !shapeLayer.locked
       })
-      
+
       if (visibleShapes.length === 0) {
         alert('No visible shapes to engrave')
         return
@@ -259,7 +259,7 @@ function EngravingToolsWindow() {
 
       // 3. Generate commands for each pass
       const positionQueryCmd = firmware === 'grbl' ? '?' : 'M114'
-      
+
       for (let pass = 0; pass < passCount; pass++) {
         // Process each shape
         for (let shapeIndex = 0; shapeIndex < visibleShapes.length; shapeIndex++) {
@@ -278,7 +278,7 @@ function EngravingToolsWindow() {
           )
 
           allCommands.push(...shapeCommands)
-          
+
           // Add buffer pause between shapes to ensure proper processing
           // This helps prevent command skipping on complex shapes
           if (shapeIndex < visibleShapes.length - 1) {
@@ -412,7 +412,7 @@ function EngravingToolsWindow() {
         const x = center.x + machineRadius * Math.cos(angle)
         const y = center.y + machineRadius * Math.sin(angle)
         commands.push(generateMovement(firmware, x, y, null, feedRate, false))
-        
+
         // Insert position query every 10 segments to prevent buffer overflow
         if (i > 0 && i % 10 === 0 && i < numSegments) {
           commands.push(positionQueryCmd)
@@ -510,18 +510,18 @@ function EngravingToolsWindow() {
       // Turn on laser
       commands.push(generateLaserControl(firmware, laserPower, true))
 
-      // Draw arc using small segments (increased for smoother arcs)
+      // Draw arc using small segments with proper waits
       const numSegments = Math.max(72, Math.floor(Math.abs(extent) / 5))
       const positionQueryCmd = firmware === 'grbl' ? '?' : 'M114'
-      
+
       for (let i = 0; i <= numSegments; i++) {
         const angleRad = ((startAngle + (extent * i / numSegments)) * Math.PI) / 180
         const x = center.x + machineRadius * Math.cos(angleRad)
         const y = center.y + machineRadius * Math.sin(angleRad)
         commands.push(generateMovement(firmware, x, y, null, feedRate, false))
-        
-        // Insert position query every 10 segments to prevent buffer overflow
-        if (i > 0 && i % 10 === 0 && i < numSegments) {
+
+        // Insert position query every 6 segments to prevent buffer overflow
+        if (i > 0 && i % 6 === 0 && i < numSegments) {
           commands.push(positionQueryCmd)
         }
       }
