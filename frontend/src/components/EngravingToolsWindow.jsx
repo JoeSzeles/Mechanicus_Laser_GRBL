@@ -191,8 +191,12 @@ function EngravingToolsWindow() {
       return
     }
 
+    // Get FRESH shapes from store to avoid stale state
+    const currentShapes = useCadStore.getState().shapes
+    const currentLayers = useCadStore.getState().layers
+    
     // Debug: Log current shapes in store
-    console.log('📊 All shapes in store:', shapes.length, shapes.map(s => ({ id: s.id, type: s.type })))
+    console.log('📊 All shapes in store:', currentShapes.length, currentShapes.map(s => ({ id: s.id, type: s.type })))
     
     // Get shapes to engrave
     let visibleShapes
@@ -200,7 +204,7 @@ function EngravingToolsWindow() {
       // Engrave only selected shapes - ignore layer visibility when explicitly selected
       console.log('🔍 Looking for shapes with IDs:', specificShapeIds)
       
-      visibleShapes = shapes.filter(shape => {
+      visibleShapes = currentShapes.filter(shape => {
         const matches = specificShapeIds.includes(shape.id)
         console.log(`  - Shape ${shape.id} (${shape.type}): ${matches ? '✅ MATCH' : '❌ no match'}`)
         return matches
@@ -211,14 +215,14 @@ function EngravingToolsWindow() {
       
       if (visibleShapes.length === 0) {
         console.error('❌ No shapes found matching IDs:', specificShapeIds)
-        console.error('❌ Available shape IDs:', shapes.map(s => s.id))
+        console.error('❌ Available shape IDs:', currentShapes.map(s => s.id))
         alert('No shapes selected to engrave. The selected shapes may have been deleted.')
         return
       }
     } else {
       // Get visible shapes from canvas
-      visibleShapes = shapes.filter(shape => {
-        const shapeLayer = layers.find(l => l.id === shape.layerId) || layers[0]
+      visibleShapes = currentShapes.filter(shape => {
+        const shapeLayer = currentLayers.find(l => l.id === shape.layerId) || currentLayers[0]
         return shapeLayer && shapeLayer.visible && !shapeLayer.locked
       })
       
