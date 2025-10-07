@@ -1,0 +1,1508 @@
+⏸️ [BUFFER] Planner buffer full (8/8), waiting... 7 index-ClOgbAV2.js:108:98980
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-ClOgbAV2.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:27.100,25.338,0.000|FS:1489,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: <Run|MPos:27.100,25.338,0.000|FS:1489,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Run|MPos:27.100,25.338,0.000|FS:1489,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 7/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: <Run|MPos:27.100,25.338,0.000|FS:1489,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: <Run|MPos:27.100,25.338,0.000|FS:1489,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97083
+📍 [MAIN APP] Position response detected: <Run|MPos:27.100,25.338,0.000|FS:1489,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-ClOgbAV2.js:60:25514
+📍 [POSITION] Parsing response: <Run|MPos:27.100,25.338,0.000|FS:1489,0|Pn:P|WCO:0.000,0.000,0.000|PS:100|PF:100> index-ClOgbAV2.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 27.1, y: 25.338, z: 0 }
+index-ClOgbAV2.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 27.1, y: 25.338, z: 0 }
+index-ClOgbAV2.js:60:25647
+💾 Auto-saving workspace... index-ClOgbAV2.js:120:17503
+💾 Workspace saved: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: true, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1759822876388 }
+index-ClOgbAV2.js:108:8368
+✅ Workspace saved successfully index-ClOgbAV2.js:108:13990
+📤 [BUFFER] Sending line 17/84: G1 X26.145 Y33.573 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X26.145 Y33.573 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 27.1, y: 25.338, z: 0 }
+index-ClOgbAV2.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 27.1, y: 25.338, z: 0 }
+index-ClOgbAV2.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X26.145 Y33.573 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 18/84: G1 X25.520 Y34.255 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X25.520 Y34.255 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 8/8 index-ClOgbAV2.js:108:98350
+⏸️ [BUFFER] Planner buffer full (8/8), waiting... index-ClOgbAV2.js:108:98980
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X25.520 Y34.255 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 7/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 2/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📤 [BUFFER] Sending line 19/84: G1 X24.838 Y34.880 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X24.838 Y34.880 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📤 [BUFFER] Sending line 20/84: G1 X24.104 Y35.443 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X24.104 Y35.443 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X24.838 Y34.880 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X24.104 Y35.443 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 21/84: G1 X23.324 Y35.940 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X23.324 Y35.940 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X23.324 Y35.940 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 22/84: G1 X22.503 Y36.368 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X22.503 Y36.368 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 23/84: G1 X21.649 Y36.722 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X21.649 Y36.722 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X22.503 Y36.368 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X21.649 Y36.722 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 24/84: G1 X20.767 Y37.000 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X20.767 Y37.000 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X20.767 Y37.000 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 25/84: G1 X19.863 Y37.200 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X19.863 Y37.200 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 26/84: G1 X18.946 Y37.321 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X18.946 Y37.321 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X19.863 Y37.200 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📤 [BUFFER] Sending line 27/84: G1 X18.022 Y37.361 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X18.022 Y37.361 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X18.946 Y37.321 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📤 [BUFFER] Sending line 28/84: G1 X17.098 Y37.321 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X17.098 Y37.321 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X18.022 Y37.361 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X17.098 Y37.321 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 29/84: G1 X16.181 Y37.200 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X16.181 Y37.200 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📤 [BUFFER] Sending line 30/84: G1 X15.278 Y37.000 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X15.278 Y37.000 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X16.181 Y37.200 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X15.278 Y37.000 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 31/84: G1 X14.395 Y36.722 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X14.395 Y36.722 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X14.395 Y36.722 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 32/84: G1 X13.541 Y36.368 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X13.541 Y36.368 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 33/84: G1 X12.720 Y35.940 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X12.720 Y35.940 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X13.541 Y36.368 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 34/84: G1 X11.940 Y35.443 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X11.940 Y35.443 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X12.720 Y35.940 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X11.940 Y35.443 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 35/84: G1 X11.206 Y34.880 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X11.206 Y34.880 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 36/84: G1 X10.524 Y34.255 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X10.524 Y34.255 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X11.206 Y34.880 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X10.524 Y34.255 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 37/84: G1 X9.899 Y33.573 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X9.899 Y33.573 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X9.899 Y33.573 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 38/84: G1 X9.336 Y32.839 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X9.336 Y32.839 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 1/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X9.336 Y32.839 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 39/84: G1 X8.839 Y32.059 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X8.839 Y32.059 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X8.839 Y32.059 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 40/84: G1 X8.412 Y31.239 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X8.412 Y31.239 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 3/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X8.412 Y31.239 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 41/84: G1 X8.058 Y30.384 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X8.058 Y30.384 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 2/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X8.058 Y30.384 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 42/84: G1 X7.779 Y29.502 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X7.779 Y29.502 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 3/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X7.779 Y29.502 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 43/84: G1 X7.579 Y28.599 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X7.579 Y28.599 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X7.579 Y28.599 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 2/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 44/84: G1 X7.459 Y27.681 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X7.459 Y27.681 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 3/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X7.459 Y27.681 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 45/84: G1 X7.418 Y26.757 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X7.418 Y26.757 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 46/84: G1 X7.459 Y25.833 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X7.459 Y25.833 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X7.418 Y26.757 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X7.459 Y25.833 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 47/84: G1 X7.579 Y24.916 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X7.579 Y24.916 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 48/84: G1 X7.779 Y24.013 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X7.779 Y24.013 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X7.579 Y24.916 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X7.779 Y24.013 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 49/84: G1 X8.058 Y23.130 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X8.058 Y23.130 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X8.058 Y23.130 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 50/84: G1 X8.412 Y22.276 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X8.412 Y22.276 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X8.412 Y22.276 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 51/84: G1 X8.839 Y21.455 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X8.839 Y21.455 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 52/84: G1 X9.336 Y20.675 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X9.336 Y20.675 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X8.839 Y21.455 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X9.336 Y20.675 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 53/84: G1 X9.899 Y19.941 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X9.899 Y19.941 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X9.899 Y19.941 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 54/84: G1 X10.524 Y19.259 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X10.524 Y19.259 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X10.524 Y19.259 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 55/84: G1 X11.206 Y18.634 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X11.206 Y18.634 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X11.206 Y18.634 F2000" }
+index-ClOgbAV2.js:60:26347
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-ClOgbAV2.js:60:21771
+📤 [BUFFER] Sending line 56/84: G1 X11.940 Y18.071 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X11.940 Y18.071 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X11.940 Y18.071 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 57/84: G1 X12.720 Y17.574 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X12.720 Y17.574 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 8/8 index-ClOgbAV2.js:108:98350
+⏸️ [BUFFER] Planner buffer full (8/8), waiting... index-ClOgbAV2.js:108:98980
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X12.720 Y17.574 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:21.450,36.791,0.000|FS:2000,1000|Pn:P|Ov:100,100,100|A:S|PS:100|PF:100> index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: <Run|MPos:21.450,36.791,0.000|FS:2000,1000|Pn:P|Ov:100,100,100|A:S|PS:100|PF:100> index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Run|MPos:21.450,36.791,0.000|FS:2000,1000|Pn:P|Ov:100,100,100|A:S|PS:100|PF:100> index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 7/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: <Run|MPos:21.450,36.791,0.000|FS:2000,1000|Pn:P|Ov:100,100,100|A:S|PS:100|PF:100> index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: <Run|MPos:21.450,36.791,0.000|FS:2000,1000|Pn:P|Ov:100,100,100|A:S|PS:100|PF:100> index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97083
+📍 [MAIN APP] Position response detected: <Run|MPos:21.450,36.791,0.000|FS:2000,1000|Pn:P|Ov:100,100,100|A:S|PS:100|PF:100> index-ClOgbAV2.js:60:25514
+📍 [POSITION] Parsing response: <Run|MPos:21.450,36.791,0.000|FS:2000,1000|Pn:P|Ov:100,100,100|A:S|PS:100|PF:100> index-ClOgbAV2.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 21.45, y: 36.791, z: 0 }
+index-ClOgbAV2.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 21.45, y: 36.791, z: 0 }
+index-ClOgbAV2.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 21.45, y: 36.791, z: 0 }
+index-ClOgbAV2.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 21.45, y: 36.791, z: 0 }
+index-ClOgbAV2.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 2/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 58/84: G1 X13.541 Y17.147 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X13.541 Y17.147 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 3/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X13.541 Y17.147 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 2/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 59/84: G1 X14.395 Y16.793 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X14.395 Y16.793 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 2/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X14.395 Y16.793 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 60/84: G1 X15.278 Y16.515 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X15.278 Y16.515 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 3/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X15.278 Y16.515 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 61/84: G1 X16.181 Y16.314 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X16.181 Y16.314 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 62/84: G1 X17.098 Y16.194 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X17.098 Y16.194 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X16.181 Y16.314 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X17.098 Y16.194 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 63/84: G1 X18.022 Y16.153 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X18.022 Y16.153 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X18.022 Y16.153 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 64/84: G1 X18.946 Y16.194 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X18.946 Y16.194 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X18.946 Y16.194 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 65/84: G1 X19.863 Y16.314 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X19.863 Y16.314 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X19.863 Y16.314 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 66/84: G1 X20.767 Y16.515 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X20.767 Y16.515 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X20.767 Y16.515 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 67/84: G1 X21.649 Y16.793 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X21.649 Y16.793 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 4/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X21.649 Y16.793 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 68/84: G1 X22.503 Y17.147 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X22.503 Y17.147 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X22.503 Y17.147 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 69/84: G1 X23.324 Y17.574 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X23.324 Y17.574 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 70/84: G1 X24.104 Y18.071 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X24.104 Y18.071 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X23.324 Y17.574 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X24.104 Y18.071 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 71/84: G1 X24.838 Y18.634 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X24.838 Y18.634 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X24.838 Y18.634 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 72/84: G1 X25.520 Y19.259 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X25.520 Y19.259 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X25.520 Y19.259 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 73/84: G1 X26.145 Y19.941 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X26.145 Y19.941 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 8/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 7/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 74/84: G1 X26.708 Y20.675 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X26.708 Y20.675 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X26.145 Y19.941 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X26.708 Y20.675 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 75/84: G1 X27.205 Y21.455 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X27.205 Y21.455 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 8/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X27.205 Y21.455 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 7/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 76/84: G1 X27.632 Y22.276 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X27.632 Y22.276 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X27.632 Y22.276 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 77/84: G1 X27.986 Y23.130 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X27.986 Y23.130 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 8/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X27.986 Y23.130 F2000" }
+index-ClOgbAV2.js:60:26347
+⏸️ [BUFFER] Planner buffer full (8/8), waiting... index-ClOgbAV2.js:108:98980
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 7/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 78/84: G1 X28.265 Y24.013 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X28.265 Y24.013 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X28.265 Y24.013 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 79/84: G1 X28.465 Y24.916 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X28.465 Y24.916 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97083
+📤 [BUFFER] Sending line 80/84: G1 X28.586 Y25.833 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X28.586 Y25.833 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 5/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X28.465 Y24.916 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 81/84: G1 X28.626 Y26.757 F2000 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G1 X28.626 Y26.757 F2000 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X28.586 Y25.833 F2000" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G1 X28.626 Y26.757 F2000" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 82/84: M5 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: M5 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "M5" }
+index-ClOgbAV2.js:60:26347
+📤 [BUFFER] Sending line 83/84: M5 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: M5 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 6/8 index-ClOgbAV2.js:108:98350
+📤 [BUFFER] Sending line 84/84: G28 index-ClOgbAV2.js:108:98103
+🔴 [MAIN→COMPANION] send_command: G28 index-ClOgbAV2.js:60:27333
+📊 [BUFFER] Sent command, in-flight: 7/8 index-ClOgbAV2.js:108:98350
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "M5" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "G28" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 6/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 5/8 index-ClOgbAV2.js:108:97083
+⏳ [BUFFER] Waiting for remaining 5 commands to complete... index-ClOgbAV2.js:108:99218
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 4/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 3/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 2/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📊 [BUFFER] In-flight: 1/8 index-ClOgbAV2.js:108:97083
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📊 [BUFFER] In-flight: 0/8 index-ClOgbAV2.js:108:97423
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+⏳ [BUFFER] Last command was home, waiting for homing to complete... index-ClOgbAV2.js:108:99453
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-ClOgbAV2.js:60:21771
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:7.537,28.263,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: <Run|MPos:7.537,28.263,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Run|MPos:7.537,28.263,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: <Run|MPos:7.537,28.263,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: <Run|MPos:7.537,28.263,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:96990
+📍 [MAIN APP] Position response detected: <Run|MPos:7.537,28.263,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:60:25514
+📍 [POSITION] Parsing response: <Run|MPos:7.537,28.263,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 7.537, y: 28.263, z: 0 }
+index-ClOgbAV2.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 7.537, y: 28.263, z: 0 }
+index-ClOgbAV2.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 7.537, y: 28.263, z: 0 }
+index-ClOgbAV2.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 7.537, y: 28.263, z: 0 }
+index-ClOgbAV2.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📍 [TRACKING] Stopped position polling index-ClOgbAV2.js:60:21526
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+📍 [TRACKER] Querying position for port: COM7 firmware: grbl command: ? index-ClOgbAV2.js:60:21771
+📍 [TRACKING] Final position query index-ClOgbAV2.js:60:21357
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "command_sent", data: {…} }
+index-ClOgbAV2.js:60:24517
+📨 [WS] Received: command_sent 
+Object { portPath: "COM7", command: "?" }
+index-ClOgbAV2.js:60:26347
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: <Run|MPos:20.812,16.539,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: <Run|MPos:20.812,16.539,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: <Run|MPos:20.812,16.539,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: <Run|MPos:20.812,16.539,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: <Run|MPos:20.812,16.539,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:108:96990
+📍 [MAIN APP] Position response detected: <Run|MPos:20.812,16.539,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:60:25514
+📍 [POSITION] Parsing response: <Run|MPos:20.812,16.539,0.000|FS:2000,1000|Pn:P|PS:100|PF:100> index-ClOgbAV2.js:60:21975
+✅ [POSITION] GRBL position parsed: 
+Object { x: 20.812, y: 16.539, z: 0 }
+index-ClOgbAV2.js:60:22184
+📍 [MAIN APP] Position parsed: 
+Object { x: 20.812, y: 16.539, z: 0 }
+index-ClOgbAV2.js:60:25647
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "position_update", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] position_update: 
+Object { x: 20.812, y: 16.539, z: 0 }
+index-ClOgbAV2.js:60:25842
+🎯 [MAIN APP] Position update received: 
+Object { x: 20.812, y: 16.539, z: 0 }
+index-ClOgbAV2.js:60:25938
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+🔔 [WS MESSAGE RECEIVED]: 
+Object { type: "serial_data", data: {…} }
+index-ClOgbAV2.js:60:24517
+🟢 [COMPANION→MAIN] serial_data: ok index-ClOgbAV2.js:60:25137
+🔵 [BUFFER] Direct handler received: ok index-ClOgbAV2.js:108:97163
+✅ [BUFFER] Command acknowledged via direct handler: ok index-ClOgbAV2.js:108:97311
+📥 [BUFFER] Received serial response: ok index-ClOgbAV2.js:108:96790
+✅ [BUFFER] Command acknowledged: ok index-ClOgbAV2.js:108:96990
+✅ [BUFFER] All commands sent and acknowledged, engraving complete! index-ClOgbAV2.js:108:99589
+🗑️ [BUFFER] Buffer cleared index-ClOgbAV2.js:108:99818
+👆 SHAPE CLICKED: shape-1759822871486 type: circle index-ClOgbAV2.js:120:43572
+   showLineEditorTools: false index-ClOgbAV2.js:120:43625
+   lineEditorState: null index-ClOgbAV2.js:120:43667
+   → Default selection index-ClOgbAV2.js:120:44603
+👆 SHAPE CLICKED: shape-1759822871486 type: circle index-ClOgbAV2.js:120:43572
+   showLineEditorTools: false index-ClOgbAV2.js:120:43625
+   lineEditorState: null index-ClOgbAV2.js:120:43667
+   → Default selection index-ClOgbAV2.js:120:44603
+🔥 Context Menu - Engrave Selected clicked: 
+Object { allSelectedIds: (1) […], selectedShapeIds: [], selectedShapeId: "shape-1759822871486", shapesCount: 1, shapesInStore: 1, shapesInStoreIds: (1) […] }
+index-ClOgbAV2.js:108:103653
+🔥 Engrave-selected event received: 
+Object { shapeIds: (1) […], isConnected: true, serialState: {…}, port: "COM7" }
+index-ClOgbAV2.js:108:82453
+📊 All shapes in store: 0 
+Array []
+index-ClOgbAV2.js:108:83737
+🔍 Looking for shapes with IDs: 
+Array [ "shape-1759822871486" ]
+index-ClOgbAV2.js:108:83847
+🔥 Engrave selected: 
+Object { specificShapeIds: (1) […], foundShapes: 0, visibleShapes: [] }
+index-ClOgbAV2.js:108:84025
+❌ No shapes found matching IDs: 
+Array [ "shape-1759822871486" ]
+index-ClOgbAV2.js:108:84185
+❌ Available shape IDs: 
+Array []
+index-ClOgbAV2.js:108:84236
