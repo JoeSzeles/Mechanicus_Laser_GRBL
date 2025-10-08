@@ -1,0 +1,210 @@
+
+.svg-import-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.svg-import-dialog {
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  padding: 24px;
+  min-width: 400px;
+  max-width: 500px;
+  color: #fff;
+}
+
+.svg-import-dialog h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+}
+
+.import-section {
+  margin-bottom: 20px;
+}
+
+.import-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.size-info {
+  margin-bottom: 12px;
+}
+
+.size-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.size-inputs {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.size-inputs label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.size-inputs input {
+  padding: 6px 8px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.alignment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.alignment-btn {
+  background: #334155;
+  border: 2px solid #475569;
+  border-radius: 6px;
+  padding: 12px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.alignment-btn:hover {
+  background: #3f4d63;
+}
+
+.alignment-btn.active {
+  border-color: #3b82f6;
+  background: #1e3a8a;
+}
+
+.alignment-visual {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #64748b;
+  border-radius: 4px;
+  position: relative;
+  background: #1e293b;
+}
+
+.inner-rect {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 2px;
+}
+
+.inner-rect.top-left {
+  top: 2px;
+  left: 2px;
+}
+
+.inner-rect.top-right {
+  top: 2px;
+  right: 2px;
+}
+
+.inner-rect.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.inner-rect.bottom-left {
+  bottom: 2px;
+  left: 2px;
+}
+
+.inner-rect.bottom-right {
+  bottom: 2px;
+  right: 2px;
+}
+
+.alignment-btn span {
+  font-size: 11px;
+  color: #cbd5e1;
+  text-transform: capitalize;
+}
+
+.import-section select {
+  width: 100%;
+  padding: 8px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.layer-name-input {
+  width: 100%;
+  padding: 8px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.dialog-buttons button {
+  padding: 8px 16px;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  background: #334155;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.dialog-buttons button:hover {
+  background: #3f4d63;
+}
+
+.dialog-buttons button.primary {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.dialog-buttons button.primary:hover {
+  background: #2563eb;
+}

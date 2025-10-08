@@ -16,6 +16,7 @@ import EngravingToolsWindow from './EngravingToolsWindow'
 import MachineJogControls from './MachineJogControls'
 import GcodeBufferWindow from './GcodeBufferWindow'
 import ContextMenu from './ContextMenu'
+import SVGImportDialog from './SVGImportDialog'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
@@ -196,8 +197,10 @@ function CADInterface() {
   const [dragStart, setDragStart] = useState(null)
   const [isDraggingSelection, setIsDraggingSelection] = useState(false)
   const [altKeyPressed, setAltKeyPressed] = useState(false)
+  const [shiftKeyPressed, setShiftKeyPressed] = useState(false)
   const [clonePreview, setClonePreview] = useState(null)
   const [contextMenu, setContextMenu] = useState(null)
+  const [svgImportFile, setSvgImportFile] = useState(null)
 
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -516,6 +519,13 @@ function CADInterface() {
       })
 
       if (clickedShape) {
+        // If Shift is pressed and multiple shapes selected, prepare for multi-drag
+        if (shiftKeyPressed && selectedShapeIds.length > 0 && selectedShapeIds.includes(clickedShape.id)) {
+          setDragStart(point)
+          setIsDraggingSelection(true)
+          return
+        }
+        
         // Select this shape and prepare for dragging
         setSelectedShapeId(clickedShape.id)
         setSelectedShapeIds([])
@@ -1239,6 +1249,9 @@ function CADInterface() {
       if (e.altKey) {
         setAltKeyPressed(true)
       }
+      if (e.shiftKey) {
+        setShiftKeyPressed(true)
+      }
     }
 
     const handleKeyUp = (e) => {
@@ -1249,6 +1262,9 @@ function CADInterface() {
       if (!e.altKey) {
         setAltKeyPressed(false)
         setClonePreview(null)
+      }
+      if (!e.shiftKey) {
+        setShiftKeyPressed(false)
       }
     }
 
@@ -1637,28 +1653,19 @@ function CADInterface() {
     downloadSVG(svgContent, 'design.svg')
   }
 
-  const handleImportSVG = async (event) => {
+  const handleImportSVG = (event) => {
     const file = event.target.files[0]
     if (!file) return
-
-    try {
-      const { shapes: importedShapes, layers: importedLayers } = await importFromSVG(file, machineProfile)
-
-      if (importedLayers && importedLayers.length > 0) {
-        setLayers(importedLayers)
-      }
-
-      if (importedShapes && importedShapes.length > 0) {
-        setShapes(importedShapes)
-      }
-
-      alert(`Imported ${importedShapes.length} shapes and ${importedLayers.length} layers`)
-    } catch (error) {
-      console.error('SVG import error:', error)
-      alert('Failed to import SVG: ' + error.message)
-    }
-
+    
+    setSvgImportFile(file)
     event.target.value = ''
+  }
+  
+  const handleSVGImportComplete = (importedShapes) => {
+    importedShapes.forEach(shape => {
+      addShapeWithUndo(shape)
+    })
+    alert(`Imported ${importedShapes.length} shapes`)
   }
 
   const handleDeleteSelected = () => {
@@ -3331,6 +3338,14 @@ function CADInterface() {
             onClose={() => setContextMenu(null)}
             selectedShapeIds={selectedShapeIds}
             selectedShapeId={selectedShapeId}
+          />
+        )}
+        
+        {svgImportFile && (
+          <SVGImportDialog
+            file={svgImportFile}
+            onClose={() => setSvgImportFile(null)}
+            onImport={handleSVGImportComplete}
           />
         )}
       </div>
