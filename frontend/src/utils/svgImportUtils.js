@@ -127,6 +127,47 @@ const parseElement = (el, svgWidth, svgHeight, machineProfile) => {
     }
   } else if (tagName === 'path') {
     const d = el.getAttribute('d')
+    
+    // Check if this path represents an arc
+    const arcMatch = d.match(/M\s*([0-9.-]+)[,\s]+([0-9.-]+)\s*A\s*([0-9.-]+)[,\s]+([0-9.-]+)\s+[0-9]+\s+([0-9]+)[,\s]+([0-9]+)\s+([0-9.-]+)[,\s]+([0-9.-]+)/)
+    if (arcMatch) {
+      const x1 = parseFloat(arcMatch[1])
+      const y1 = parseFloat(arcMatch[2])
+      const rx = parseFloat(arcMatch[3])
+      const ry = parseFloat(arcMatch[4])
+      const largeArcFlag = parseInt(arcMatch[5])
+      const sweepFlag = parseInt(arcMatch[6])
+      const x2 = parseFloat(arcMatch[7])
+      const y2 = parseFloat(arcMatch[8])
+      
+      // Calculate center point
+      const radius = (rx + ry) / 2 // Use average for elliptical arcs
+      const cx = (x1 + x2) / 2
+      const cy = (y1 + y2) / 2
+      
+      // Calculate angles
+      const angle1 = Math.atan2(y1 - cy, x1 - cx) * 180 / Math.PI
+      const angle2 = Math.atan2(y2 - cy, x2 - cx) * 180 / Math.PI
+      
+      let angle = angle2 - angle1
+      if (angle < 0) angle += 360
+      if (largeArcFlag) {
+        angle = 360 - angle
+      }
+      
+      return {
+        type: 'arc',
+        x: cx,
+        y: cy,
+        outerRadius: radius,
+        angle: angle,
+        rotation: angle1,
+        stroke,
+        strokeWidth
+      }
+    }
+    
+    // Otherwise treat as a path
     const points = pathToPoints(d)
     return {
       type: 'freehand',
@@ -140,7 +181,7 @@ const parseElement = (el, svgWidth, svgHeight, machineProfile) => {
 }
 
 /**
- * Convert SVG path data to points
+ * Convert SVG path data to points (for non-arc paths)
  */
 const pathToPoints = (d) => {
   const points = []
@@ -187,6 +228,40 @@ const pathToPoints = (d) => {
         break
       case 'v':
         currentY += args[0]
+        points.push(currentX, currentY)
+        break
+      case 'A':
+      case 'a':
+        // For arcs in a polyline path, approximate with line to end point
+        if (type === 'A') {
+          currentX = args[5]
+          currentY = args[6]
+        } else {
+          currentX += args[5]
+          currentY += args[6]
+        }
+        points.push(currentX, currentY)
+        break
+      case 'C':
+        // Cubic bezier - use end point
+        currentX = args[4]
+        currentY = args[5]
+        points.push(currentX, currentY)
+        break
+      case 'c':
+        currentX += args[4]
+        currentY += args[5]
+        points.push(currentX, currentY)
+        break
+      case 'Q':
+        // Quadratic bezier - use end point
+        currentX = args[2]
+        currentY = args[3]
+        points.push(currentX, currentY)
+        break
+      case 'q':
+        currentX += args[2]
+        currentY += args[3]
         points.push(currentX, currentY)
         break
     }
