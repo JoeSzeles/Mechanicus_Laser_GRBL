@@ -22,15 +22,23 @@ export const parseImageFile = async (file) => {
           originalHeight: heightMM,
           pixelWidth: img.width,
           pixelHeight: img.height,
-          aspectRatio: img.width / img.height
+          aspectRatio: img.width / img.height,
+          dpi: dpi
         })
       }
       
-      img.onerror = () => reject(new Error('Failed to load image'))
+      img.onerror = () => {
+        reject(new Error('Failed to load image'))
+      }
+      
+      // Set src after handlers are attached
       img.src = e.target.result
     }
     
-    reader.onerror = () => reject(new Error('Failed to read file'))
+    reader.onerror = () => {
+      reject(new Error('Failed to read file'))
+    }
+    
     reader.readAsDataURL(file)
   })
 }

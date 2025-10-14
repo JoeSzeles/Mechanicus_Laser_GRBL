@@ -30,10 +30,10 @@ function ImageImportDialog({ file, onClose, onImport }) {
       }).catch(error => {
         console.error('Image parse error:', error)
         alert('Failed to parse image: ' + error.message)
-        onClose()
+        setLoading(false)
       })
     }
-  }, [file, onClose])
+  }, [file])
   
   const handleWidthChange = (newWidth) => {
     setTargetWidth(newWidth)
@@ -114,6 +114,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
           <div className="size-info">
             <p>Original: {imageData.originalWidth.toFixed(2)} × {imageData.originalHeight.toFixed(2)} mm</p>
             <p>Resolution: {imageData.pixelWidth} × {imageData.pixelHeight} px</p>
+            <p>DPI: {imageData.dpi}</p>
           </div>
           
           <label className="checkbox-label">
