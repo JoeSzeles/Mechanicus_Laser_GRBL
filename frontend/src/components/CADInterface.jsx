@@ -47,6 +47,7 @@ const ImageShape = ({ shape, onShapeClick }) => {
   
   return (
     <KonvaImage
+      id={shape.id}
       image={image}
       x={shape.x}
       y={shape.y}
@@ -3197,28 +3198,62 @@ function CADInterface() {
                             onDragMove={(e) => {
                               if (draggedHandle === null || !initialBbox) return
 
-                              const pos = e.target.position()
-                              const worldX = pos.x
-                              const worldY = pos.y
+                              const stage = stageRef.current
+                              if (!stage) return
+
+                              const point = stage.getPointerPosition()
+                              const worldX = (point.x - viewport.pan.x) / viewport.zoom
+                              const worldY = (point.y - viewport.pan.y) / viewport.zoom
 
                               const newShape = { ...shape }
-                              const scaleX = Math.abs((worldX - bbox.x) / bbox.width)
-                              const scaleY = Math.abs((worldY - bbox.y) / bbox.height)
 
                               if (shape.type === 'circle') {
                                 const centerX = shape.x
                                 const centerY = shape.y
                                 const radius = Math.sqrt(Math.pow(worldX - centerX, 2) + Math.pow(worldY - centerY, 2))
                                 newShape.radius = radius
-                              } else if (shape.type === 'rectangle') {
-                                if (i === 4) {
-                                  newShape.width = worldX - shape.x
-                                  newShape.height = worldY - shape.y
-                                }
-                              } else if (shape.type === 'image') {
-                                if (i === 4) {
-                                  newShape.width = worldX - shape.x
-                                  newShape.height = worldY - shape.y
+                              } else if (shape.type === 'rectangle' || shape.type === 'image') {
+                                // Handle all 8 resize handles for rectangles and images
+                                const oldX = initialBbox.x
+                                const oldY = initialBbox.y
+                                const oldW = initialBbox.width
+                                const oldH = initialBbox.height
+                                
+                                switch(i) {
+                                  case 0: // top-left
+                                    newShape.x = worldX
+                                    newShape.y = worldY
+                                    newShape.width = oldX + oldW - worldX
+                                    newShape.height = oldY + oldH - worldY
+                                    break
+                                  case 1: // top-center
+                                    newShape.y = worldY
+                                    newShape.height = oldY + oldH - worldY
+                                    break
+                                  case 2: // top-right
+                                    newShape.y = worldY
+                                    newShape.width = worldX - oldX
+                                    newShape.height = oldY + oldH - worldY
+                                    break
+                                  case 3: // middle-right
+                                    newShape.width = worldX - oldX
+                                    break
+                                  case 4: // bottom-right
+                                    newShape.width = worldX - oldX
+                                    newShape.height = worldY - oldY
+                                    break
+                                  case 5: // bottom-center
+                                    newShape.height = worldY - oldY
+                                    break
+                                  case 6: // bottom-left
+                                    newShape.x = worldX
+                                    newShape.width = oldX + oldW - worldX
+                                    newShape.height = worldY - oldY
+                                    break
+                                  case 7: // middle-left
+                                    newShape.x = worldX
+                                    newShape.width = oldX + oldW - worldX
+                                    break
                                 }
                               } else if (shape.type === 'line') {
                                 if (i === 4) {
