@@ -727,7 +727,7 @@ function CADInterface() {
         } else if (shape.type === 'circle' || shape.type === 'arc' || shape.type === 'text') {
           updates.x = shape.x + dx
           updates.y = shape.y + dy
-        } else if (shape.type === 'rectangle') {
+        } else if (shape.type === 'rectangle' || shape.type === 'image') {
           updates.x = shape.x + dx
           updates.y = shape.y + dy
         } else if (shape.type === 'polygon' || shape.type === 'freehand' || shape.type === 'path') {
@@ -760,7 +760,7 @@ function CADInterface() {
         } else if (shape.type === 'circle' || shape.type === 'arc' || shape.type === 'text') {
           updates.x = shape.x + dx
           updates.y = shape.y + dy
-        } else if (shape.type === 'rectangle') {
+        } else if (shape.type === 'rectangle' || shape.type === 'image') {
           updates.x = shape.x + dx
           updates.y = shape.y + dy
         } else if (shape.type === 'polygon' || shape.type === 'freehand' || shape.type === 'path') {
