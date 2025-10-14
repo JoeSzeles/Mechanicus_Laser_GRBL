@@ -80,143 +80,142 @@ function ImageImportDialog({ file, onClose, onImport }) {
     onClose()
   }
   
-  if (loading) {
-    return (
-      <div className="image-import-overlay">
-        <div className="image-import-dialog">
-          <p>Loading image...</p>
-        </div>
-      </div>
-    )
-  }
-  
   return (
     <div className="image-import-overlay">
       <div className="image-import-dialog">
-        <h2>Import Image</h2>
-        
-        {imageData && (
-          <div className="image-preview">
-            <img 
-              src={imageData.dataUrl} 
-              alt="Preview" 
-              style={{ 
-                maxWidth: '100%', 
-                maxHeight: '200px',
-                opacity: opacity / 100
-              }} 
-            />
-          </div>
-        )}
-        
-        <div className="import-section">
-          <h3>Size</h3>
-          <div className="size-info">
-            <p>Original: {imageData.originalWidth.toFixed(2)} × {imageData.originalHeight.toFixed(2)} mm</p>
-            <p>Resolution: {imageData.pixelWidth} × {imageData.pixelHeight} px</p>
-            <p>DPI: {imageData.dpi}</p>
-          </div>
-          
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={useOriginalSize}
-              onChange={(e) => setUseOriginalSize(e.target.checked)}
-            />
-            Use original size
-          </label>
-          
-          {!useOriginalSize && (
-            <>
-              <div className="size-inputs">
-                <label>
-                  Width (mm):
-                  <input
-                    type="number"
-                    value={targetWidth.toFixed(2)}
-                    onChange={(e) => handleWidthChange(parseFloat(e.target.value))}
-                    step="0.1"
-                  />
-                </label>
-                <label>
-                  Height (mm):
-                  <input
-                    type="number"
-                    value={targetHeight.toFixed(2)}
-                    onChange={(e) => handleHeightChange(parseFloat(e.target.value))}
-                    step="0.1"
-                  />
-                </label>
+        {loading ? (
+          <>
+            <h2>Import Image</h2>
+            <p>Loading image...</p>
+          </>
+        ) : (
+          <>
+            <h2>Import Image</h2>
+            
+            {imageData && (
+              <div className="image-preview">
+                <img 
+                  src={imageData.dataUrl} 
+                  alt="Preview" 
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '200px',
+                    opacity: opacity / 100
+                  }} 
+                />
               </div>
+            )}
+            
+            <div className="import-section">
+              <h3>Size</h3>
+              <div className="size-info">
+                <p>Original: {imageData.originalWidth.toFixed(2)} × {imageData.originalHeight.toFixed(2)} mm</p>
+                <p>Resolution: {imageData.pixelWidth} × {imageData.pixelHeight} px</p>
+                <p>DPI: {imageData.dpi}</p>
+              </div>
+              
               <label className="checkbox-label">
                 <input
                   type="checkbox"
-                  checked={maintainAspect}
-                  onChange={(e) => setMaintainAspect(e.target.checked)}
+                  checked={useOriginalSize}
+                  onChange={(e) => setUseOriginalSize(e.target.checked)}
                 />
-                Maintain aspect ratio
+                Use original size
               </label>
-            </>
-          )}
-        </div>
-        
-        <div className="import-section">
-          <h3>Opacity</h3>
-          <div className="opacity-control">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={opacity}
-              onChange={(e) => setOpacity(parseInt(e.target.value))}
-              className="opacity-slider"
-            />
-            <span className="opacity-value">{opacity}%</span>
-          </div>
-        </div>
-        
-        <div className="import-section">
-          <h3>Alignment</h3>
-          <div className="alignment-grid">
-            {['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'].map(align => (
-              <button
-                key={align}
-                className={`alignment-btn ${alignment === align ? 'active' : ''}`}
-                onClick={() => setAlignment(align)}
-              >
-                <div className="alignment-visual">
-                  <div className={`inner-rect ${align}`}></div>
-                </div>
-                <span>{align.replace('-', ' ')}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-        
-        <div className="import-section">
-          <h3>Layer</h3>
-          <select value={selectedLayer} onChange={(e) => setSelectedLayer(e.target.value)}>
-            <option value="new">New Layer</option>
-            {layers.map(layer => (
-              <option key={layer.id} value={layer.id}>{layer.name}</option>
-            ))}
-          </select>
-          
-          {selectedLayer === 'new' && (
-            <input
-              type="text"
-              value={newLayerName}
-              onChange={(e) => setNewLayerName(e.target.value)}
-              placeholder="Layer name"
-              className="layer-name-input"
-            />
-          )}
-        </div>
-        
-        <div className="dialog-buttons">
-          <button onClick={onClose}>Cancel</button>
-          <button onClick={handleImport} className="primary">Import</button>
-        </div>
+              
+              {!useOriginalSize && (
+                <>
+                  <div className="size-inputs">
+                    <label>
+                      Width (mm):
+                      <input
+                        type="number"
+                        value={targetWidth.toFixed(2)}
+                        onChange={(e) => handleWidthChange(parseFloat(e.target.value))}
+                        step="0.1"
+                      />
+                    </label>
+                    <label>
+                      Height (mm):
+                      <input
+                        type="number"
+                        value={targetHeight.toFixed(2)}
+                        onChange={(e) => handleHeightChange(parseFloat(e.target.value))}
+                        step="0.1"
+                      />
+                    </label>
+                  </div>
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={maintainAspect}
+                      onChange={(e) => setMaintainAspect(e.target.checked)}
+                    />
+                    Maintain aspect ratio
+                  </label>
+                </>
+              )}
+            </div>
+            
+            <div className="import-section">
+              <h3>Opacity</h3>
+              <div className="opacity-control">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={opacity}
+                  onChange={(e) => setOpacity(parseInt(e.target.value))}
+                  className="opacity-slider"
+                />
+                <span className="opacity-value">{opacity}%</span>
+              </div>
+            </div>
+            
+            <div className="import-section">
+              <h3>Alignment</h3>
+              <div className="alignment-grid">
+                {['top-left', 'top-right', 'center', 'bottom-left', 'bottom-right'].map(align => (
+                  <button
+                    key={align}
+                    className={`alignment-btn ${alignment === align ? 'active' : ''}`}
+                    onClick={() => setAlignment(align)}
+                  >
+                    <div className="alignment-visual">
+                      <div className={`inner-rect ${align}`}></div>
+                    </div>
+                    <span>{align.replace('-', ' ')}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="import-section">
+              <h3>Layer</h3>
+              <select value={selectedLayer} onChange={(e) => setSelectedLayer(e.target.value)}>
+                <option value="new">New Layer</option>
+                {layers.map(layer => (
+                  <option key={layer.id} value={layer.id}>{layer.name}</option>
+                ))}
+              </select>
+              
+              {selectedLayer === 'new' && (
+                <input
+                  type="text"
+                  value={newLayerName}
+                  onChange={(e) => setNewLayerName(e.target.value)}
+                  placeholder="Layer name"
+                  className="layer-name-input"
+                />
+              )}
+            </div>
+            
+            <div className="dialog-buttons">
+              <button onClick={onClose}>Cancel</button>
+              <button onClick={handleImport} className="primary">Import</button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
