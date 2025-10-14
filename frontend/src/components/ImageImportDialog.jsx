@@ -19,6 +19,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const [newLayerName, setNewLayerName] = useState('Imported Image')
   const [opacity, setOpacity] = useState(100)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     if (file) {
@@ -29,12 +30,11 @@ function ImageImportDialog({ file, onClose, onImport }) {
         setLoading(false)
       }).catch(error => {
         console.error('Image parse error:', error)
-        alert('Failed to parse image: ' + error.message)
+        setError('Failed to parse image: ' + error.message)
         setLoading(false)
-        onClose()
       })
     }
-  }, [file, onClose])
+  }, [file])
 
   const handleWidthChange = (newWidth) => {
     setTargetWidth(newWidth)
@@ -87,6 +87,20 @@ function ImageImportDialog({ file, onClose, onImport }) {
         <div className="image-import-dialog">
           <h2>Import Image</h2>
           <p>Loading image...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="image-import-overlay">
+        <div className="image-import-dialog">
+          <h2>Import Image</h2>
+          <p style={{ color: '#ef4444' }}>{error}</p>
+          <div className="dialog-buttons">
+            <button onClick={onClose}>Close</button>
+          </div>
         </div>
       </div>
     )
