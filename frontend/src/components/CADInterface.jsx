@@ -3141,6 +3141,8 @@ function CADInterface() {
                       }
                     } else if (shape.type === 'rectangle') {
                       bbox = { x: shape.x, y: shape.y, width: shape.width, height: shape.height }
+                    } else if (shape.type === 'image') {
+                      bbox = { x: shape.x, y: shape.y, width: shape.width, height: shape.height }
                     } else if (shape.type === 'polygon' || shape.type === 'freehand') {
                       const xs = shape.points.filter((_, i) => i % 2 === 0)
                       const ys = shape.points.filter((_, i) => i % 2 === 1)
@@ -3214,6 +3216,11 @@ function CADInterface() {
                                 const radius = Math.sqrt(Math.pow(worldX - centerX, 2) + Math.pow(worldY - centerY, 2))
                                 newShape.radius = radius
                               } else if (shape.type === 'rectangle') {
+                                if (i === 4) {
+                                  newShape.width = worldX - shape.x
+                                  newShape.height = worldY - shape.y
+                                }
+                              } else if (shape.type === 'image') {
                                 if (i === 4) {
                                   newShape.width = worldX - shape.x
                                   newShape.height = worldY - shape.y

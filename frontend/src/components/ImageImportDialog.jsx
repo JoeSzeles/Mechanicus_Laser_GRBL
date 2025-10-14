@@ -17,6 +17,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const [newLayerName, setNewLayerName] = useState('Imported Image')
   const [loading, setLoading] = useState(true)
   const [maintainAspectRatio, setMaintainAspectRatio] = useState(true)
+  const [dpi, setDpi] = useState(300)
   
   useEffect(() => {
     if (file) {
@@ -25,8 +26,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
       reader.onload = (e) => {
         const img = new Image()
         img.onload = () => {
-          // Convert pixel dimensions to mm (assuming 96 DPI)
-          const dpi = 96
+          // Convert pixel dimensions to mm based on DPI
           const mmPerInch = 25.4
           const widthMM = (img.width / dpi) * mmPerInch
           const heightMM = (img.height / dpi) * mmPerInch
@@ -59,6 +59,21 @@ function ImageImportDialog({ file, onClose, onImport }) {
       reader.readAsDataURL(file)
     }
   }, [file, onClose])
+  
+  // Recalculate sizes when DPI changes
+  useEffect(() => {
+    if (imageData) {
+      const mmPerInch = 25.4
+      const widthMM = (imageData.width / dpi) * mmPerInch
+      const heightMM = (imageData.height / dpi) * mmPerInch
+      
+      setImageData(prev => ({ ...prev, widthMM, heightMM }))
+      if (useOriginalSize) {
+        setTargetWidth(widthMM)
+        setTargetHeight(heightMM)
+      }
+    }
+  }, [dpi])
   
   const handleWidthChange = (newWidth) => {
     setTargetWidth(newWidth)
@@ -99,49 +114,29 @@ function ImageImportDialog({ file, onClose, onImport }) {
     
     const bedWidth = machineProfile.bedSizeX
     const bedHeight = machineProfile.bedSizeY
-    const originPoint = machineProfile.originPoint || 'bottom-left'
     
-    // Calculate position based on alignment and origin point
+    // Konva uses top-left origin, so we always calculate from top-left
+    // regardless of machine origin setting
     switch (alignment) {
       case 'top-left':
-        if (originPoint === 'top-left' || originPoint === 'top-right') {
-          x = 0
-          y = 0
-        } else {
-          x = 0
-          y = bedHeight - height
-        }
+        x = 0
+        y = 0
         break
       case 'top-right':
-        if (originPoint === 'top-left' || originPoint === 'top-right') {
-          x = bedWidth - width
-          y = 0
-        } else {
-          x = bedWidth - width
-          y = bedHeight - height
-        }
+        x = bedWidth - width
+        y = 0
         break
       case 'center':
         x = (bedWidth - width) / 2
         y = (bedHeight - height) / 2
         break
       case 'bottom-left':
-        if (originPoint === 'bottom-left' || originPoint === 'bottom-right') {
-          x = 0
-          y = 0
-        } else {
-          x = 0
-          y = bedHeight - height
-        }
+        x = 0
+        y = bedHeight - height
         break
       case 'bottom-right':
-        if (originPoint === 'bottom-left' || originPoint === 'bottom-right') {
-          x = bedWidth - width
-          y = 0
-        } else {
-          x = bedWidth - width
-          y = bedHeight - height
-        }
+        x = bedWidth - width
+        y = bedHeight - height
         break
     }
     
@@ -184,7 +179,20 @@ function ImageImportDialog({ file, onClose, onImport }) {
           </div>
           <div className="image-info">
             <p>Resolution: {imageData.width} × {imageData.height} pixels</p>
-            <p>Original Size: {imageData.widthMM.toFixed(2)} × {imageData.heightMM.toFixed(2)} mm</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                DPI:
+                <input
+                  type="number"
+                  value={dpi}
+                  onChange={(e) => setDpi(Number(e.target.value))}
+                  style={{ width: '70px', padding: '4px' }}
+                  min="72"
+                  max="1200"
+                />
+              </label>
+            </div>
+            <p>Size at {dpi} DPI: {imageData.widthMM.toFixed(2)} × {imageData.heightMM.toFixed(2)} mm</p>
           </div>
         </div>
         
