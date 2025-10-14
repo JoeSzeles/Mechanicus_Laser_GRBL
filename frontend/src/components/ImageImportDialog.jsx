@@ -5,9 +5,17 @@ import { parseImageFile, createImageShape } from '../utils/imageImportUtils'
 import './ImageImportDialog.css'
 
 function ImageImportDialog({ file, onClose, onImport }) {
+  console.log('🖼️ ImageImportDialog: Component rendering', { file, hasOnClose: !!onClose, hasOnImport: !!onImport })
+  
   const machineProfile = useCadStore((state) => state.machineProfile)
   const layers = useCadStore((state) => state.layers)
   const addLayer = useCadStore((state) => state.addLayer)
+
+  console.log('🖼️ ImageImportDialog: Store state', { 
+    machineProfile: machineProfile ? 'loaded' : 'null', 
+    layersCount: layers?.length,
+    hasAddLayer: !!addLayer 
+  })
 
   const [imageData, setImageData] = useState(null)
   const [useOriginalSize, setUseOriginalSize] = useState(true)
@@ -21,22 +29,37 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  console.log('🖼️ ImageImportDialog: State initialized', { 
+    loading, 
+    error, 
+    hasImageData: !!imageData,
+    useOriginalSize,
+    selectedLayer 
+  })
+
   useEffect(() => {
+    console.log('🖼️ ImageImportDialog: useEffect triggered', { hasFile: !!file })
     if (file) {
+      console.log('🖼️ ImageImportDialog: Starting image parse', { fileName: file.name, fileSize: file.size, fileType: file.type })
       parseImageFile(file).then(data => {
+        console.log('🖼️ ImageImportDialog: Image parsed successfully', data)
         setImageData(data)
         setTargetWidth(data.originalWidth)
         setTargetHeight(data.originalHeight)
         setLoading(false)
+        console.log('🖼️ ImageImportDialog: State updated after parse')
       }).catch(error => {
-        console.error('Image parse error:', error)
+        console.error('🖼️ ImageImportDialog: Image parse error:', error)
+        console.error('🖼️ ImageImportDialog: Error stack:', error.stack)
         setError('Failed to parse image: ' + error.message)
         setLoading(false)
+        console.log('🖼️ ImageImportDialog: Error state set')
       })
     }
   }, [file])
 
   const handleWidthChange = (newWidth) => {
+    console.log('🖼️ ImageImportDialog: Width change', { newWidth, maintainAspect })
     setTargetWidth(newWidth)
     if (maintainAspect && imageData) {
       setTargetHeight(newWidth / imageData.aspectRatio)
@@ -44,6 +67,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   }
 
   const handleHeightChange = (newHeight) => {
+    console.log('🖼️ ImageImportDialog: Height change', { newHeight, maintainAspect })
     setTargetHeight(newHeight)
     if (maintainAspect && imageData) {
       setTargetWidth(newHeight * imageData.aspectRatio)
@@ -51,10 +75,22 @@ function ImageImportDialog({ file, onClose, onImport }) {
   }
 
   const handleImport = () => {
-    if (!imageData) return
+    console.log('🖼️ ImageImportDialog: Import clicked', { 
+      hasImageData: !!imageData,
+      selectedLayer,
+      useOriginalSize,
+      targetWidth,
+      targetHeight,
+      opacity
+    })
+    if (!imageData) {
+      console.warn('🖼️ ImageImportDialog: No image data, aborting import')
+      return
+    }
 
     // Determine layer
     let layerId = selectedLayer
+    console.log('🖼️ ImageImportDialog: Determining layer', { selectedLayer, newLayerName })
     if (selectedLayer === 'new') {
       const newLayer = {
         id: `layer-${Date.now()}`,
@@ -62,26 +98,60 @@ function ImageImportDialog({ file, onClose, onImport }) {
         visible: true,
         locked: false
       }
-      addLayer(newLayer)
-      layerId = newLayer.id
+      console.log('🖼️ ImageImportDialog: Creating new layer', newLayer)
+      try {
+        addLayer(newLayer)
+        layerId = newLayer.id
+        console.log('🖼️ ImageImportDialog: Layer created successfully', { layerId })
+      } catch (err) {
+        console.error('🖼️ ImageImportDialog: Error creating layer:', err)
+        throw err
+      }
     }
 
     // Create image shape
-    const imageShape = createImageShape(imageData, {
+    console.log('🖼️ ImageImportDialog: Creating image shape', {
       targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
       targetHeight: useOriginalSize ? imageData.originalHeight : targetHeight,
       alignment,
       layerId,
-      useOriginalSize
-    }, machineProfile)
+      useOriginalSize,
+      hasMachineProfile: !!machineProfile
+    })
+    
+    let imageShape
+    try {
+      imageShape = createImageShape(imageData, {
+        targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
+        targetHeight: useOriginalSize ? imageData.originalHeight : targetHeight,
+        alignment,
+        layerId,
+        useOriginalSize
+      }, machineProfile)
+      console.log('🖼️ ImageImportDialog: Image shape created', imageShape)
+    } catch (err) {
+      console.error('🖼️ ImageImportDialog: Error creating image shape:', err)
+      throw err
+    }
 
     imageShape.opacity = opacity / 100
+    console.log('🖼️ ImageImportDialog: Opacity set', { opacity: imageShape.opacity })
 
-    onImport([imageShape])
+    console.log('🖼️ ImageImportDialog: Calling onImport with shapes:', [imageShape])
+    try {
+      onImport([imageShape])
+      console.log('🖼️ ImageImportDialog: onImport called successfully')
+    } catch (err) {
+      console.error('🖼️ ImageImportDialog: Error in onImport:', err)
+      throw err
+    }
+    
+    console.log('🖼️ ImageImportDialog: Calling onClose')
     onClose()
   }
 
   if (loading) {
+    console.log('🖼️ ImageImportDialog: Rendering loading state')
     return (
       <div className="image-import-overlay">
         <div className="image-import-dialog">
@@ -93,6 +163,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   }
 
   if (error) {
+    console.log('🖼️ ImageImportDialog: Rendering error state', { error })
     return (
       <div className="image-import-overlay">
         <div className="image-import-dialog">
@@ -107,9 +178,11 @@ function ImageImportDialog({ file, onClose, onImport }) {
   }
 
   if (!imageData) {
+    console.log('🖼️ ImageImportDialog: No image data, rendering null')
     return null
   }
 
+  console.log('🖼️ ImageImportDialog: Rendering main dialog')
   return (
     <div className="image-import-overlay">
       <div className="image-import-dialog">
