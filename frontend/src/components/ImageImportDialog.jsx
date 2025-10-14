@@ -106,14 +106,18 @@ function ImageImportDialog({ file, onClose, onImport }) {
     }
     
     // Calculate position based on alignment
-    const width = useOriginalSize ? imageData.widthMM : targetWidth
-    const height = useOriginalSize ? imageData.heightMM : targetHeight
+    // Convert mm to pixels for canvas rendering
+    const mmToPx = machineProfile.mmToPx || 3.7795275591 // Default: 96 DPI
+    const widthMM = useOriginalSize ? imageData.widthMM : targetWidth
+    const heightMM = useOriginalSize ? imageData.heightMM : targetHeight
+    const widthPx = widthMM * mmToPx
+    const heightPx = heightMM * mmToPx
     
     let x = 0
     let y = 0
     
-    const bedWidth = machineProfile.bedSizeX
-    const bedHeight = machineProfile.bedSizeY
+    const bedWidthPx = machineProfile.bedSizeX * mmToPx
+    const bedHeightPx = machineProfile.bedSizeY * mmToPx
     
     // Konva uses top-left origin, so we always calculate from top-left
     // regardless of machine origin setting
@@ -123,31 +127,31 @@ function ImageImportDialog({ file, onClose, onImport }) {
         y = 0
         break
       case 'top-right':
-        x = bedWidth - width
+        x = bedWidthPx - widthPx
         y = 0
         break
       case 'center':
-        x = (bedWidth - width) / 2
-        y = (bedHeight - height) / 2
+        x = (bedWidthPx - widthPx) / 2
+        y = (bedHeightPx - heightPx) / 2
         break
       case 'bottom-left':
         x = 0
-        y = bedHeight - height
+        y = bedHeightPx - heightPx
         break
       case 'bottom-right':
-        x = bedWidth - width
-        y = bedHeight - height
+        x = bedWidthPx - widthPx
+        y = bedHeightPx - heightPx
         break
     }
     
-    // Create image shape
+    // Create image shape with pixel dimensions
     const imageShape = {
       id: `image-${Date.now()}`,
       type: 'image',
       x: x,
       y: y,
-      width: width,
-      height: height,
+      width: widthPx,
+      height: heightPx,
       imageUrl: imageData.url,
       layerId: layerId,
       locked: false
