@@ -32,6 +32,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   useEffect(() => {
     console.log('🖼️ ImageImportDialog: useEffect triggered')
     let cancelled = false
+    let timeoutId = null
 
     if (file) {
       console.log('📂 ImageImportDialog: Starting file parse', {
@@ -40,44 +41,54 @@ function ImageImportDialog({ file, onClose, onImport }) {
         timestamp: Date.now()
       })
       
+      // Set a timeout to prevent infinite loading
+      timeoutId = setTimeout(() => {
+        if (!cancelled) {
+          console.error('❌ ImageImportDialog: Parse timeout after 10 seconds')
+          alert('Image parsing timed out. Please try a different image.')
+          onClose()
+        }
+      }, 10000)
+      
       parseImageFile(file).then(data => {
+        clearTimeout(timeoutId)
+        
         if (cancelled) {
           console.warn('⚠️ ImageImportDialog: Operation cancelled, aborting before state updates')
           return
         }
         
         console.log('✅ ImageImportDialog: Parse success', {
-          cancelled: cancelled,
           imageWidth: data.originalWidth,
           imageHeight: data.originalHeight,
           timestamp: Date.now()
         })
         
-        console.log('🔄 ImageImportDialog: Updating state with parsed data')
         setImageData(data)
         setTargetWidth(data.originalWidth)
         setTargetHeight(data.originalHeight)
         setLoading(false)
         console.log('✅ ImageImportDialog: State updated successfully')
       }).catch(error => {
+        clearTimeout(timeoutId)
         console.error('❌ ImageImportDialog: Parse error:', error)
+        
         if (cancelled) {
           console.warn('⚠️ ImageImportDialog: Operation cancelled, skipping error handling')
           return
         }
+        
+        setError(error.message)
         alert('Failed to parse image: ' + error.message)
         onClose()
       })
     }
 
     return () => {
-      console.log('🧹 ImageImportDialog: Cleanup - cancelling operations', {
-        hadFile: !!file,
-        timestamp: Date.now()
-      })
+      console.log('🧹 ImageImportDialog: Cleanup')
+      if (timeoutId) clearTimeout(timeoutId)
       cancelled = true
       isMountedRef.current = false
-      console.log('✅ ImageImportDialog: Marked as unmounted and cancelled')
     }
   }, [file, onClose])
 
