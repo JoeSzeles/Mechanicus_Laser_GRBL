@@ -79,8 +79,8 @@ function ImageImportDialog({ file, onClose, onImport }) {
 
   const handleImport = () => {
     console.log('🖼️ ImageImportDialog: handleImport called', { hasImageData: !!imageData })
-    if (!imageData) {
-      console.log('🖼️ ImageImportDialog: No image data, aborting import')
+    if (!imageData || !isMountedRef.current) {
+      console.log('🖼️ ImageImportDialog: No image data or already unmounted, aborting import')
       return
     }
 
@@ -112,18 +112,12 @@ function ImageImportDialog({ file, onClose, onImport }) {
     imageShape.opacity = opacity / 100
     console.log('🖼️ ImageImportDialog: Image shape created:', imageShape)
 
-    // Mark as unmounted BEFORE calling callbacks to prevent state updates
-    console.log('🖼️ ImageImportDialog: Calling onImport')
+    // Import and immediately close - let React batch the updates
+    console.log('🖼️ ImageImportDialog: Calling onImport and onClose')
+    isMountedRef.current = false
     onImport([imageShape])
-
-    // Use setTimeout to ensure onClose happens AFTER all React updates complete
-    console.log('🖼️ ImageImportDialog: Scheduling close')
-    setTimeout(() => {
-      console.log('🖼️ ImageImportDialog: Executing scheduled close')
-      isMountedRef.current = false
-      onClose()
-      console.log('🖼️ ImageImportDialog: Import complete')
-    }, 0)
+    onClose()
+    console.log('🖼️ ImageImportDialog: Import complete')
   }
 
   if (loading) {
