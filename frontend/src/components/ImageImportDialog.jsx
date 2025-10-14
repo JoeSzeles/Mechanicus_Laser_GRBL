@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react'
 import useCadStore from '../store/cadStore'
 import { parseImageFile, createImageShape } from '../utils/imageImportUtils'
@@ -6,12 +5,12 @@ import './ImageImportDialog.css'
 
 function ImageImportDialog({ file, onClose, onImport }) {
   console.log('🖼️ ImageImportDialog: Render start', { hasFile: !!file })
-  
+
   if (!file) {
     console.log('🖼️ ImageImportDialog: No file, returning null')
     return null
   }
-  
+
   const machineProfile = useCadStore((state) => state.machineProfile)
   const layers = useCadStore((state) => state.layers)
   const addLayer = useCadStore((state) => state.addLayer)
@@ -27,13 +26,13 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const [opacity, setOpacity] = useState(100)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  
+
   const isMountedRef = useRef(true)
 
   useEffect(() => {
     console.log('🖼️ ImageImportDialog: useEffect triggered')
     isMountedRef.current = true
-    
+
     if (file) {
       console.log('🖼️ ImageImportDialog: Starting file parse')
       parseImageFile(file).then(data => {
@@ -57,7 +56,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
         onClose()
       })
     }
-    
+
     return () => {
       console.log('🖼️ ImageImportDialog: Cleanup - marking as unmounted')
       isMountedRef.current = false
@@ -80,11 +79,11 @@ function ImageImportDialog({ file, onClose, onImport }) {
 
   const handleImport = () => {
     console.log('🖼️ ImageImportDialog: handleImport called', { hasImageData: !!imageData })
-    if (!imageData || !isMountedRef.current) {
-      console.log('🖼️ ImageImportDialog: No image data or unmounted, aborting import')
+    if (!imageData) {
+      console.log('🖼️ ImageImportDialog: No image data, aborting import')
       return
     }
-    
+
     console.log('🖼️ ImageImportDialog: Creating layer')
     // Determine layer
     let layerId = selectedLayer
@@ -99,7 +98,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
       layerId = newLayer.id
       console.log('🖼️ ImageImportDialog: New layer created:', layerId)
     }
-    
+
     console.log('🖼️ ImageImportDialog: Creating image shape')
     // Create image shape
     const imageShape = createImageShape(imageData, {
@@ -109,18 +108,22 @@ function ImageImportDialog({ file, onClose, onImport }) {
       layerId,
       useOriginalSize
     }, machineProfile)
-    
+
     imageShape.opacity = opacity / 100
     console.log('🖼️ ImageImportDialog: Image shape created:', imageShape)
-    
+
     // Mark as unmounted BEFORE calling callbacks to prevent state updates
-    isMountedRef.current = false
-    
     console.log('🖼️ ImageImportDialog: Calling onImport')
     onImport([imageShape])
-    console.log('🖼️ ImageImportDialog: Calling onClose')
-    onClose()
-    console.log('🖼️ ImageImportDialog: Import complete')
+
+    // Use setTimeout to ensure onClose happens AFTER all React updates complete
+    console.log('🖼️ ImageImportDialog: Scheduling close')
+    setTimeout(() => {
+      console.log('🖼️ ImageImportDialog: Executing scheduled close')
+      isMountedRef.current = false
+      onClose()
+      console.log('🖼️ ImageImportDialog: Import complete')
+    }, 0)
   }
 
   if (loading) {
@@ -139,7 +142,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
     console.log('🖼️ ImageImportDialog: No image data, returning null')
     return null
   }
-  
+
   console.log('🖼️ ImageImportDialog: Rendering main dialog')
   return (
     <div className="image-import-overlay">
