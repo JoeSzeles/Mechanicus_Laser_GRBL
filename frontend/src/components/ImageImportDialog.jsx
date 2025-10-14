@@ -34,22 +34,35 @@ function ImageImportDialog({ file, onClose, onImport }) {
     isMountedRef.current = true
 
     if (file) {
-      console.log('🖼️ ImageImportDialog: Starting file parse')
+      console.log('📂 ImageImportDialog: Starting file parse', {
+        fileName: file.name,
+        fileSize: file.size,
+        timestamp: Date.now()
+      })
+      
       parseImageFile(file).then(data => {
-        console.log('🖼️ ImageImportDialog: Parse success, isMounted:', isMountedRef.current)
+        console.log('✅ ImageImportDialog: Parse success', {
+          isMounted: isMountedRef.current,
+          imageWidth: data.originalWidth,
+          imageHeight: data.originalHeight,
+          timestamp: Date.now()
+        })
+        
         if (!isMountedRef.current) {
-          console.log('🖼️ ImageImportDialog: Component unmounted, skipping state update')
+          console.warn('⚠️ ImageImportDialog: Component unmounted during parse, skipping state update')
           return
         }
+        
+        console.log('🔄 ImageImportDialog: Updating state with parsed data')
         setImageData(data)
         setTargetWidth(data.originalWidth)
         setTargetHeight(data.originalHeight)
         setLoading(false)
-        console.log('🖼️ ImageImportDialog: State updated successfully')
+        console.log('✅ ImageImportDialog: State updated successfully')
       }).catch(error => {
-        console.error('🖼️ ImageImportDialog: Parse error:', error)
+        console.error('❌ ImageImportDialog: Parse error:', error)
         if (!isMountedRef.current) {
-          console.log('🖼️ ImageImportDialog: Component unmounted, closing without state update')
+          console.warn('⚠️ ImageImportDialog: Component unmounted, closing without state update')
           return
         }
         alert('Failed to parse image: ' + error.message)
@@ -58,8 +71,12 @@ function ImageImportDialog({ file, onClose, onImport }) {
     }
 
     return () => {
-      console.log('🖼️ ImageImportDialog: Cleanup - marking as unmounted')
+      console.log('🧹 ImageImportDialog: Cleanup function called', {
+        hadFile: !!file,
+        timestamp: Date.now()
+      })
       isMountedRef.current = false
+      console.log('✅ ImageImportDialog: Marked as unmounted')
     }
   }, [file, onClose])
 
@@ -78,13 +95,23 @@ function ImageImportDialog({ file, onClose, onImport }) {
   }
 
   const handleImport = () => {
-    console.log('🖼️ ImageImportDialog: handleImport called', { hasImageData: !!imageData })
-    if (!imageData || !isMountedRef.current) {
-      console.log('🖼️ ImageImportDialog: No image data or already unmounted, aborting import')
+    console.log('🖼️ ImageImportDialog: handleImport START', {
+      hasImageData: !!imageData,
+      isMounted: isMountedRef.current,
+      timestamp: Date.now()
+    })
+    
+    if (!imageData) {
+      console.error('❌ ImageImportDialog: No image data available')
+      return
+    }
+    
+    if (!isMountedRef.current) {
+      console.error('❌ ImageImportDialog: Component already unmounted, aborting')
       return
     }
 
-    console.log('🖼️ ImageImportDialog: Creating layer')
+    console.log('📦 ImageImportDialog: Creating layer')
     // Determine layer
     let layerId = selectedLayer
     if (selectedLayer === 'new') {
@@ -96,10 +123,20 @@ function ImageImportDialog({ file, onClose, onImport }) {
       }
       addLayer(newLayer)
       layerId = newLayer.id
-      console.log('🖼️ ImageImportDialog: New layer created:', layerId)
+      console.log('✅ ImageImportDialog: New layer created:', layerId)
+    } else {
+      console.log('📂 ImageImportDialog: Using existing layer:', layerId)
     }
 
-    console.log('🖼️ ImageImportDialog: Creating image shape')
+    console.log('🎨 ImageImportDialog: Creating image shape with params:', {
+      useOriginalSize,
+      targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
+      targetHeight: useOriginalSize ? imageData.originalHeight : targetHeight,
+      alignment,
+      layerId,
+      opacity: opacity / 100
+    })
+    
     // Create image shape
     const imageShape = createImageShape(imageData, {
       targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
@@ -110,12 +147,22 @@ function ImageImportDialog({ file, onClose, onImport }) {
     }, machineProfile)
 
     imageShape.opacity = opacity / 100
-    console.log('🖼️ ImageImportDialog: Image shape created:', imageShape)
+    console.log('✅ ImageImportDialog: Image shape created successfully:', {
+      id: imageShape.id,
+      type: imageShape.type,
+      position: { x: imageShape.x, y: imageShape.y },
+      dimensions: { width: imageShape.width, height: imageShape.height },
+      layerId: imageShape.layerId,
+      opacity: imageShape.opacity
+    })
 
-    // Only call onImport - let parent handle closing
-    console.log('🖼️ ImageImportDialog: Calling onImport')
+    // Mark as unmounted BEFORE calling onImport to prevent any state updates
+    console.log('🔒 ImageImportDialog: Marking as unmounted before onImport')
+    isMountedRef.current = false
+    
+    console.log('📤 ImageImportDialog: Calling onImport with 1 shape')
     onImport([imageShape])
-    console.log('🖼️ ImageImportDialog: Import complete - parent will close dialog')
+    console.log('✅ ImageImportDialog: onImport complete - parent will close dialog')
   }
 
   if (loading) {

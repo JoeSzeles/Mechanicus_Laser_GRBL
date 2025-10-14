@@ -1687,13 +1687,33 @@ function CADInterface() {
   }
 
   const handleImageImport = (shapes) => {
-    console.log('🖼️ CADInterface: Importing shapes:', shapes)
-    shapes.forEach(shape => addShapeWithUndo(shape))
+    console.log('📥 CADInterface: handleImageImport START', {
+      shapeCount: shapes.length,
+      timestamp: Date.now()
+    })
+    
+    console.log('📦 CADInterface: Shape details:', shapes.map(s => ({
+      id: s.id,
+      type: s.type,
+      layerId: s.layerId,
+      position: { x: s.x, y: s.y },
+      dimensions: { width: s.width, height: s.height }
+    })))
+    
+    console.log('➕ CADInterface: Adding shapes to store')
+    shapes.forEach((shape, index) => {
+      console.log(`  Shape ${index + 1}/${shapes.length}: ${shape.id}`)
+      addShapeWithUndo(shape)
+    })
+    console.log('✅ CADInterface: All shapes added to store')
+    
     // Delay closing to allow React to finish all updates
+    console.log('⏱️ CADInterface: Scheduling dialog close (100ms delay)')
     setTimeout(() => {
+      console.log('🔒 CADInterface: Closing image import dialog')
       setImageImportFile(null)
-      console.log('🖼️ CADInterface: Image import complete, dialog closed')
-    }, 50)
+      console.log('✅ CADInterface: Dialog closed successfully')
+    }, 100)
   }
 
   const handleDeleteSelected = () => {
