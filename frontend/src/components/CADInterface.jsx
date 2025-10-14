@@ -1689,9 +1689,11 @@ function CADInterface() {
   const handleImageImport = (shapes) => {
     console.log('🖼️ CADInterface: Importing shapes:', shapes)
     shapes.forEach(shape => addShapeWithUndo(shape))
-    // Close dialog after import completes
-    setImageImportFile(null)
-    console.log('🖼️ CADInterface: Image import complete, dialog closed')
+    // Delay closing to allow React to finish all updates
+    setTimeout(() => {
+      setImageImportFile(null)
+      console.log('🖼️ CADInterface: Image import complete, dialog closed')
+    }, 50)
   }
 
   const handleDeleteSelected = () => {
