@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import useCadStore from '../store/cadStore'
 import { parseImageFile, createImageShape } from '../utils/imageImportUtils'
 import './ImageImportDialog.css'
@@ -16,6 +16,8 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const machineProfile = useCadStore((state) => state.machineProfile)
   const layers = useCadStore((state) => state.layers)
   const addLayer = useCadStore((state) => state.addLayer)
+  
+  const unmountedRef = useRef(false)
 
   console.log('🖼️ ImageImportDialog: Store state', { 
     machineProfile: machineProfile ? 'loaded' : 'null', 
@@ -48,6 +50,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
     if (file) {
       console.log('🖼️ ImageImportDialog: Starting image parse', { fileName: file.name, fileSize: file.size, fileType: file.type })
       parseImageFile(file).then(data => {
+        if (unmountedRef.current) return
         console.log('🖼️ ImageImportDialog: Image parsed successfully', data)
         setImageData(data)
         setTargetWidth(data.originalWidth)
@@ -55,6 +58,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
         setLoading(false)
         console.log('🖼️ ImageImportDialog: State updated after parse')
       }).catch(error => {
+        if (unmountedRef.current) return
         console.error('🖼️ ImageImportDialog: Image parse error:', error)
         console.error('🖼️ ImageImportDialog: Error stack:', error.stack)
         setError('Failed to parse image: ' + error.message)
@@ -137,7 +141,8 @@ function ImageImportDialog({ file, onClose, onImport }) {
       onImport([imageShape])
       console.log('🖼️ ImageImportDialog: onImport called successfully')
       
-      // Close immediately after successful import - no alerts or delays
+      // Mark as unmounted BEFORE closing to prevent any state updates
+      unmountedRef.current = true
       console.log('🖼️ ImageImportDialog: Calling onClose')
       onClose()
     } catch (err) {

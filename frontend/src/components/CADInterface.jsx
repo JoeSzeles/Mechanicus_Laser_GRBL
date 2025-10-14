@@ -118,7 +118,7 @@ function CADInterface() {
       setPanelState('gcodeBuffer', true)
     }
     window.addEventListener('open-buffer-window', handleOpenBuffer)
-    
+
     return () => {
       window.removeEventListener('open-buffer-window', handleOpenBuffer)
     }
@@ -437,7 +437,7 @@ function CADInterface() {
     if (e.evt.button === 2) {
       e.evt.preventDefault()
       const clickedOnEmpty = e.target === e.target.getStage()
-      
+
       // If anything is selected, show context menu regardless of where clicked
       if (selectedShapeIds.length > 0 || selectedShapeId) {
         setContextMenu({
@@ -446,17 +446,17 @@ function CADInterface() {
         })
         return
       }
-      
+
       // If nothing selected, check if clicking on a shape to select and show menu
       if (!clickedOnEmpty) {
         const clickedShapeId = e.target.id()
         const clickedShape = shapes.find(s => s.id === clickedShapeId)
-        
+
         if (clickedShape) {
           // Select the clicked shape
           setSelectedShapeId(clickedShapeId)
           setSelectedShapeIds([])
-          
+
           // Show context menu at mouse position
           setContextMenu({
             x: e.evt.clientX,
@@ -527,7 +527,7 @@ function CADInterface() {
           setIsDraggingSelection(true)
           return
         }
-        
+
         // Select this shape and prepare for dragging
         setSelectedShapeId(clickedShape.id)
         setSelectedShapeIds([])
@@ -1172,7 +1172,7 @@ function CADInterface() {
           point.y - drawingState.centerY,
           point.x - drawingState.centerX
         ) * 180 / Math.PI
-        
+
         newShape.type = 'arc'
         newShape.angle = 90 // Default 90 degree arc (quarter circle)
         newShape.innerRadius = 0
@@ -1549,17 +1549,17 @@ function CADInterface() {
     // Calculate ruler marks based on machine origin point
     const originPoint = machineProfile.originPoint || 'bottom-left'
     const originIsRight = originPoint === 'bottom-right' || originPoint === 'top-right'
-    
+
     // Draw marks every 1mm
     for (let mmPos = 0; mmPos <= machineProfile.bedSizeX; mmPos += 1) {
       // Step 1: Calculate world X coordinate (unzoomed canvas position)
-      const worldX = originIsRight 
+      const worldX = originIsRight
         ? canvasWidth - (mmPos * machineProfile.mmToPx)
         : mmPos * machineProfile.mmToPx
-      
+
       // Step 2: Apply zoom and pan to get screen position
       const x = worldX * viewport.zoom + viewport.pan.x
-      
+
       if (x < 0 || x > hRulerCanvas.width) continue
 
       let tickHeight
@@ -1594,16 +1594,16 @@ function CADInterface() {
 
     // Draw marks every 1mm starting from 0 at the origin
     const originIsTop = originPoint === 'top-left' || originPoint === 'top-right'
-    
+
     for (let mmPos = 0; mmPos <= machineProfile.bedSizeY; mmPos += 1) {
       // Step 1: Calculate world Y coordinate (unzoomed canvas position)
-      const worldY = originIsTop 
+      const worldY = originIsTop
         ? mmPos * machineProfile.mmToPx
         : canvasHeight - (mmPos * machineProfile.mmToPx)
-      
+
       // Step 2: Apply zoom and pan to get screen position
       const y = worldY * viewport.zoom + viewport.pan.y
-      
+
       if (y < 0 || y > vRulerCanvas.height) continue
 
       let tickWidth
@@ -1658,11 +1658,11 @@ function CADInterface() {
   const handleImportSVG = (event) => {
     const file = event.target.files[0]
     if (!file) return
-    
+
     setSvgImportFile(file)
     event.target.value = ''
   }
-  
+
   const handleSVGImportComplete = (importedShapes) => {
     importedShapes.forEach(shape => {
       addShapeWithUndo(shape)
@@ -1673,7 +1673,7 @@ function CADInterface() {
   const handleImportImage = (event) => {
     const file = event.target.files[0]
     if (!file) return
-    
+
     // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/bmp', 'image/gif']
     if (!validTypes.includes(file.type)) {
@@ -1681,16 +1681,16 @@ function CADInterface() {
       event.target.value = ''
       return
     }
-    
+
     setImageImportFile(file)
     event.target.value = ''
   }
-  
+
   const handleImageImportComplete = (importedShapes) => {
     importedShapes.forEach(shape => {
       addShapeWithUndo(shape)
     })
-    alert(`Imported image successfully`)
+    // No alert - silent import
   }
 
   const handleDeleteSelected = () => {
@@ -2444,7 +2444,7 @@ function CADInterface() {
               active={showEngravingTools}
               className="laser-button"
             />
-            
+
             <ToolButton
               icon={<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -2700,15 +2700,15 @@ function CADInterface() {
                       )
                     } else if (shape.type === 'image') {
                       const [imageObj, setImageObj] = React.useState(null)
-                      
+
                       React.useEffect(() => {
                         const img = new window.Image()
                         img.src = shape.dataUrl
                         img.onload = () => setImageObj(img)
                       }, [shape.dataUrl])
-                      
+
                       if (!imageObj) return null
-                      
+
                       return (
                         <KonvaImage
                           key={shape.id}
@@ -3410,7 +3410,7 @@ function CADInterface() {
             selectedShapeId={selectedShapeId}
           />
         )}
-        
+
         {svgImportFile && (
           <SVGImportDialog
             file={svgImportFile}
@@ -3418,7 +3418,7 @@ function CADInterface() {
             onImport={handleSVGImportComplete}
           />
         )}
-        
+
         {imageImportFile && (
           <ImageImportDialog
             file={imageImportFile}
