@@ -44,7 +44,6 @@ const MenuBar = ({
     { label: 'Save As...', onClick: () => console.log('Save As'), disabled: true },
     { separator: true },
     { label: 'Import SVG', onClick: onImportSVG, shortcut: 'Ctrl+I' },
-    { label: 'Import Image', onClick: () => document.getElementById('image-import-input')?.click() },
     { label: 'Export SVG', onClick: onExportSVG, shortcut: 'Ctrl+E' },
     { separator: true },
     { label: 'Export G-Code', onClick: () => console.log('Export G-Code'), disabled: true }
