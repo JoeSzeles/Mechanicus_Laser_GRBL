@@ -112,12 +112,17 @@ function ImageImportDialog({ file, onClose, onImport }) {
     imageShape.opacity = opacity / 100
     console.log('🖼️ ImageImportDialog: Image shape created:', imageShape)
 
-    // Import and immediately close - let React batch the updates
-    console.log('🖼️ ImageImportDialog: Calling onImport and onClose')
-    isMountedRef.current = false
+    // Call onImport first
+    console.log('🖼️ ImageImportDialog: Calling onImport')
     onImport([imageShape])
-    onClose()
-    console.log('🖼️ ImageImportDialog: Import complete')
+    
+    // Use requestAnimationFrame to ensure close happens after React finishes all updates
+    console.log('🖼️ ImageImportDialog: Scheduling close after render')
+    requestAnimationFrame(() => {
+      isMountedRef.current = false
+      onClose()
+      console.log('🖼️ ImageImportDialog: Import complete')
+    })
   }
 
   if (loading) {
