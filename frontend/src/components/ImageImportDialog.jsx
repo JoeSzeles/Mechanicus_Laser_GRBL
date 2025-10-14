@@ -98,6 +98,9 @@ function ImageImportDialog({ file, onClose, onImport }) {
       return
     }
 
+    // Mark as unmounted IMMEDIATELY to prevent any state updates
+    unmountedRef.current = true
+
     try {
       // Determine layer
       let layerId = selectedLayer
@@ -141,13 +144,14 @@ function ImageImportDialog({ file, onClose, onImport }) {
       onImport([imageShape])
       console.log('🖼️ ImageImportDialog: onImport called successfully')
       
-      // Mark as unmounted BEFORE closing to prevent any state updates
-      unmountedRef.current = true
       console.log('🖼️ ImageImportDialog: Calling onClose')
       onClose()
     } catch (err) {
       console.error('🖼️ ImageImportDialog: Error during import:', err)
-      setError('Failed to import image: ' + err.message)
+      // Don't update state if unmounted
+      if (!unmountedRef.current) {
+        setError('Failed to import image: ' + err.message)
+      }
     }
   }
 
