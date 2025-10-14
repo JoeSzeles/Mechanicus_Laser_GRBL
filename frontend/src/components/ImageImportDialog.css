@@ -1,0 +1,272 @@
+
+.image-import-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.image-import-dialog {
+  background: #1e293b;
+  border: 1px solid #475569;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  color: #fff;
+}
+
+.image-import-dialog h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  color: #fff;
+}
+
+.image-preview {
+  margin-bottom: 20px;
+  text-align: center;
+  background: #0f172a;
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.import-section {
+  margin-bottom: 24px;
+}
+
+.import-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.size-info {
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.size-info p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #cbd5e1;
+  margin: 8px 0;
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.size-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.size-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.size-inputs input {
+  padding: 8px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.opacity-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.opacity-slider {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: #334155;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+}
+
+.opacity-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  border: none;
+}
+
+.opacity-value {
+  min-width: 40px;
+  text-align: right;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.alignment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.alignment-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  background: #334155;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.alignment-btn:hover {
+  background: #3f4d63;
+}
+
+.alignment-btn.active {
+  border-color: #3b82f6;
+  background: #1e3a8a;
+}
+
+.alignment-visual {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #64748b;
+  border-radius: 4px;
+  position: relative;
+  background: #1e293b;
+}
+
+.inner-rect {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: #3b82f6;
+  border-radius: 2px;
+}
+
+.inner-rect.top-left {
+  top: 2px;
+  left: 2px;
+}
+
+.inner-rect.top-right {
+  top: 2px;
+  right: 2px;
+}
+
+.inner-rect.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.inner-rect.bottom-left {
+  bottom: 2px;
+  left: 2px;
+}
+
+.inner-rect.bottom-right {
+  bottom: 2px;
+  right: 2px;
+}
+
+.alignment-btn span {
+  font-size: 11px;
+  color: #cbd5e1;
+  text-transform: capitalize;
+}
+
+.import-section select {
+  width: 100%;
+  padding: 8px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.layer-name-input {
+  width: 100%;
+  padding: 8px;
+  background: #334155;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.dialog-buttons button {
+  padding: 8px 16px;
+  border: 1px solid #475569;
+  border-radius: 4px;
+  background: #334155;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.dialog-buttons button:hover {
+  background: #3f4d63;
+}
+
+.dialog-buttons button.primary {
+  background: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.dialog-buttons button.primary:hover {
+  background: #2563eb;
+}
