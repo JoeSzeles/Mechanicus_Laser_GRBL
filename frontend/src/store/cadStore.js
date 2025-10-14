@@ -686,6 +686,7 @@ const useCadStore = create((set) => ({
         return Math.abs(dist - shape.radius) < tolerance
       }
       case 'rectangle':
+      case 'image':
         return x >= shape.x - tolerance && x <= shape.x + shape.width + tolerance &&
                y >= shape.y - tolerance && y <= shape.y + shape.height + tolerance
       case 'polygon':
