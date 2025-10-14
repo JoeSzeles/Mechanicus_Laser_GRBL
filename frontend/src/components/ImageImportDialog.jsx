@@ -17,7 +17,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const [newLayerName, setNewLayerName] = useState('Imported Image')
   const [loading, setLoading] = useState(true)
   const [maintainAspectRatio, setMaintainAspectRatio] = useState(true)
-  const [dpi, setDpi] = useState(300)
+  const [dpi, setDpi] = useState(96)
   
   useEffect(() => {
     if (file) {
@@ -106,12 +106,19 @@ function ImageImportDialog({ file, onClose, onImport }) {
     }
     
     // Calculate position based on alignment
-    // Convert mm to pixels for canvas rendering
     const mmToPx = machineProfile.mmToPx || 3.7795275591 // Default: 96 DPI
-    const widthMM = useOriginalSize ? imageData.widthMM : targetWidth
-    const heightMM = useOriginalSize ? imageData.heightMM : targetHeight
-    const widthPx = widthMM * mmToPx
-    const heightPx = heightMM * mmToPx
+    
+    // Determine size in pixels
+    let widthPx, heightPx
+    if (useOriginalSize) {
+      // Use image's native pixel dimensions directly
+      widthPx = imageData.width
+      heightPx = imageData.height
+    } else {
+      // Convert custom mm size to pixels
+      widthPx = targetWidth * mmToPx
+      heightPx = targetHeight * mmToPx
+    }
     
     let x = 0
     let y = 0
@@ -185,7 +192,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
             <p>Resolution: {imageData.width} × {imageData.height} pixels</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                DPI:
+                DPI (for reference):
                 <input
                   type="number"
                   value={dpi}
@@ -196,7 +203,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
                 />
               </label>
             </div>
-            <p>Size at {dpi} DPI: {imageData.widthMM.toFixed(2)} × {imageData.heightMM.toFixed(2)} mm</p>
+            <p>Physical size at {dpi} DPI: {imageData.widthMM.toFixed(2)} × {imageData.heightMM.toFixed(2)} mm</p>
           </div>
         </div>
         
@@ -209,7 +216,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
               checked={useOriginalSize}
               onChange={(e) => setUseOriginalSize(e.target.checked)}
             />
-            Use original size
+            Use original size ({imageData.width} × {imageData.height} pixels)
           </label>
           
           {!useOriginalSize && (

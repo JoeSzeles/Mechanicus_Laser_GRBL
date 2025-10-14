@@ -32,7 +32,7 @@ import MenuBar from './MenuBar'
 import FloatingPanel from './FloatingPanel'
 import './CADInterface.css'
 
-const ImageShape = ({ shape, onShapeClick, onShapeUpdate }) => {
+const ImageShape = ({ shape, onShapeClick }) => {
   const [image, setImage] = useState(null)
   
   useEffect(() => {
@@ -52,13 +52,9 @@ const ImageShape = ({ shape, onShapeClick, onShapeUpdate }) => {
       y={shape.y}
       width={shape.width}
       height={shape.height}
-      draggable={!shape.locked}
       onClick={(e) => onShapeClick(shape, e)}
-      onDragEnd={(e) => {
-        const newX = e.target.x()
-        const newY = e.target.y()
-        onShapeUpdate(shape.id, { x: newX, y: newY })
-      }}
+      onMouseEnter={() => {}}
+      onMouseLeave={() => {}}
     />
   )
 }
@@ -2705,7 +2701,6 @@ function CADInterface() {
                           key={shape.id}
                           shape={shape}
                           onShapeClick={handleShapeClick}
-                          onShapeUpdate={updateShape}
                         />
                       )
                     } else if (shape.type === 'path-group') {
