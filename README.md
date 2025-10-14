@@ -1,7 +1,7 @@
 
 # Mechanicus CAD - Laser/CNC Design System
 
-![Mechanicus CAD](mechanicus_laser_cad/Screenshot1.jpg)
+![Mechanicus CAD](Screenshot%202025-10-15%20at%2010-21-05%20frontend.png)
 
 A modern, web-based CAD system for laser engraving and CNC machines. Design, edit, and control your laser/CNC projects directly from your browser with real-time machine communication.
 
