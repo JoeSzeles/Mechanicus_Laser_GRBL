@@ -41,17 +41,17 @@ function ImageImportDialog({ file, onClose, onImport }) {
       })
       
       parseImageFile(file).then(data => {
+        if (cancelled) {
+          console.warn('⚠️ ImageImportDialog: Operation cancelled, aborting before state updates')
+          return
+        }
+        
         console.log('✅ ImageImportDialog: Parse success', {
           cancelled: cancelled,
           imageWidth: data.originalWidth,
           imageHeight: data.originalHeight,
           timestamp: Date.now()
         })
-        
-        if (cancelled) {
-          console.warn('⚠️ ImageImportDialog: Operation cancelled, skipping state update')
-          return
-        }
         
         console.log('🔄 ImageImportDialog: Updating state with parsed data')
         setImageData(data)
