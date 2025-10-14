@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react'
-import { Stage, Layer, Line, Rect, Circle, Text, RegularPolygon, Arc, Wedge } from 'react-konva'
+import { Stage, Layer, Line, Rect, Circle, Text, RegularPolygon, Arc, Wedge, Image as KonvaImage } from 'react-konva'
 import AuthContext from '../contexts/AuthContext'
 import { useSerial } from '../contexts/SerialContext'
 import useCadStore from '../store/cadStore'
@@ -17,6 +17,7 @@ import MachineJogControls from './MachineJogControls'
 import GcodeBufferWindow from './GcodeBufferWindow'
 import ContextMenu from './ContextMenu'
 import SVGImportDialog from './SVGImportDialog'
+import ImageImportDialog from './ImageImportDialog'
 import { findSnapPoint, updateSpatialIndex, SNAP_COLORS } from '../utils/snapEngine'
 import { findLineIntersection } from '../utils/lineEditorUtils'
 import { exportToSVG, downloadSVG, importFromSVG } from '../utils/svgUtils'
@@ -30,6 +31,37 @@ import {
 import MenuBar from './MenuBar'
 import FloatingPanel from './FloatingPanel'
 import './CADInterface.css'
+
+const ImageShape = ({ shape, onShapeClick, onShapeUpdate }) => {
+  const [image, setImage] = useState(null)
+  
+  useEffect(() => {
+    const img = new window.Image()
+    img.src = shape.imageUrl
+    img.onload = () => {
+      setImage(img)
+    }
+  }, [shape.imageUrl])
+  
+  if (!image) return null
+  
+  return (
+    <KonvaImage
+      image={image}
+      x={shape.x}
+      y={shape.y}
+      width={shape.width}
+      height={shape.height}
+      draggable={!shape.locked}
+      onClick={(e) => onShapeClick(shape, e)}
+      onDragEnd={(e) => {
+        const newX = e.target.x()
+        const newY = e.target.y()
+        onShapeUpdate(shape.id, { x: newX, y: newY })
+      }}
+    />
+  )
+}
 
 function CADInterface() {
   const { user, logout } = useContext(AuthContext)
@@ -201,6 +233,7 @@ function CADInterface() {
   const [clonePreview, setClonePreview] = useState(null)
   const [contextMenu, setContextMenu] = useState(null)
   const [svgImportFile, setSvgImportFile] = useState(null)
+  const [imageImportFile, setImageImportFile] = useState(null)
 
   const [panelPositions, setPanelPositions] = useState(() => {
     const savedPositions = workspace.panelPositions || {}
@@ -1667,6 +1700,20 @@ function CADInterface() {
     })
     alert(`Imported ${importedShapes.length} shapes`)
   }
+  
+  const handleImportImage = (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+    
+    setImageImportFile(file)
+    event.target.value = ''
+  }
+  
+  const handleImageImportComplete = (importedShapes) => {
+    importedShapes.forEach(shape => {
+      addShapeWithUndo(shape)
+    })
+  }
 
   const handleDeleteSelected = () => {
     if (selectedShapeIds.length === 0) return
@@ -2318,6 +2365,18 @@ function CADInterface() {
           <div className="tool-button-grid">
             <ToolButton
               icon={<ImportIcon />}
+              label="Import Image"
+              onClick={() => document.getElementById('image-import-input').click()}
+            />
+            <input
+              id="image-import-input"
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/bmp,image/gif,image/webp"
+              onChange={handleImportImage}
+              style={{ display: 'none' }}
+            />
+            <ToolButton
+              icon={<ImportIcon />}
               label="Import SVG"
               onClick={() => document.getElementById('svg-import-input').click()}
             />
@@ -2638,6 +2697,15 @@ function CADInterface() {
                           onClick={(e) => handleShapeClick(shape, e)}
                           onMouseEnter={() => handleShapeHover(shape, true)}
                           onMouseLeave={() => handleShapeHover(shape, false)}
+                        />
+                      )
+                    } else if (shape.type === 'image') {
+                      return (
+                        <ImageShape
+                          key={shape.id}
+                          shape={shape}
+                          onShapeClick={handleShapeClick}
+                          onShapeUpdate={updateShape}
                         />
                       )
                     } else if (shape.type === 'path-group') {
@@ -3346,6 +3414,14 @@ function CADInterface() {
             file={svgImportFile}
             onClose={() => setSvgImportFile(null)}
             onImport={handleSVGImportComplete}
+          />
+        )}
+        
+        {imageImportFile && (
+          <ImageImportDialog
+            file={imageImportFile}
+            onClose={() => setImageImportFile(null)}
+            onImport={handleImageImportComplete}
           />
         )}
       </div>
