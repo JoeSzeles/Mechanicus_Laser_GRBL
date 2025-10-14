@@ -5,7 +5,12 @@ import { parseImageFile, createImageShape } from '../utils/imageImportUtils'
 import './ImageImportDialog.css'
 
 function ImageImportDialog({ file, onClose, onImport }) {
-  if (!file) return null
+  console.log('🖼️ ImageImportDialog: Render start', { hasFile: !!file })
+  
+  if (!file) {
+    console.log('🖼️ ImageImportDialog: No file, returning null')
+    return null
+  }
   
   const machineProfile = useCadStore((state) => state.machineProfile)
   const layers = useCadStore((state) => state.layers)
@@ -22,21 +27,42 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const [opacity, setOpacity] = useState(100)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  
+  const isMountedRef = useRef(true)
 
   useEffect(() => {
+    console.log('🖼️ ImageImportDialog: useEffect triggered')
+    isMountedRef.current = true
+    
     if (file) {
+      console.log('🖼️ ImageImportDialog: Starting file parse')
       parseImageFile(file).then(data => {
+        console.log('🖼️ ImageImportDialog: Parse success, isMounted:', isMountedRef.current)
+        if (!isMountedRef.current) {
+          console.log('🖼️ ImageImportDialog: Component unmounted, skipping state update')
+          return
+        }
         setImageData(data)
         setTargetWidth(data.originalWidth)
         setTargetHeight(data.originalHeight)
         setLoading(false)
+        console.log('🖼️ ImageImportDialog: State updated successfully')
       }).catch(error => {
-        console.error('Image parse error:', error)
-        setError('Failed to parse image: ' + error.message)
-        setLoading(false)
+        console.error('🖼️ ImageImportDialog: Parse error:', error)
+        if (!isMountedRef.current) {
+          console.log('🖼️ ImageImportDialog: Component unmounted, closing without state update')
+          return
+        }
+        alert('Failed to parse image: ' + error.message)
+        onClose()
       })
     }
-  }, [file])
+    
+    return () => {
+      console.log('🖼️ ImageImportDialog: Cleanup - marking as unmounted')
+      isMountedRef.current = false
+    }
+  }, [file, onClose])
 
   const handleWidthChange = (newWidth) => {
     setTargetWidth(newWidth)
@@ -53,8 +79,13 @@ function ImageImportDialog({ file, onClose, onImport }) {
   }
 
   const handleImport = () => {
-    if (!imageData) return
+    console.log('🖼️ ImageImportDialog: handleImport called', { hasImageData: !!imageData })
+    if (!imageData) {
+      console.log('🖼️ ImageImportDialog: No image data, aborting import')
+      return
+    }
     
+    console.log('🖼️ ImageImportDialog: Creating layer')
     // Determine layer
     let layerId = selectedLayer
     if (selectedLayer === 'new') {
@@ -66,8 +97,10 @@ function ImageImportDialog({ file, onClose, onImport }) {
       }
       addLayer(newLayer)
       layerId = newLayer.id
+      console.log('🖼️ ImageImportDialog: New layer created:', layerId)
     }
     
+    console.log('🖼️ ImageImportDialog: Creating image shape')
     // Create image shape
     const imageShape = createImageShape(imageData, {
       targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
@@ -78,12 +111,18 @@ function ImageImportDialog({ file, onClose, onImport }) {
     }, machineProfile)
     
     imageShape.opacity = opacity / 100
+    console.log('🖼️ ImageImportDialog: Image shape created:', imageShape)
     
+    console.log('🖼️ ImageImportDialog: Calling onImport')
     onImport([imageShape])
+    console.log('🖼️ ImageImportDialog: Calling onClose')
+    isMountedRef.current = false
     onClose()
+    console.log('🖼️ ImageImportDialog: Import complete')
   }
 
   if (loading) {
+    console.log('🖼️ ImageImportDialog: Rendering loading state')
     return (
       <div className="image-import-overlay">
         <div className="image-import-dialog">
@@ -94,21 +133,12 @@ function ImageImportDialog({ file, onClose, onImport }) {
     )
   }
 
-  if (error) {
-    return (
-      <div className="image-import-overlay">
-        <div className="image-import-dialog">
-          <h2>Import Image</h2>
-          <p style={{ color: '#ef4444' }}>{error}</p>
-          <div className="dialog-buttons">
-            <button onClick={onClose}>Close</button>
-          </div>
-        </div>
-      </div>
-    )
+  if (!imageData) {
+    console.log('🖼️ ImageImportDialog: No image data, returning null')
+    return null
   }
-
-  if (!imageData) return null
+  
+  console.log('🖼️ ImageImportDialog: Rendering main dialog')
   return (
     <div className="image-import-overlay">
       <div className="image-import-dialog">
