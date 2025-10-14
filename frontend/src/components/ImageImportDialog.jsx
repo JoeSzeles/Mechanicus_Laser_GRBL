@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react'
 import useCadStore from '../store/cadStore'
 import { parseImageFile, createImageShape } from '../utils/imageImportUtils'
@@ -8,7 +7,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const machineProfile = useCadStore((state) => state.machineProfile)
   const layers = useCadStore((state) => state.layers)
   const addLayer = useCadStore((state) => state.addLayer)
-  
+
   const [imageData, setImageData] = useState(null)
   const [useOriginalSize, setUseOriginalSize] = useState(true)
   const [targetWidth, setTargetWidth] = useState(100)
@@ -19,7 +18,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
   const [newLayerName, setNewLayerName] = useState('Imported Image')
   const [opacity, setOpacity] = useState(100)
   const [loading, setLoading] = useState(true)
-  
+
   useEffect(() => {
     if (file) {
       parseImageFile(file).then(data => {
@@ -34,24 +33,24 @@ function ImageImportDialog({ file, onClose, onImport }) {
       })
     }
   }, [file])
-  
+
   const handleWidthChange = (newWidth) => {
     setTargetWidth(newWidth)
     if (maintainAspect && imageData) {
       setTargetHeight(newWidth / imageData.aspectRatio)
     }
   }
-  
+
   const handleHeightChange = (newHeight) => {
     setTargetHeight(newHeight)
     if (maintainAspect && imageData) {
       setTargetWidth(newHeight * imageData.aspectRatio)
     }
   }
-  
+
   const handleImport = () => {
     if (!imageData) return
-    
+
     // Determine layer
     let layerId = selectedLayer
     if (selectedLayer === 'new') {
@@ -64,7 +63,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
       addLayer(newLayer)
       layerId = newLayer.id
     }
-    
+
     // Create image shape
     const imageShape = createImageShape(imageData, {
       targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
@@ -73,13 +72,13 @@ function ImageImportDialog({ file, onClose, onImport }) {
       layerId,
       useOriginalSize
     }, machineProfile)
-    
+
     imageShape.opacity = opacity / 100
-    
+
     onImport([imageShape])
     onClose()
   }
-  
+
   return (
     <div className="image-import-overlay">
       <div className="image-import-dialog">
@@ -91,29 +90,29 @@ function ImageImportDialog({ file, onClose, onImport }) {
         ) : (
           <>
             <h2>Import Image</h2>
-            
+
             {imageData && (
               <div className="image-preview">
-                <img 
-                  src={imageData.dataUrl} 
-                  alt="Preview" 
-                  style={{ 
-                    maxWidth: '100%', 
+                <img
+                  src={imageData.dataUrl}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '100%',
                     maxHeight: '200px',
                     opacity: opacity / 100
-                  }} 
+                  }}
                 />
               </div>
             )}
-            
+
             <div className="import-section">
               <h3>Size</h3>
               <div className="size-info">
                 <p>Original: {imageData.originalWidth.toFixed(2)} × {imageData.originalHeight.toFixed(2)} mm</p>
                 <p>Resolution: {imageData.pixelWidth} × {imageData.pixelHeight} px</p>
-                <p>DPI: {imageData.dpi}</p>
+                {imageData.dpi && <p>DPI: {imageData.dpi}</p>}
               </div>
-              
+
               <label className="checkbox-label">
                 <input
                   type="checkbox"
@@ -122,7 +121,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
                 />
                 Use original size
               </label>
-              
+
               {!useOriginalSize && (
                 <>
                   <div className="size-inputs">
@@ -156,7 +155,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
                 </>
               )}
             </div>
-            
+
             <div className="import-section">
               <h3>Opacity</h3>
               <div className="opacity-control">
@@ -171,7 +170,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
                 <span className="opacity-value">{opacity}%</span>
               </div>
             </div>
-            
+
             <div className="import-section">
               <h3>Alignment</h3>
               <div className="alignment-grid">
@@ -189,7 +188,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
                 ))}
               </div>
             </div>
-            
+
             <div className="import-section">
               <h3>Layer</h3>
               <select value={selectedLayer} onChange={(e) => setSelectedLayer(e.target.value)}>
@@ -198,7 +197,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
                   <option key={layer.id} value={layer.id}>{layer.name}</option>
                 ))}
               </select>
-              
+
               {selectedLayer === 'new' && (
                 <input
                   type="text"
@@ -209,7 +208,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
                 />
               )}
             </div>
-            
+
             <div className="dialog-buttons">
               <button onClick={onClose}>Cancel</button>
               <button onClick={handleImport} className="primary">Import</button>
