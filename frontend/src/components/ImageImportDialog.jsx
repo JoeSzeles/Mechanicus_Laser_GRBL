@@ -7,6 +7,12 @@ import './ImageImportDialog.css'
 function ImageImportDialog({ file, onClose, onImport }) {
   console.log('🖼️ ImageImportDialog: Component rendering', { file, hasOnClose: !!onClose, hasOnImport: !!onImport })
   
+  // Early return if no file to prevent hook issues
+  if (!file) {
+    console.log('🖼️ ImageImportDialog: No file provided, returning null')
+    return null
+  }
+  
   const machineProfile = useCadStore((state) => state.machineProfile)
   const layers = useCadStore((state) => state.layers)
   const addLayer = useCadStore((state) => state.addLayer)
@@ -88,40 +94,34 @@ function ImageImportDialog({ file, onClose, onImport }) {
       return
     }
 
-    // Determine layer
-    let layerId = selectedLayer
-    console.log('🖼️ ImageImportDialog: Determining layer', { selectedLayer, newLayerName })
-    if (selectedLayer === 'new') {
-      const newLayer = {
-        id: `layer-${Date.now()}`,
-        name: newLayerName,
-        visible: true,
-        locked: false
-      }
-      console.log('🖼️ ImageImportDialog: Creating new layer', newLayer)
-      try {
+    try {
+      // Determine layer
+      let layerId = selectedLayer
+      console.log('🖼️ ImageImportDialog: Determining layer', { selectedLayer, newLayerName })
+      if (selectedLayer === 'new') {
+        const newLayer = {
+          id: `layer-${Date.now()}`,
+          name: newLayerName,
+          visible: true,
+          locked: false
+        }
+        console.log('🖼️ ImageImportDialog: Creating new layer', newLayer)
         addLayer(newLayer)
         layerId = newLayer.id
         console.log('🖼️ ImageImportDialog: Layer created successfully', { layerId })
-      } catch (err) {
-        console.error('🖼️ ImageImportDialog: Error creating layer:', err)
-        throw err
       }
-    }
 
-    // Create image shape
-    console.log('🖼️ ImageImportDialog: Creating image shape', {
-      targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
-      targetHeight: useOriginalSize ? imageData.originalHeight : targetHeight,
-      alignment,
-      layerId,
-      useOriginalSize,
-      hasMachineProfile: !!machineProfile
-    })
-    
-    let imageShape
-    try {
-      imageShape = createImageShape(imageData, {
+      // Create image shape
+      console.log('🖼️ ImageImportDialog: Creating image shape', {
+        targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
+        targetHeight: useOriginalSize ? imageData.originalHeight : targetHeight,
+        alignment,
+        layerId,
+        useOriginalSize,
+        hasMachineProfile: !!machineProfile
+      })
+      
+      const imageShape = createImageShape(imageData, {
         targetWidth: useOriginalSize ? imageData.originalWidth : targetWidth,
         targetHeight: useOriginalSize ? imageData.originalHeight : targetHeight,
         alignment,
@@ -129,25 +129,21 @@ function ImageImportDialog({ file, onClose, onImport }) {
         useOriginalSize
       }, machineProfile)
       console.log('🖼️ ImageImportDialog: Image shape created', imageShape)
-    } catch (err) {
-      console.error('🖼️ ImageImportDialog: Error creating image shape:', err)
-      throw err
-    }
 
-    imageShape.opacity = opacity / 100
-    console.log('🖼️ ImageImportDialog: Opacity set', { opacity: imageShape.opacity })
+      imageShape.opacity = opacity / 100
+      console.log('🖼️ ImageImportDialog: Opacity set', { opacity: imageShape.opacity })
 
-    console.log('🖼️ ImageImportDialog: Calling onImport with shapes:', [imageShape])
-    try {
+      console.log('🖼️ ImageImportDialog: Calling onImport with shapes:', [imageShape])
       onImport([imageShape])
       console.log('🖼️ ImageImportDialog: onImport called successfully')
+      
+      // Close immediately after successful import - no alerts or delays
+      console.log('🖼️ ImageImportDialog: Calling onClose')
+      onClose()
     } catch (err) {
-      console.error('🖼️ ImageImportDialog: Error in onImport:', err)
-      throw err
+      console.error('🖼️ ImageImportDialog: Error during import:', err)
+      setError('Failed to import image: ' + err.message)
     }
-    
-    console.log('🖼️ ImageImportDialog: Calling onClose')
-    onClose()
   }
 
   if (loading) {
