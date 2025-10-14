@@ -31,7 +31,7 @@ function ImageImportDialog({ file, onClose, onImport }) {
 
   useEffect(() => {
     console.log('🖼️ ImageImportDialog: useEffect triggered')
-    isMountedRef.current = true
+    let cancelled = false
 
     if (file) {
       console.log('📂 ImageImportDialog: Starting file parse', {
@@ -42,14 +42,14 @@ function ImageImportDialog({ file, onClose, onImport }) {
       
       parseImageFile(file).then(data => {
         console.log('✅ ImageImportDialog: Parse success', {
-          isMounted: isMountedRef.current,
+          cancelled: cancelled,
           imageWidth: data.originalWidth,
           imageHeight: data.originalHeight,
           timestamp: Date.now()
         })
         
-        if (!isMountedRef.current) {
-          console.warn('⚠️ ImageImportDialog: Component unmounted during parse, skipping state update')
+        if (cancelled) {
+          console.warn('⚠️ ImageImportDialog: Operation cancelled, skipping state update')
           return
         }
         
@@ -61,8 +61,8 @@ function ImageImportDialog({ file, onClose, onImport }) {
         console.log('✅ ImageImportDialog: State updated successfully')
       }).catch(error => {
         console.error('❌ ImageImportDialog: Parse error:', error)
-        if (!isMountedRef.current) {
-          console.warn('⚠️ ImageImportDialog: Component unmounted, closing without state update')
+        if (cancelled) {
+          console.warn('⚠️ ImageImportDialog: Operation cancelled, skipping error handling')
           return
         }
         alert('Failed to parse image: ' + error.message)
@@ -71,12 +71,13 @@ function ImageImportDialog({ file, onClose, onImport }) {
     }
 
     return () => {
-      console.log('🧹 ImageImportDialog: Cleanup function called', {
+      console.log('🧹 ImageImportDialog: Cleanup - cancelling operations', {
         hadFile: !!file,
         timestamp: Date.now()
       })
+      cancelled = true
       isMountedRef.current = false
-      console.log('✅ ImageImportDialog: Marked as unmounted')
+      console.log('✅ ImageImportDialog: Marked as unmounted and cancelled')
     }
   }, [file, onClose])
 
