@@ -1,0 +1,34 @@
+SES Removing unpermitted intrinsics lockdown-install.js:1:203117
+  Removing intrinsics.%DatePrototype%.toTemporalInstant lockdown-install.js:1:202962
+✅ User authenticated, default profile loaded index-tzZd9zZG.js:120:62308
+✅ updateLineEditorState is available index-tzZd9zZG.js:120:14086
+🔄 Loading workspace on mount... index-tzZd9zZG.js:120:14160
+📂 Workspace loaded: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1760434562025 }
+index-tzZd9zZG.js:108:8617
+✅ Workspace loaded successfully index-tzZd9zZG.js:108:14114
+✅ Loaded default profile: Joe index-tzZd9zZG.js:120:14231
+💾 Auto-saving workspace... index-tzZd9zZG.js:120:14616
+💾 Workspace saved: 
+Object { panelStates: {…}, panelPositions: {…}, gridVisible: true, gridSize: 10, gridSnap: false, selectedTool: "select", zoomLevel: 100, viewportPosition: {…}, timestamp: 1760434877124 }
+index-tzZd9zZG.js:108:8379
+✅ Workspace saved successfully index-tzZd9zZG.js:108:14001
+SES_UNCAUGHT_EXCEPTION: Error: Minified React error #310; visit https://react.dev/errors/310 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    Dn https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    El https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    useState https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    useState https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:17
+    children https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:120
+    t2 https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:120
+    qa https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Na https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Lc https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Zu https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Fs https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Vn https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Qs https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    is https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Ve https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    Oe https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+    W0 https://1e182e38-02b6-458a-bc2e-2519de4f1a5f-00-33i9i4a20tjvo.spock.replit.dev:3001/assets/index-tzZd9zZG.js:48
+lockdown-install.js:1:145467
